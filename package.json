@@ -1,13 +1,17 @@
 {
   "name": "simple-fake-server",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "",
   "main": "index.js",
   "author": "soluto",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "koa": "1.1.2",
     "koa-body": "1.4.0",
     "koa-cors": "0.0.16"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/itaym2/simple-fake-server.git"
   }
 }
