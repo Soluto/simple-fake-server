@@ -17,7 +17,7 @@ describe('Home Page', () => {
         fakeServer.start(1234); // the fake server now listens on http://localhost:1234
     });
 
-    it('Displays the list of existing partners', () => {
+    it('Does something', () => {
         http.get().to('/your/api').willReturn({ message: "hello world" });
 
         return fetch('http://localhost:1234/your/api', { method: 'GET' })
@@ -37,7 +37,7 @@ describe('Home Page', () => {
 Currently there are 3 different helper methods - http.get(), http.put(), and http.post(), which just pass the relavent verb to the http.create() method.  
 
 `let pathSpec = verbSpec.to(regex)` is used to match the request url.  
-`let pathWithPayloadSpec = pathSpec.withPayload(payloadRegex)` is used to match requests only if their body matches the provided regex.
+`let pathWithPayloadSpec = pathSpec.withPayload(payloadRegex)` is used to match requests only if their body matches the provided regex.  
 `pathSpec.willReturn(response)` sets the response that the fake server will return for requests matching the path spec  
 `pathSpec.willSucceed()` return status code 200 with no body for requests matching the path spec  
 `pathSepc.willFail(errorStatusCode)` return an error response with the provided status code
