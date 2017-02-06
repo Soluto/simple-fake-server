@@ -1,6 +1,6 @@
 {
   "name": "simple-fake-server",
-  "version": "0.0.4",
+  "version": "0.1.0",
   "description": "",
   "main": "index.js",
   "author": "soluto",
@@ -8,10 +8,22 @@
   "dependencies": {
     "koa": "1.1.2",
     "koa-body": "1.4.0",
-    "koa-cors": "0.0.16"
+    "koa-cors": "0.0.16",
+    "lodash": "4.17.4"
+  },
+  "devDependencies": {
+    "babel-jest": "18.0.0",
+    "babel-polyfill": "6.22.0",
+    "babel-preset-stage-3": "6.22.0",
+    "jest": "18.1.0",
+    "node-fetch": "1.6.3"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/Soluto/simple-fake-server"
+  },
+  "scripts": {
+    "start": "node index.js",
+    "test": "jest"
   }
 }

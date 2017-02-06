@@ -2,7 +2,9 @@
 
 var koa = require('koa');
 var cors = require('koa-cors');
-var koaBody   = require('koa-body');
+var koaBody = require('koa-body');
+
+var serverCallHistory = require('./serverCallHistory');
 
 var FakeServer = function() {
     let mockedCalls = [];
@@ -23,6 +25,7 @@ var FakeServer = function() {
                         && new RegExp(payloadRegex).test(JSON.stringify(this.request.body));
                 });
                 if (matched.length >= 1) {
+	                serverCallHistory.push({method: this.req.method, path: this.url, body: JSON.stringify(this.request.body)});
                     var firstMatch = matched[matched.length-1];
                     if (firstMatch.isError) {
                         let command = _createCommand(this.req.method, this.url, JSON.stringify(this.request.body));
@@ -42,6 +45,7 @@ var FakeServer = function() {
                     this.body = "no match for [" + command + "]";
                 }
             });
+            serverCallHistory.clear();
             server = app.listen(port || 1111);
         },
 

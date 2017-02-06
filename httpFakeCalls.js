@@ -1,4 +1,5 @@
-var fakeServer = require("./fakeServer");
+var fakeServer = require('./fakeServer');
+var RouteCallTester = require('./RouteCallTester');
 
 var httpFakeCalls = {
     post() {
@@ -14,34 +15,38 @@ var httpFakeCalls = {
     }
 };
 
-function create(verb) {
+function create(method) {
     return {
         to(pathRegex) {
             return Object.assign(
-                withPayload(verb, pathRegex),
-                will(verb, pathRegex));
+                withBodyThatMatches(method, pathRegex),
+                will(method, pathRegex));
         }
     }
 }
 
-function withPayload(verb, pathRegex) {
+function withBodyThatMatches(method, pathRegex) {
     return {
-        withPayload(payloadRegex) {
-            return will(verb, pathRegex, payloadRegex);
+        withBodyThatMatches(bodyRegex) {
+            return will(method, pathRegex, bodyRegex);
         }
     };
 }
 
-function will(verb, pathRegex, payloadRegex) {
+function will(method, pathRegex, bodyRegex) {
+    const routeCallTester = { call: new RouteCallTester(method, pathRegex, bodyRegex) };
     return {
         willReturn(response) {
-            fakeServer.set(verb, pathRegex, payloadRegex, response)
+            fakeServer.set(method, pathRegex, bodyRegex, response);
+            return routeCallTester;
         },
         willSucceed() {
-            fakeServer.set(verb, pathRegex, payloadRegex, null)
+            fakeServer.set(method, pathRegex, bodyRegex, null);
+            return routeCallTester;
         },
         willFail(errorStatus) {
-            fakeServer.setError(verb, pathRegex, payloadRegex, errorStatus)
+            fakeServer.setError(method, pathRegex, bodyRegex, errorStatus);
+            return routeCallTester;
         }
     }
 }
