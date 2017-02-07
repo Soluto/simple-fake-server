@@ -38,11 +38,11 @@ describe('Home Page', () => {
 
 ## Defining Routes
 
-`let verbSpec = http.get();  // or http.post() or http.put()` is used to match the request's verb.
+`let verbSpec = http.get();  // or http.post() or http.put()` is used to match the request's verb.  
 `let pathSpec = verbSpec.to(pathRegex);` is used to match the request url.  
 `let pathWithBodySpec = pathSpec.withBodyThatMatches(bodyRegex);` is used to match requests only if their body matches the provided regex.  
 `pathSpec.willReturn(response);` sets the response that the fake server will return for requests matching the path spec.  
-`pathSpec.willSucceed();` return status code 200 with no body for requests matching the path spec.
+`pathSpec.willSucceed();` return status code 200 with no body for requests matching the path spec.  
 `pathSepc.willFail(errorStatusCode);` return an error response with the provided status code.
 
 Those methods could be chained:
