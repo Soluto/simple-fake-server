@@ -5,6 +5,7 @@ var cors = require('koa-cors');
 var koaBody = require('koa-body');
 
 var serverCallHistory = require('./serverCallHistory');
+const clearServerCallHistory = () => serverCallHistory.clear();
 
 var FakeServer = function() {
     let mockedCalls = [];
@@ -45,13 +46,17 @@ var FakeServer = function() {
                     this.body = "no match for [" + command + "]";
                 }
             });
-            serverCallHistory.clear();
+            clearServerCallHistory();
             server = app.listen(port || 1111);
         },
 
         stop() {
             server.close();
             mockedCalls = [];
+        },
+        
+        clearCallHistory() {
+            clearServerCallHistory();
         },
 
         set(verb, path, payloadRegex, response) {
