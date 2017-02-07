@@ -45,7 +45,7 @@ describe('Home Page', () => {
 `pathSpec.willSucceed();` return status code 200 with no body for requests matching the path spec.  
 `pathSepc.willFail(errorStatusCode);` return an error response with the provided status code.
 
-Those methods could be chained:
+Those methods can be chained:
 `http.get().to('/some/path').withBodyThatMatches('{"message":"[a-zA-Z]+"}').willSucceed()`
 
 ## Testing If Route Was Called
