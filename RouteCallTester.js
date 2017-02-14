@@ -1,3 +1,5 @@
+'use strict';
+
 var serverCallHistory = require('./serverCallHistory');
 var _ = require('lodash');
 
