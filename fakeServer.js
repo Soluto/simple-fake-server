@@ -3,6 +3,8 @@
 var koa = require('koa');
 var cors = require('koa-cors');
 var koaBody = require('koa-body');
+var deepEquals = require('deep-equal');
+var isSubset = require('is-subset');
 
 var serverCallHistory = require('./serverCallHistory');
 const clearServerCallHistory = () => serverCallHistory.clear();
@@ -16,34 +18,54 @@ var FakeServer = function() {
             let app = koa();
             app.use(koaBody());
             app.use(cors());
-            app.use(function *(){
+            app.use(function *() {
                 var matched = mockedCalls.filter(call => {
-                    var verb = call.command.split(' ')[0];
-                    var pathRegex = call.command.split(' ')[1];
-                    var payloadRegex = call.command.split(' ')[2];
-                    return verb === this.req.method
-                        && new RegExp(pathRegex).test(this.url)
-                        && new RegExp(payloadRegex).test(JSON.stringify(this.request.body));
+
+                    const { method, pathRegex, bodyRestriction } = call;
+
+                    if (method !== this.req.method) {
+                        return false;
+                    }
+
+                    if (!(new RegExp(pathRegex).test(this.url))) {
+                        return false;
+                    }
+
+                    const contentTypeIsApplicationJson = this.request.header['content-type'] === 'application/json';
+
+                    if (bodyRestriction.regex) {
+                        const requestBodyAsString = contentTypeIsApplicationJson ? JSON.stringify(this.request.body) : this.request.body;
+                        if (!(new RegExp(bodyRestriction.regex).test(requestBodyAsString))) {
+                            return false;
+                        }
+                    }
+
+                    if (bodyRestriction.minimalObject && (!contentTypeIsApplicationJson || !isSubset(this.request.body, bodyRestriction.minimalObject))) {
+                        return false;
+                    }
+
+                    if (bodyRestriction.object && (!contentTypeIsApplicationJson || !deepEquals(this.request.body, bodyRestriction.object))) {
+                        return false;
+                    }
+
+                    return true;
                 });
                 if (matched.length >= 1) {
-	                serverCallHistory.push({method: this.req.method, path: this.url, body: JSON.stringify(this.request.body)});
+	                serverCallHistory.push({method: this.req.method, path: this.url, headers: this.request.header, body: this.request.body});
                     var firstMatch = matched[matched.length-1];
                     if (firstMatch.isError) {
-                        let command = _createCommand(this.req.method, this.url, JSON.stringify(this.request.body));
-                        log("fakeServer:: call to [" + command + "]. Respond with error: ["+firstMatch.errorStatus+"]");
+                        log(`fakeServer:: call to [${this.req.method} ${this.url} ${JSON.stringify(this.request.body)}]. Respond with error: [${firstMatch.errorStatus}]`);
                         this.status = firstMatch.errorStatus;
                     }
                     else {
-                        let command = _createCommand(this.req.method, this.url, JSON.stringify(this.request.body));
-                        log("fakeServer:: call to [" + command + "]. Respond with: [" + JSON.stringify(matched[matched.length-1].response) + "]");
+                        log(`fakeServer:: call to [${this.req.method} ${this.url} ${JSON.stringify(this.request.body)}]. Respond with: [${JSON.stringify(matched[matched.length-1].response)}]`);
                         this.body = matched[matched.length-1].response
                     }
                 }
                 else {
-                    let command = _createCommand(this.req.method, this.url, JSON.stringify(this.request.body));
-                    log("fakeServer:: no match for [" + command + "]");
+                    log(`fakeServer:: no match for [${this.req.method} ${this.url} ${JSON.stringify(this.request.body)}]`);
                     this.status = 400;
-                    this.body = "no match for [" + command + "]";
+                    this.body = `no match for [${this.req.method} ${this.url} ${JSON.stringify(this.request.body)}]`;
                 }
             });
             clearServerCallHistory();
@@ -59,24 +81,16 @@ var FakeServer = function() {
             clearServerCallHistory();
         },
 
-        set(verb, path, payloadRegex, response) {
-            payloadRegex = payloadRegex || ".*";
-            let command = _createCommand(verb, path, payloadRegex);
-            log("fakeServer:: registering [" + command + "] with response [" + JSON.stringify(response) + "]");
-            mockedCalls.push({command: command, response: response});
+        set(method, path, bodyRestriction, response) {
+            log(`fakeServer:: registering [${method} ${path}     body restriction: ${JSON.stringify(bodyRestriction)}] with response [${JSON.stringify(response)}]`);
+            mockedCalls.push({ method, path, bodyRestriction, response });
         },
 
-        setError(verb, path, payloadRegex, errorStatus) {
-            payloadRegex = payloadRegex || ".*";
-            let command = _createCommand(verb, path, payloadRegex);
-            log("fakeServer:: registering [" + command + "] with error code ["+errorStatus+"]");
-            mockedCalls.push({command: command, isError: true, errorStatus: errorStatus});
+        setError(method, path, bodyRestriction, errorStatus) {
+            log(`fakeServer:: registering [${method} ${path}     body restriction: ${JSON.stringify(bodyRestriction)}] with error code [${errorStatus}]`);
+            mockedCalls.push({ method, path, bodyRestriction, errorStatus, isError: true });
         }
     };
-
-    function _createCommand(verb, pathRegex, payload) {
-        return verb + " " + pathRegex + " " + payload;
-    }
 
     function log(message) {
         if (process.env.DEBUG) {

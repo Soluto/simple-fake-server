@@ -1,4 +1,4 @@
-# Simple-fake-server.js
+# simple-fake-server.js
 A small, simple http server for mocking and asserting http calls.  
 This server was developed mainly to isolate the client side code during automation (selenium) tests.  
 
@@ -6,7 +6,7 @@ This server was developed mainly to isolate the client side code during automati
 `npm install simple-fake-server --save-dev`
 
 ## Usage Example
-```javascript
+```js
 const chai = require('chai');
 chai.should();
 const fakeServer = require('simple-fake-server').fakeServer;
@@ -38,29 +38,115 @@ describe('Home Page', () => {
 
 ## Defining Routes
 
-`let verbSpec = http.get();  // or http.post() or http.put()` is used to match the request's verb.  
-`let pathSpec = verbSpec.to(pathRegex);` is used to match the request url.  
-`let pathWithBodySpec = pathSpec.withBodyThatMatches(bodyRegex);` is used to match requests only if their body matches the provided regex.  
-`pathSpec.willReturn(response);` sets the response that the fake server will return for requests matching the path spec.  
-`pathSpec.willSucceed();` return status code 200 with no body for requests matching the path spec.  
-`pathSepc.willFail(errorStatusCode);` return an error response with the provided status code.
+```js
+let verbSpec = http.get();  // or http.post() or http.put() - is used to match the request's verb.
+let pathSpec = verbSpec.to(pathRegex); // is used to match the request url.  
+pathSpec.willReturn(response); // sets the response that the fake server will return for requests matching the path spec.  
+pathSpec.willSucceed(); // returns status code 200 with no body for requests matching the path spec.  
+pathSepc.willFail(errorStatusCode); // returns an error response with the provided status code.
+```
 
 Those methods can be chained:
-`http.get().to('/some/path').withBodyThatMatches('{"message":"[a-zA-Z]+"}').willSucceed()`
+```js
+http.get().to('/some/path').willSucceed();
+```
 
 ## Testing If Route Was Called
 
 `willReturn()`, `willSucceed()` and `willFail()` return a route call tester object which will allow you to check if calls to that route have been made:
 
-`let route = http.get().to('/some/path/[a-zA-Z]+$').withBodyThatMatches('{"message":"[a-zA-Z]+"}').willSucceed();`
-
-`route.call.hasBeenMade();` returns true/false, based on weather this route was called since the server was started.
+```js
+let route = http.get().to('/some/path/[a-zA-Z]+$').willSucceed();
+route.call.hasBeenMade(); // returns true/false, based on weather this route was called since the server was started.
+```
  
 You can use `withPath(specificPath)` to make the test specific to a certain path, rather than the whole path regex:
-`route.call.withPath('/some/path/abc').hasBeenMade();`
+```js
+route.call.withPath('/some/path/abc').hasBeenMade();
+```
 
-Similarly, you can use `withBody(specificBody)` to make the test specific to a certain body, rather than the whole body regex:
-`route.call.withBody(JSON.stringify({ message: 'hi' })).hasBeenMade();`
+## Body Restrictions
 
-Chaining `withPath()` and `withBody()` is possible too:
-`route.call.withPath('/some/path/abc').withBody(JSON.stringify({ message: 'hi' })).hasBeenMade();`
+### When Defining a Route
+
+When you define a route, you may set a body restriction. Requests with body that does not match the restriction will not be matched.
+
+`withBodyThatMatches(regex)` will match only requests with bodies that match the given regex:
+
+```js
+const route1 = httpFakeCalls.post().to('/some/path').withBodyThatMatches('[a-zA-Z]+$').willSucceed();
+const route2 = httpFakeCalls.post().to('/some/path').withBodyThatMatches('[0-9]+$').willSucceed();
+
+// posting a request to '/some/path' with the body 'abc'...
+
+route1.call.hasBeenMade().should.equal(true);
+route2.call.hasBeenMade().should.equal(false);
+```
+
+`withBodyThatContains(minimalObject)` will match only requests with content-type header set to 'application/json' and bodies that are *supersets* of the given minimal object:
+
+```js
+const route1 = httpFakeCalls.post().to('/some/path').withBodyThatContains({ a: 1, b: 2 }).willSucceed();
+const route2 = httpFakeCalls.post().to('/some/path').withBodyThatContains({ a: 1, b: 2, c: 3 }).willSucceed();
+const route3 = httpFakeCalls.post().to('/some/path').withBodyThatContains({ a: 1, b: 2, c: 3, d: 4 }).willSucceed();
+
+// posting a request to '/some/path' with content-type header set to 'application/json' and the body JSON.stringify({ b: 2, a: 1, c: 3 })...
+
+route1.call.hasBeenMade().should.equal(true);
+route2.call.hasBeenMade().should.equal(true);
+route3.call.hasBeenMade().should.equal(false);
+```
+
+`withBody(object)` will match only requests with content-type header set to 'application/json' and bodies that are objects that *deeply equal* the given object:
+
+```js
+const route1 = httpFakeCalls.post().to('/some/path').withBody({ a: 1, b: 2 }).willSucceed();
+const route2 = httpFakeCalls.post().to('/some/path').withBody({ a: 1, b: 2, c: 3 }).willSucceed();
+const route3 = httpFakeCalls.post().to('/some/path').withBody({ a: 1, b: 2, c: 3, d: 4 }).willSucceed();
+
+// posting a request to '/some/path' with content-type header set to 'application/json' and the body JSON.stringify({ b: 2, a: 1, c: 3 })...
+
+route1.call.hasBeenMade().should.equal(false);
+route2.call.hasBeenMade().should.equal(true);
+route3.call.hasBeenMade().should.equal(false);
+```
+
+### When Testing If Route Was Called
+
+After the route is defined, you can test if there were any calls made to the route with a *specific* body.
+
+`withBodyText(str);` will restrict `hasBeenMade()` to return true only if there were any requests to the route with a body that equals the *specific* string `str`.
+It can be called only if route was defined with no body restriction or if the route was defined with a regex body restriction (using `withBodyThatMatches(regex)`) and `str` matches the regex.
+
+```js
+const route1 = httpFakeCalls.post().to('/some/path').willSucceed();
+const route2 = httpFakeCalls.post().to('/some/path').withBodyThatMatches('[a-zA-Z]+$').willSucceed();
+
+// posting a request to '/some/path' with the body 'abc'...
+
+route1.call.withBodyText('xyz').hasBeenMade().should.equal(false);
+route2.call.withBodyText('xyz').hasBeenMade().should.equal(false);
+route1.call.withBodyText('abc').hasBeenMade().should.equal(true);
+route2.call.withBodyText('abc').hasBeenMade().should.equal(true);
+
+route2.call.withBodyText('123'); // throws exception - specific string does not match the regex
+```
+
+`withSpecificBody(obj);` will restrict `hasBeenMade()` to return true only if there were any requests to the route with content-type header set to 'application/json' the body deeply equals the *specific* object `obj`.
+It can be called only if route was defined with no body restriction or if the route was defined with a minimal object body restriction (using `withBodyThatContains(minimalObject)`) and `obj` is a superset of the minimal object.
+
+```js
+const route1 = httpFakeCalls.post().to('/some/path').willSucceed();
+const route2 = httpFakeCalls.post().to('/some/path').withBodyThatContains({ a: 1, b: 2 }).willSucceed();
+
+// posting a request to '/some/path' with content-type header set to 'application/json' and body JSON.stringify({ a: 1, b: 2, c: 3 })...
+
+route1.call.withSpecificBody({ a: 1, b: 2 }).hasBeenMade().should.equal(false);
+route2.call.withSpecificBody({ a: 1, b: 2 }).hasBeenMade().should.equal(false);
+route1.call.withSpecificBody({ c: 3, b: 2, a: 1 }).hasBeenMade().should.equal(true);
+route2.call.withSpecificBody({ c: 3, b: 2, a: 1 }).hasBeenMade().should.equal(true);
+
+route2.call.withSpecificBody({ a: 1, c: 3 }); // throws exception - specific body is not a superset of the minimal object
+```
+
+More examples can be found in this project's tests.

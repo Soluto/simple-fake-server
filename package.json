@@ -1,11 +1,13 @@
 {
   "name": "simple-fake-server",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "",
   "main": "index.js",
   "author": "soluto",
   "license": "MIT",
   "dependencies": {
+    "deep-equal": "1.0.1",
+    "is-subset": "0.1.1",
     "koa": "1.1.2",
     "koa-body": "1.4.0",
     "koa-cors": "0.0.16",
