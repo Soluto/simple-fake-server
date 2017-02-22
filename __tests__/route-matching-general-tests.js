@@ -1,6 +1,6 @@
 const fetch = require('node-fetch');
 
-var app = require('../index');
+var app = require('../dist/index');
 const { fakeServer, httpFakeCalls } = app;
 
 const port = 4444;
