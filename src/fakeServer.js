@@ -58,8 +58,8 @@ var FakeServer = function() {
                         this.status = firstMatch.errorStatus;
                     }
                     else {
-                        log(`fakeServer:: call to [${this.req.method} ${this.url} ${JSON.stringify(this.request.body)}]. Respond with: [${JSON.stringify(matched[matched.length-1].response)}]`);
-                        this.body = matched[matched.length-1].response
+                        log(`fakeServer:: call to [${this.req.method} ${this.url} ${JSON.stringify(this.request.body)}]. Respond with: [${JSON.stringify(firstMatch.response)}]`);
+                        this.body = firstMatch.response
                     }
                 }
                 else {
@@ -81,14 +81,14 @@ var FakeServer = function() {
             clearServerCallHistory();
         },
 
-        set(method, path, bodyRestriction, response) {
-            log(`fakeServer:: registering [${method} ${path}     body restriction: ${JSON.stringify(bodyRestriction)}] with response [${JSON.stringify(response)}]`);
-            mockedCalls.push({ method, path, bodyRestriction, response });
+        set(method, pathRegex, bodyRestriction, response) {
+            log(`fakeServer:: registering [${method} ${pathRegex}     body restriction: ${JSON.stringify(bodyRestriction)}] with response [${JSON.stringify(response)}]`);
+            mockedCalls.push({ method, pathRegex, bodyRestriction, response });
         },
 
-        setError(method, path, bodyRestriction, errorStatus) {
-            log(`fakeServer:: registering [${method} ${path}     body restriction: ${JSON.stringify(bodyRestriction)}] with error code [${errorStatus}]`);
-            mockedCalls.push({ method, path, bodyRestriction, errorStatus, isError: true });
+        setError(method, pathRegex, bodyRestriction, errorStatus) {
+            log(`fakeServer:: registering [${method} ${pathRegex}     body restriction: ${JSON.stringify(bodyRestriction)}] with error code [${errorStatus}]`);
+            mockedCalls.push({ method, pathRegex, bodyRestriction, errorStatus, isError: true });
         }
     };
 
