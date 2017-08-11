@@ -13,11 +13,20 @@ afterEach(() => {
 	fakeServer.stop();
 });
 
-test('route defined and called - match', async () => {
+test('GET route defined and called - match', async () => {
 	const path = '/somePath';
 	const route = httpFakeCalls.get().to(path).willSucceed();
 
 	await fetch(`http://localhost:${port}${path}`, { method: 'GET' });
+
+	expect(route.call.hasBeenMade()).toEqual(true);
+});
+
+test('DELETE route defined and called - match', async () => {
+	const path = '/somePath';
+	const route = httpFakeCalls.delete().to(path).willSucceed();
+
+	await fetch(`http://localhost:${port}${path}`, { method: 'DELETE' });
 
 	expect(route.call.hasBeenMade()).toEqual(true);
 });

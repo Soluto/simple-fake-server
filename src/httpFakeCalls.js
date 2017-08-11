@@ -14,6 +14,10 @@ var httpFakeCalls = {
 
     put() {
         return create("PUT")
+    },
+
+    delete() {
+        return create("DELETE")
     }
 };
 
