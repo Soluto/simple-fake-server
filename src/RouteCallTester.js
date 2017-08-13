@@ -6,10 +6,11 @@ var deepEquals = require('deep-equal');
 var isSubset = require('is-subset');
 
 module.exports = class RouteCallTester {
-	constructor(method, pathRegex, bodyRestriction) {
+	constructor(method, pathRegex, bodyRestriction, queryParamsObject) {
 		this.method = method;
 		this.pathRegex = pathRegex || '.*';
 		this.bodyRestriction = bodyRestriction;
+		this.queryParamsObject = queryParamsObject;
 	}
 
 	withPath(path) {
@@ -17,6 +18,10 @@ module.exports = class RouteCallTester {
 			throw new Error(`misuse: withPath() is intended to let you test calls to a specific path within the route's path regex ${this.pathRegex}. however, you called withPath() with the path ${path}, which does not match the route's path regex.`)
 		}
 		return new RouteCallTester(this.method, path, this.bodyRestriction);
+	}
+
+	withQueryParams(queryObject) {
+		return new RouteCallTester(this.method, path, this.bodyRestriction, queryObject);
 	}
 
 	withBodyText(bodyText) {

@@ -22,6 +22,48 @@ test('GET route defined and called - match', async () => {
 	expect(route.call.hasBeenMade()).toEqual(true);
 });
 
+test('GET route with query params - match', async () => {
+	const path = '/someQueryPath';
+	const queryObject = {k1: 'v1', k2: 'v2'}
+	const route = httpFakeCalls.get().to(path).withQueryParams(queryObject).willSucceed();
+	
+	const queryParams = '?k1=v1&k2=v2'
+	await fetch(`http://localhost:${port}${path}${queryParams}`, { method: 'GET' });
+
+	expect(route.call.hasBeenMade()).toEqual(true);
+});
+
+test('GET route with wrong query params - no match', async () => {
+	const path = '/someQueryPath';
+	const queryObject = {k1: 'v1', k2: 'v2'}
+	const route = httpFakeCalls.get().to(path).withQueryParams(queryObject).willSucceed();
+	
+	const wrongQueryParams = '?k1=v1&k3=v3'
+	await fetch(`http://localhost:${port}${path}${wrongQueryParams}`, { method: 'GET' });
+
+	expect(route.call.hasBeenMade()).toEqual(false);
+});
+
+test('GET route with no query params and with query restrictions - no match', async () => {
+	const path = '/someQueryPath';
+	const queryObject = {k1: 'v1', k2: 'v2'}
+	const route = httpFakeCalls.get().to(path).withQueryParams(queryObject).willSucceed();
+	
+	await fetch(`http://localhost:${port}${path}`, { method: 'GET' });
+
+	expect(route.call.hasBeenMade()).toEqual(false);
+});
+
+test('GET route with query paraysm without specifying query restrictions -  match', async () => {
+	const path = '/someQueryPath';
+	const route = httpFakeCalls.get().to(path).willSucceed();
+	
+	const queryParams = '?k1=v1&k3=v3'
+	await fetch(`http://localhost:${port}${path}${queryParams}`, { method: 'GET' });
+
+	expect(route.call.hasBeenMade()).toEqual(true);
+});
+
 test('DELETE route defined and called - match', async () => {
 	const path = '/somePath';
 	const route = httpFakeCalls.delete().to(path).willSucceed();

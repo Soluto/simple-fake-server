@@ -28,6 +28,7 @@ function create(method) {
                 withBodyThatMatches(method, pathRegex),
                 withBodyThatContains(method, pathRegex),
                 withBody(method, pathRegex),
+                withQueryParams(method, pathRegex),
                 will(method, pathRegex, {}));
         }
     }
@@ -57,19 +58,27 @@ function withBody(method, pathRegex) {
     };
 }
 
-function will(method, pathRegex, bodyRestriction) {
-    const routeCallTester = { call: new RouteCallTester(method, pathRegex, bodyRestriction) };
+function withQueryParams(method, pathRegex) {
+    return {
+        withQueryParams(queryParamsObject) {
+            return will(method, pathRegex, {}, queryParamsObject);
+        }
+    };
+}
+
+function will(method, pathRegex, bodyRestriction, queryParamsObject) {
+    const routeCallTester = { call: new RouteCallTester(method, pathRegex, bodyRestriction, queryParamsObject) };
     return {
         willReturn(response) {
-            fakeServer.set(method, pathRegex, bodyRestriction, response);
+            fakeServer.set(method, pathRegex, bodyRestriction, queryParamsObject, response);
             return routeCallTester;
         },
         willSucceed() {
-            fakeServer.set(method, pathRegex, bodyRestriction, null);
+            fakeServer.set(method, pathRegex, bodyRestriction, queryParamsObject, null);
             return routeCallTester;
         },
         willFail(errorStatus) {
-            fakeServer.setError(method, pathRegex, bodyRestriction, errorStatus);
+            fakeServer.setError(method, pathRegex, bodyRestriction, queryParamsObject, errorStatus);
             return routeCallTester;
         }
     }

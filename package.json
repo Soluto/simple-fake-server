@@ -1,6 +1,6 @@
 {
   "name": "simple-fake-server",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "",
   "main": "./dist/index.js",
   "author": "soluto",
@@ -11,7 +11,8 @@
     "koa": "1.1.2",
     "koa-body": "1.4.0",
     "koa-cors": "0.0.16",
-    "lodash": "4.17.4"
+    "lodash": "4.17.4",
+    "query-string": "^5.0.0"
   },
   "devDependencies": {
     "babel-cli": "6.23.0",

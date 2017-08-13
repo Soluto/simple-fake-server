@@ -5,7 +5,7 @@ var cors = require('koa-cors');
 var koaBody = require('koa-body');
 var deepEquals = require('deep-equal');
 var isSubset = require('is-subset');
-
+const queryString = require('query-string');
 var serverCallHistory = require('./serverCallHistory');
 const clearServerCallHistory = () => serverCallHistory.clear();
 
@@ -21,7 +21,7 @@ var FakeServer = function() {
             app.use(function *() {
                 var matched = mockedCalls.filter(call => {
 
-                    const { method, pathRegex, bodyRestriction } = call;
+                    const { method, pathRegex, queryParamsObject, bodyRestriction } = call;
 
                     if (method !== this.req.method) {
                         return false;
@@ -33,13 +33,22 @@ var FakeServer = function() {
 
                     const contentTypeIsApplicationJson = this.request.header['content-type'] === 'application/json';
 
+                    if (queryParamsObject) {
+                        const splitUrl = this.url.split('?')
+                        if (splitUrl.length < 2) {
+                            return false
+                        }
+                        const queryParamsOnUrl = queryString.parse(splitUrl[1])
+                        if (!deepEquals(queryParamsOnUrl, queryParamsObject)) {
+                            return false
+                        }
+                    }
                     if (bodyRestriction.regex) {
                         const requestBodyAsString = contentTypeIsApplicationJson ? JSON.stringify(this.request.body) : this.request.body;
                         if (!(new RegExp(bodyRestriction.regex).test(requestBodyAsString))) {
                             return false;
                         }
                     }
-
                     if (bodyRestriction.minimalObject && (!contentTypeIsApplicationJson || !isSubset(this.request.body, bodyRestriction.minimalObject))) {
                         return false;
                     }
@@ -47,7 +56,6 @@ var FakeServer = function() {
                     if (bodyRestriction.object && (!contentTypeIsApplicationJson || !deepEquals(this.request.body, bodyRestriction.object))) {
                         return false;
                     }
-
                     return true;
                 });
                 if (matched.length >= 1) {
@@ -81,14 +89,14 @@ var FakeServer = function() {
             clearServerCallHistory();
         },
 
-        set(method, pathRegex, bodyRestriction, response) {
+        set(method, pathRegex, bodyRestriction, queryParamsObject, response) {
             log(`fakeServer:: registering [${method} ${pathRegex}     body restriction: ${JSON.stringify(bodyRestriction)}] with response [${JSON.stringify(response)}]`);
-            mockedCalls.push({ method, pathRegex, bodyRestriction, response });
+            mockedCalls.push({ method, pathRegex, bodyRestriction, queryParamsObject, response });
         },
 
-        setError(method, pathRegex, bodyRestriction, errorStatus) {
+        setError(method, pathRegex, bodyRestriction, queryParamsObject, errorStatus) {
             log(`fakeServer:: registering [${method} ${pathRegex}     body restriction: ${JSON.stringify(bodyRestriction)}] with error code [${errorStatus}]`);
-            mockedCalls.push({ method, pathRegex, bodyRestriction, errorStatus, isError: true });
+            mockedCalls.push({ method, pathRegex, bodyRestriction, queryParamsObject, errorStatus, isError: true });
         }
     };
 
