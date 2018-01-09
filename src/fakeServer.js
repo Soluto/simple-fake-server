@@ -1,5 +1,6 @@
 "use strict";
 
+const https = require('https');
 var koa = require('koa');
 var cors = require('koa-cors');
 var koaBody = require('koa-body');
@@ -14,7 +15,7 @@ var FakeServer = function() {
     let server;
 
     return {
-        start(port) {
+        start(port, tls = false) {
             let app = koa();
             app.use(koaBody());
             app.use(cors());
@@ -77,7 +78,7 @@ var FakeServer = function() {
                 }
             });
             clearServerCallHistory();
-            server = app.listen(port || 1111);
+            server = tls ? https.createServer(app.callback()).listen(port | 1111) : app.listen(port || 1111);
         },
 
         stop() {
