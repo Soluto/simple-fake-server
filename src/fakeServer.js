@@ -1,6 +1,8 @@
 "use strict";
 
+const  fs = require('fs');
 const https = require('https');
+
 var koa = require('koa');
 var cors = require('koa-cors');
 var koaBody = require('koa-body');
@@ -78,7 +80,16 @@ var FakeServer = function() {
                 }
             });
             clearServerCallHistory();
-            server = tls ? https.createServer(app.callback()).listen(port | 1111) : app.listen(port || 1111);
+
+            if (!tls) {
+                server = app.listen(port || 1111);
+            } else {
+                const  key  = fs.readFileSync('./sslcert/server.key', 'utf8');
+                const  cert = fs.readFileSync('./sslcert/server.crt', 'utf8');
+                const  credentials = {key, cert};
+
+                server = https.createServer(credentials, app.callback()).listen(port | 1111);
+            }
         },
 
         stop() {
