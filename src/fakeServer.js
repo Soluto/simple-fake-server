@@ -1,7 +1,7 @@
 "use strict";
 
-const  fs = require('fs');
 const https = require('https');
+const selfSignedCertifcate = require('./selfSignedCertificate');
 
 var koa = require('koa');
 var cors = require('koa-cors');
@@ -84,11 +84,7 @@ var FakeServer = function() {
             if (!tls) {
                 server = app.listen(port || 1111);
             } else {
-                const  key  = fs.readFileSync('./sslcert/server.key', 'utf8');
-                const  cert = fs.readFileSync('./sslcert/server.crt', 'utf8');
-                const  credentials = {key, cert};
-
-                server = https.createServer(credentials, app.callback()).listen(port || 1111);
+                server = https.createServer(selfSignedCertifcate, app.callback()).listen(port || 1111);
             }
         },
 
