@@ -88,7 +88,7 @@ var FakeServer = function() {
                 const  cert = fs.readFileSync('./sslcert/server.crt', 'utf8');
                 const  credentials = {key, cert};
 
-                server = https.createServer(credentials, app.callback()).listen(port | 1111);
+                server = https.createServer(credentials, app.callback()).listen(port || 1111);
             }
         },
 
