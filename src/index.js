@@ -1,3 +1,7 @@
-module.exports.fakeServer = require('./fakeServer.js');
-module.exports.httpFakeCalls = require('./httpFakeCalls.js');
+import fakeServer from './fakeServer.js';
+import httpFakeCalls from './httpFakeCalls.js';
 
+export {
+  fakeServer,
+  httpFakeCalls
+};

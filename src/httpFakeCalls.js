@@ -1,87 +1,77 @@
-"use strict";
+import fakeServer from './fakeServer';
+import RouteCallTester from './RouteCallTester';
 
-var fakeServer = require('./fakeServer');
-var RouteCallTester = require('./RouteCallTester');
+const will = (method, pathRegex, bodyRestriction, queryParamsObject) => {
+  const routeCallTester = {call: new RouteCallTester(method, pathRegex, bodyRestriction, queryParamsObject)};
 
-var httpFakeCalls = {
-    post() {
-        return create("POST")
+  return {
+    willReturn (response) {
+      fakeServer.set(method, pathRegex, bodyRestriction, queryParamsObject, response);
+
+      return routeCallTester;
     },
+    willSucceed () {
+      fakeServer.set(method, pathRegex, bodyRestriction, queryParamsObject, null);
 
-    get() {
-        return create("GET")
+      return routeCallTester;
     },
+    willFail (errorStatus) {
+      fakeServer.setError(method, pathRegex, bodyRestriction, queryParamsObject, errorStatus);
 
-    put() {
-        return create("PUT")
-    },
-
-    delete() {
-        return create("DELETE")
+      return routeCallTester;
     }
+  };
 };
 
-function create(method) {
-    return {
-        to(pathRegex) {
-            return Object.assign(
-                withBodyThatMatches(method, pathRegex),
-                withBodyThatContains(method, pathRegex),
-                withBody(method, pathRegex),
-                withQueryParams(method, pathRegex),
-                will(method, pathRegex, {}));
-        }
-    }
-}
+const withBodyThatMatches = (method, pathRegex) => ({
+  withBodyThatMatches (regex) {
+    return will(method, pathRegex, {regex});
+  }
+});
 
-function withBodyThatMatches(method, pathRegex) {
-    return {
-        withBodyThatMatches(regex) {
-            return will(method, pathRegex, { regex });
-        }
-    };
-}
-    
-function withBodyThatContains(method, pathRegex) {
-    return {
-        withBodyThatContains(minimalObject) {
-            return will(method, pathRegex, { minimalObject });
-        }
-    };
-}
+const withBodyThatContains = (method, pathRegex) => ({
+  withBodyThatContains (minimalObject) {
+    return will(method, pathRegex, {minimalObject});
+  }
+});
 
-function withBody(method, pathRegex) {
-    return {
-        withBody(object) {
-            return will(method, pathRegex, { object });
-        }
-    };
-}
+const withBody = (method, pathRegex) => ({
+  withBody (object) {
+    return will(method, pathRegex, {object});
+  }
+});
 
-function withQueryParams(method, pathRegex) {
-    return {
-        withQueryParams(queryParamsObject) {
-            return will(method, pathRegex, {}, queryParamsObject);
-        }
-    };
-}
+const withQueryParams = (method, pathRegex) => ({
+  withQueryParams (queryParamsObject) {
+    return will(method, pathRegex, {}, queryParamsObject);
+  }
+});
 
-function will(method, pathRegex, bodyRestriction, queryParamsObject) {
-    const routeCallTester = { call: new RouteCallTester(method, pathRegex, bodyRestriction, queryParamsObject) };
-    return {
-        willReturn(response) {
-            fakeServer.set(method, pathRegex, bodyRestriction, queryParamsObject, response);
-            return routeCallTester;
-        },
-        willSucceed() {
-            fakeServer.set(method, pathRegex, bodyRestriction, queryParamsObject, null);
-            return routeCallTester;
-        },
-        willFail(errorStatus) {
-            fakeServer.setError(method, pathRegex, bodyRestriction, queryParamsObject, errorStatus);
-            return routeCallTester;
-        }
-    }
-}
+const create = method => ({
+  to (pathRegex) {
+    return Object.assign(
+      withBodyThatMatches(method, pathRegex),
+      withBodyThatContains(method, pathRegex),
+      withBody(method, pathRegex),
+      withQueryParams(method, pathRegex),
+      will(method, pathRegex, {}));
+  }
+});
 
-module.exports = httpFakeCalls;
+export default {
+  post () {
+    return create('POST');
+  },
+
+  get () {
+    return create('GET');
+  },
+
+  put () {
+    return create('PUT');
+  },
+
+  delete () {
+    return create('DELETE');
+  }
+};

@@ -1,17 +1,15 @@
-'use strict';
-
 let history = [];
 
-module.exports = {
-	get() {
-		return history;
-	},
+export default {
+  get () {
+    return history;
+  },
 
-	push(serverCall) {
-		history.push(serverCall);
-	},
+  push (serverCall) {
+    history.push(serverCall);
+  },
 
-	clear() {
-		history = [];
-	}
+  clear () {
+    history = [];
+  }
 };
