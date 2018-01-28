@@ -1,6 +1,6 @@
 {
   "name": "simple-fake-server",
-  "version": "0.5.2",
+  "version": "1.0.0",
   "description": "A small, simple http server for mocking and asserting http calls.",
   "main": "./dist/index.js",
   "author": "soluto",
