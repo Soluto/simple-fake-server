@@ -1,34 +1,35 @@
 {
   "name": "simple-fake-server",
-  "version": "0.5.2",
-  "description": "",
+  "version": "1.0.0",
+  "description": "A small, simple http server for mocking and asserting http calls.",
   "main": "./dist/index.js",
   "author": "soluto",
   "license": "MIT",
   "dependencies": {
     "deep-equal": "1.0.1",
     "is-subset": "0.1.1",
-    "koa": "1.1.2",
+    "koa": "1.5.1",
     "koa-body": "1.4.0",
     "koa-cors": "0.0.16",
     "lodash": "4.17.4",
-    "query-string": "^5.0.0"
+    "query-string": "5.0.1"
   },
   "devDependencies": {
-    "babel-cli": "6.23.0",
-    "babel-jest": "18.0.0",
-    "babel-polyfill": "6.22.0",
-    "babel-preset-stage-3": "6.22.0",
-    "jest": "18.1.0",
-    "node-fetch": "1.6.3"
+    "babel-cli": "^6.26.0",
+    "babel-jest": "^22.1.0",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-polyfill": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
+    "jest": "^22.1.4",
+    "node-fetch": "^1.7.3"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/Soluto/simple-fake-server"
   },
   "scripts": {
-    "build": "babel src --presets stage-3 --out-dir dist",
+    "build": "babel src --out-dir dist",
     "prepublish": "npm run build",
-    "test": "npm run build && jest"
+    "test": "jest --runInBand"
   }
 }
