@@ -1,7 +1,4 @@
-import _ from 'lodash';
-import deepEquals from 'deep-equal';
 import isSubset from 'is-subset';
-import serverCallHistory from './serverCallHistory';
 
 export default class RouteCallTester {
   constructor (method, pathRegex, bodyRestriction, queryParamsObject) {
@@ -43,44 +40,5 @@ export default class RouteCallTester {
     }
 
     return new RouteCallTester(this.method, this.pathRegex, {...this.bodyRestriction, exactObject: bodyObject});
-  }
-
-  hasBeenMade () {
-    return _.some(serverCallHistory.get(), call => {
-      if (call.method !== this.method) {
-        return false;
-      }
-
-      if (!(new RegExp(this.pathRegex).test(call.path))) {
-        return false;
-      }
-
-      const contentTypeIsApplicationJson = call.headers['content-type'] === 'application/json';
-      const callBodyAsString = contentTypeIsApplicationJson ? JSON.stringify(call.body) : call.body;
-
-      if (this.bodyRestriction.exactText) {
-        if (callBodyAsString !== this.bodyRestriction.exactText) {
-          return false;
-        }
-      }
-      else if (this.bodyRestriction.regex) {
-        if (!(new RegExp(this.bodyRestriction.regex).test(callBodyAsString))) {
-          return false;
-        }
-      }
-
-      if (this.bodyRestriction.exactObject) {
-        if (!deepEquals(call.body, this.bodyRestriction.exactObject)) {
-          return false;
-        }
-      }
-      else if (this.bodyRestriction.minimalObject) {
-        if (!(isSubset(call.body, this.bodyRestriction.minimalObject))) {
-          return false;
-        }
-      }
-
-      return true;
-    });
   }
 }
