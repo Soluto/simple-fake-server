@@ -1,11 +1,6 @@
+//@ts-ignore
 import isSubset from 'is-subset';
-
-export type BodyRestriction = {
-    regex?: string;
-    minimalObject?: object;
-    exactText?: string;
-    exactObject?: object;
-};
+import {BodyRestriction} from './models/BodyRestriction';
 
 export default class RouteCallTester {
     method: string;
@@ -20,7 +15,7 @@ export default class RouteCallTester {
         this.queryParamsObject = queryParamsObject;
     }
 
-    withPath(path) {
+    withPath(path: string) {
         if (!new RegExp(this.pathRegex).test(path)) {
             throw new Error(
                 `misuse: withPath() is intended to let you test calls to a specific path within the route's path regex ${
@@ -32,7 +27,7 @@ export default class RouteCallTester {
         return new RouteCallTester(this.method, path, this.bodyRestriction);
     }
 
-    withBodyText(bodyText) {
+    withBodyText(bodyText: string) {
         const numberOfBodyRestrictionKeys = Object.keys(this.bodyRestriction).length;
 
         if (!(numberOfBodyRestrictionKeys === 0 || (numberOfBodyRestrictionKeys === 1 && this.bodyRestriction.regex))) {
@@ -51,7 +46,7 @@ export default class RouteCallTester {
         return new RouteCallTester(this.method, this.pathRegex, {...this.bodyRestriction, exactText: bodyText});
     }
 
-    withSpecificBody(bodyObject) {
+    withSpecificBody(bodyObject: {}) {
         const numberOfBodyRestrictionKeys = Object.keys(this.bodyRestriction).length;
 
         if (
