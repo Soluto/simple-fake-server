@@ -1,25 +1,30 @@
+import {Server} from 'http';
 import https, {Server as SecureServer} from 'https';
 import queryString from 'query-string';
+//@ts-ignore
 import koa from 'koa';
+//@ts-ignore
 import cors from 'koa-cors';
+//@ts-ignore
 import koaBody from 'koa-body';
 import deepEquals from 'deep-equal';
+//@ts-ignore
 import isSubset from 'is-subset';
 import * as selfSignedCertificate from './selfSignedCertificate';
 import CallHistory from './CallHistory';
-import {Server} from 'http';
+import {BodyRestriction} from './models/BodyRestriction';
 
 export type MockedCall = {
     method: string;
     pathRegex: string;
-    bodyRestriction?: any;
-    queryParamsObject?: any;
+    bodyRestriction?: BodyRestriction;
+    queryParamsObject?: {};
     errorStatus?: number;
     isError?: boolean;
     response?: any;
 };
 
-const log = message => {
+const log = (message: string) => {
     if (!process.env.DEBUG) {
         return;
     }
@@ -34,7 +39,7 @@ export default class FakeServer {
     tls: boolean;
     server: Server | SecureServer;
 
-    constructor(port, tls = false) {
+    constructor(port: number, tls = false) {
         this.callHistory = new CallHistory();
         this.mockedCalls = [];
         this.port = port;
@@ -55,55 +60,57 @@ export default class FakeServer {
 
         app.use(koaBody());
         app.use(cors());
-        app.use(function*() {
-            const matched = self.mockedCalls.filter(({method, pathRegex, queryParamsObject, bodyRestriction}) => {
-                if (method !== this.req.method) {
-                    return false;
-                }
-
-                if (!new RegExp(pathRegex).test(this.url)) {
-                    return false;
-                }
-
-                const contentTypeIsApplicationJson = this.request.header['content-type'] === 'application/json';
-
-                if (queryParamsObject) {
-                    const splitUrl = this.url.split('?');
-
-                    if (splitUrl.length < 2) {
+        app.use(function*(): Iterator<void> {
+            const matched = self.mockedCalls.filter(
+                ({method, pathRegex, queryParamsObject, bodyRestriction = {}}: MockedCall) => {
+                    if (method !== this.req.method) {
                         return false;
                     }
-                    const queryParamsOnUrl = queryString.parse(splitUrl[1]);
 
-                    if (!deepEquals(queryParamsOnUrl, queryParamsObject)) {
+                    if (!new RegExp(pathRegex).test(this.url)) {
                         return false;
                     }
-                }
-                if (bodyRestriction.regex) {
-                    const requestBodyAsString = contentTypeIsApplicationJson
-                        ? JSON.stringify(this.request.body)
-                        : this.request.body;
 
-                    if (!new RegExp(bodyRestriction.regex).test(requestBodyAsString)) {
+                    const contentTypeIsApplicationJson = this.request.header['content-type'] === 'application/json';
+
+                    if (queryParamsObject) {
+                        const splitUrl = this.url.split('?');
+
+                        if (splitUrl.length < 2) {
+                            return false;
+                        }
+                        const queryParamsOnUrl = queryString.parse(splitUrl[1]);
+
+                        if (!deepEquals(queryParamsOnUrl, queryParamsObject)) {
+                            return false;
+                        }
+                    }
+                    if (bodyRestriction.regex) {
+                        const requestBodyAsString = contentTypeIsApplicationJson
+                            ? JSON.stringify(this.request.body)
+                            : this.request.body;
+
+                        if (!new RegExp(bodyRestriction.regex).test(requestBodyAsString)) {
+                            return false;
+                        }
+                    }
+                    if (
+                        bodyRestriction.minimalObject &&
+                        (!contentTypeIsApplicationJson || !isSubset(this.request.body, bodyRestriction.minimalObject))
+                    ) {
                         return false;
                     }
-                }
-                if (
-                    bodyRestriction.minimalObject &&
-                    (!contentTypeIsApplicationJson || !isSubset(this.request.body, bodyRestriction.minimalObject))
-                ) {
-                    return false;
-                }
 
-                if (
-                    bodyRestriction.object &&
-                    (!contentTypeIsApplicationJson || !deepEquals(this.request.body, bodyRestriction.object))
-                ) {
-                    return false;
-                }
+                    if (
+                        bodyRestriction.object &&
+                        (!contentTypeIsApplicationJson || !deepEquals(this.request.body, bodyRestriction.object))
+                    ) {
+                        return false;
+                    }
 
-                return true;
-            });
+                    return true;
+                }
+            );
 
             if (matched.length >= 1) {
                 self.callHistory.push({
@@ -153,7 +160,7 @@ export default class FakeServer {
         this.callHistory.clear();
     }
 
-    set(method: string, pathRegex: string, bodyRestriction: any, queryParamsObject: any, response: any) {
+    set(method: string, pathRegex: string, bodyRestriction: BodyRestriction, queryParamsObject: {}, response: any) {
         log(
             `fakeServer:: registering [${method} ${pathRegex}     body restriction: ${JSON.stringify(
                 bodyRestriction
@@ -162,7 +169,13 @@ export default class FakeServer {
         this.mockedCalls.push({method, pathRegex, bodyRestriction, queryParamsObject, response});
     }
 
-    setError(method, pathRegex, bodyRestriction, queryParamsObject, errorStatus) {
+    setError(
+        method: string,
+        pathRegex: string,
+        bodyRestriction: BodyRestriction,
+        queryParamsObject: {},
+        errorStatus: number
+    ) {
         log(
             `fakeServer:: registering [${method} ${pathRegex}     body restriction: ${JSON.stringify(
                 bodyRestriction
@@ -171,7 +184,7 @@ export default class FakeServer {
         this.mockedCalls.push({method, pathRegex, bodyRestriction, queryParamsObject, errorStatus, isError: true});
     }
 
-    hasMade(call) {
+    hasMade(call: MockedCall) {
         return this.callHistory.get().some(serverCall => {
             if (serverCall.method !== call.method) {
                 return false;
@@ -184,23 +197,25 @@ export default class FakeServer {
             const contentTypeIsApplicationJson = serverCall.headers['content-type'] === 'application/json';
             const callBodyAsString = contentTypeIsApplicationJson ? JSON.stringify(serverCall.body) : serverCall.body;
 
-            if (call.bodyRestriction.exactText) {
-                if (callBodyAsString !== call.bodyRestriction.exactText) {
-                    return false;
+            if (call.bodyRestriction) {
+                if (call.bodyRestriction.exactText) {
+                    if (callBodyAsString !== call.bodyRestriction.exactText) {
+                        return false;
+                    }
+                } else if (call.bodyRestriction.regex) {
+                    if (!new RegExp(call.bodyRestriction.regex).test(callBodyAsString)) {
+                        return false;
+                    }
                 }
-            } else if (call.bodyRestriction.regex) {
-                if (!new RegExp(call.bodyRestriction.regex).test(callBodyAsString)) {
-                    return false;
-                }
-            }
 
-            if (call.bodyRestriction.exactObject) {
-                if (!deepEquals(serverCall.body, call.bodyRestriction.exactObject)) {
-                    return false;
-                }
-            } else if (call.bodyRestriction.minimalObject) {
-                if (!isSubset(serverCall.body, call.bodyRestriction.minimalObject)) {
-                    return false;
+                if (call.bodyRestriction.exactObject) {
+                    if (!deepEquals(serverCall.body, call.bodyRestriction.exactObject)) {
+                        return false;
+                    }
+                } else if (call.bodyRestriction.minimalObject) {
+                    if (!isSubset(serverCall.body, call.bodyRestriction.minimalObject)) {
+                        return false;
+                    }
                 }
             }
 

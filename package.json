@@ -3,7 +3,7 @@
   "version": "1.1.1",
   "description": "A small, simple http server for mocking and asserting http calls.",
   "main": "dist/index.js",
-  "types": "src/index.ts",
+  "types": "dist/index.d.ts",
   "author": "soluto",
   "license": "MIT",
   "dependencies": {
@@ -16,16 +16,18 @@
     "query-string": "5.0.1"
   },
   "devDependencies": {
+    "@types/deep-equal": "^1.0.1",
     "@types/jest": "^22.0.1",
     "@types/node": "^9.3.0",
+    "@types/query-string": "^5.1.0",
     "husky": "^0.14.3",
     "jest": "^22.1.4",
     "lint-staged": "^6.0.1",
+    "node-fetch": "^1.7.3",
     "prettier": "^1.10.2",
     "rimraf": "^2.6.2",
     "ts-jest": "^22.0.1",
-    "typescript": "^2.6.2",
-    "node-fetch": "^1.7.3"
+    "typescript": "^2.6.2"
   },
   "repository": {
     "type": "git",
