@@ -2,7 +2,8 @@
   "name": "simple-fake-server",
   "version": "1.1.0",
   "description": "A small, simple http server for mocking and asserting http calls.",
-  "main": "./dist/index.js",
+  "main": "dist/index.js",
+  "types": "src/index.ts",
   "author": "soluto",
   "license": "MIT",
   "dependencies": {
