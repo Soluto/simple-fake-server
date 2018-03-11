@@ -7,6 +7,7 @@ import deepEquals from 'deep-equal';
 import isSubset from 'is-subset';
 import * as selfSignedCertificate from './selfSignedCertificate';
 import CallHistory from './CallHistory';
+import matchCalls from './matchCalls';
 
 const log = message => {
   if (!process.env.DEBUG) {
@@ -131,41 +132,10 @@ export default class FakeServer {
   }
 
   hasMade (call) {
-    return this.callHistory.get().some(serverCall => {
-      if (serverCall.method !== call.method) {
-        return false;
-      }
+    return this.callHistory.get().some(serverCall => matchCalls(call, serverCall));
+  }
 
-      if (!(new RegExp(call.pathRegex).test(serverCall.path))) {
-        return false;
-      }
-
-      const contentTypeIsApplicationJson = serverCall.headers['content-type'] === 'application/json';
-      const callBodyAsString = contentTypeIsApplicationJson ? JSON.stringify(serverCall.body) : serverCall.body;
-
-      if (call.bodyRestriction.exactText) {
-        if (callBodyAsString !== call.bodyRestriction.exactText) {
-          return false;
-        }
-      }
-      else if (call.bodyRestriction.regex) {
-        if (!(new RegExp(call.bodyRestriction.regex).test(callBodyAsString))) {
-          return false;
-        }
-      }
-
-      if (call.bodyRestriction.exactObject) {
-        if (!deepEquals(serverCall.body, call.bodyRestriction.exactObject)) {
-          return false;
-        }
-      }
-      else if (call.bodyRestriction.minimalObject) {
-        if (!(isSubset(serverCall.body, call.bodyRestriction.minimalObject))) {
-          return false;
-        }
-      }
-
-      return true;
-    });
+  callsMade(call) {
+    return this.callHistory.get().filter(serverCall => matchCalls(call, serverCall));
   }
 }
