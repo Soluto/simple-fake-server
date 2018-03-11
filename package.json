@@ -15,12 +15,15 @@
     "query-string": "5.0.1"
   },
   "devDependencies": {
-    "babel-cli": "^6.26.0",
-    "babel-jest": "^22.1.0",
-    "babel-plugin-transform-object-rest-spread": "^6.26.0",
-    "babel-polyfill": "^6.26.0",
-    "babel-preset-env": "^1.6.1",
+    "@types/jest": "^22.0.1",
+    "@types/node": "^9.3.0",
+    "husky": "^0.14.3",
     "jest": "^22.1.4",
+    "lint-staged": "^6.0.1",
+    "prettier": "^1.10.2",
+    "rimraf": "^2.6.2",
+    "ts-jest": "^22.0.1",
+    "typescript": "^2.6.2",
     "node-fetch": "^1.7.3"
   },
   "repository": {
@@ -28,8 +31,10 @@
     "url": "https://github.com/Soluto/simple-fake-server"
   },
   "scripts": {
-    "build": "babel src --out-dir dist",
-    "prepublish": "npm run build",
-    "test": "jest --runInBand"
+    "precommit": "lint-staged",
+    "prepare": "npm run build",
+    "build": "rimraf dist && tsc -p tsconfig.json",
+    "test": "jest --config jest.config.json",
+    "prettify": "prettier --write **/*.ts **/*.tsx"
   }
 }
