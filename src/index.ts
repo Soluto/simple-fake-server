@@ -1,4 +1,1 @@
-import FakeServer from './FakeServer';
-import httpFakeCalls from './httpFakeCalls';
-
-export {FakeServer, httpFakeCalls};
+export {default as FakeServer} from './FakeServer';
