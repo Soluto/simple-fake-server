@@ -6,6 +6,14 @@
   "types": "dist/index.d.ts",
   "author": "soluto",
   "license": "MIT",
+  "scripts": {
+    "precommit": "lint-staged",
+    "prepare": "npm run build",
+    "build": "rimraf dist && tsc -p tsconfig.json",
+    "test": "jest --config jest.config.json",
+    "prettify": "prettier --write **/*.ts **/*.tsx",
+    "prepush": "npm run test"
+  },
   "dependencies": {
     "deep-equal": "1.0.1",
     "is-subset": "0.1.1",
@@ -32,12 +40,5 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/Soluto/simple-fake-server"
-  },
-  "scripts": {
-    "precommit": "lint-staged",
-    "prepare": "npm run build",
-    "build": "rimraf dist && tsc -p tsconfig.json",
-    "test": "jest --config jest.config.json",
-    "prettify": "prettier --write **/*.ts **/*.tsx"
-  }
+  }  
 }
