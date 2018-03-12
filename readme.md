@@ -10,20 +10,17 @@ This server was developed mainly to isolate the client side code during automati
 const chai = require('chai');
 chai.should();
 const FakeServer = require('simple-fake-server').FakeServer;
-const httpFakeCalls = require('simple-fake-server').httpFakeCalls;
 
 describe('Home Page', () => {
     let fakeServer;
-    let http;
     
     before(() => {
         fakeServer = new FakeServer(1234);
         fakeServer.start(); // the fake server now listens on http://localhost:1234
-        http = httpFakeCalls(fakeServer);
     });
 
     it('Does something', () => {
-        var route = http.get().to('/your/api').willReturn({ message: "hello world" });
+        var route = fakeServer.http.get().to('/your/api').willReturn({ message: "hello world" });
 
         return fetch('http://localhost:1234/your/api', { method: 'GET' })
             .then(res => res.json())
@@ -44,7 +41,7 @@ describe('Home Page', () => {
 ## Defining Routes
 
 ```js
-let verbSpec = http.get();  // or http.post() or http.put() - is used to match the request's verb.
+let verbSpec = fakeServer.http.get();  // or fakeServer.http.post() or fakeServer.http.put() - is used to match the request's verb.
 let pathSpec = verbSpec.to(pathRegex); // is used to match the request url.  
 pathSpec.willReturn(response); // sets the response that the fake server will return for requests matching the path spec.  
 pathSpec.willSucceed(); // returns status code 200 with no body for requests matching the path spec.  
@@ -53,7 +50,7 @@ pathSepc.willFail(errorStatusCode); // returns an error response with the provid
 
 Those methods can be chained:
 ```js
-http.get().to('/some/path').willSucceed();
+fakeServer.http.get().to('/some/path').willSucceed();
 ```
 
 ## Testing If Route Was Called
@@ -61,7 +58,7 @@ http.get().to('/some/path').willSucceed();
 `willReturn()`, `willSucceed()` and `willFail()` return a route call tester object which will allow you to check if calls to that route have been made:
 
 ```js
-let route = http.get().to('/some/path/[a-zA-Z]+$').willSucceed();
+let route = fakeServer.http.get().to('/some/path/[a-zA-Z]+$').willSucceed();
 fakeServer.hasMade(route.call); // returns true/false, based on weather this route was called since the server was started.
 ```
  
@@ -79,8 +76,8 @@ When you define a route, you may set a body restriction. Requests with body that
 `withBodyThatMatches(regex)` will match only requests with bodies that match the given regex:
 
 ```js
-const route1 = http.post().to('/some/path').withBodyThatMatches('[a-zA-Z]+$').willSucceed();
-const route2 = http.post().to('/some/path').withBodyThatMatches('[0-9]+$').willSucceed();
+const route1 = fakeServer.http.post().to('/some/path').withBodyThatMatches('[a-zA-Z]+$').willSucceed();
+const route2 = fakeServer.http.post().to('/some/path').withBodyThatMatches('[0-9]+$').willSucceed();
 
 // posting a request to '/some/path' with the body 'abc'...
 
@@ -91,9 +88,9 @@ fakeServer.hasMade(route2.call).should.equal(false);
 `withBodyThatContains(minimalObject)` will match only requests with content-type header set to 'application/json' and bodies that are *supersets* of the given minimal object:
 
 ```js
-const route1 = http.post().to('/some/path').withBodyThatContains({ a: 1, b: 2 }).willSucceed();
-const route2 = http.post().to('/some/path').withBodyThatContains({ a: 1, b: 2, c: 3 }).willSucceed();
-const route3 = http.post().to('/some/path').withBodyThatContains({ a: 1, b: 2, c: 3, d: 4 }).willSucceed();
+const route1 = fakeServer.http.post().to('/some/path').withBodyThatContains({ a: 1, b: 2 }).willSucceed();
+const route2 = fakeServer.http.post().to('/some/path').withBodyThatContains({ a: 1, b: 2, c: 3 }).willSucceed();
+const route3 = fakeServer.http.post().to('/some/path').withBodyThatContains({ a: 1, b: 2, c: 3, d: 4 }).willSucceed();
 
 // posting a request to '/some/path' with content-type header set to 'application/json' and the body JSON.stringify({ b: 2, a: 1, c: 3 })...
 
@@ -105,9 +102,9 @@ fakeServer.hasMade(route3.call).should.equal(false);
 `withBody(object)` will match only requests with content-type header set to 'application/json' and bodies that are objects that *deeply equal* the given object:
 
 ```js
-const route1 = http.post().to('/some/path').withBody({ a: 1, b: 2 }).willSucceed();
-const route2 = http.post().to('/some/path').withBody({ a: 1, b: 2, c: 3 }).willSucceed();
-const route3 = http.post().to('/some/path').withBody({ a: 1, b: 2, c: 3, d: 4 }).willSucceed();
+const route1 = fakeServer.http.post().to('/some/path').withBody({ a: 1, b: 2 }).willSucceed();
+const route2 = fakeServer.http.post().to('/some/path').withBody({ a: 1, b: 2, c: 3 }).willSucceed();
+const route3 = fakeServer.http.post().to('/some/path').withBody({ a: 1, b: 2, c: 3, d: 4 }).willSucceed();
 
 // posting a request to '/some/path' with content-type header set to 'application/json' and the body JSON.stringify({ b: 2, a: 1, c: 3 })...
 
@@ -124,8 +121,8 @@ After the route is defined, you can test if there were any calls made to the rou
 It can be called only if route was defined with no body restriction or if the route was defined with a regex body restriction (using `withBodyThatMatches(regex)`) and `str` matches the regex.
 
 ```js
-const route1 = http.post().to('/some/path').willSucceed();
-const route2 = http.post().to('/some/path').withBodyThatMatches('[a-zA-Z]+$').willSucceed();
+const route1 = fakeServer.http.post().to('/some/path').willSucceed();
+const route2 = fakeServer.http.post().to('/some/path').withBodyThatMatches('[a-zA-Z]+$').willSucceed();
 
 // posting a request to '/some/path' with the body 'abc'...
 
@@ -141,8 +138,8 @@ route2.call.withBodyText('123'); // throws exception - specific string does not 
 It can be called only if route was defined with no body restriction or if the route was defined with a minimal object body restriction (using `withBodyThatContains(minimalObject)`) and `obj` is a superset of the minimal object.
 
 ```js
-const route1 = http.post().to('/some/path').willSucceed();
-const route2 = http.post().to('/some/path').withBodyThatContains({ a: 1, b: 2 }).willSucceed();
+const route1 = fakeServer.http.post().to('/some/path').willSucceed();
+const route2 = fakeServer.http.post().to('/some/path').withBodyThatContains({ a: 1, b: 2 }).willSucceed();
 
 // posting a request to '/some/path' with content-type header set to 'application/json' and body JSON.stringify({ a: 1, b: 2, c: 3 })...
 
