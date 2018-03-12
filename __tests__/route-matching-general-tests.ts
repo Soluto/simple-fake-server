@@ -9,7 +9,6 @@ let http: FakeHttpCalls;
 beforeEach(() => {
     fakeServer = new FakeServer(port);
     fakeServer.start();
-    http = fakeServer.http;
 });
 
 afterEach(() => {
@@ -18,7 +17,7 @@ afterEach(() => {
 
 test('GET route defined and called - match', async () => {
     const path = '/somePath';
-    const route = http
+    const route = fakeServer.http
         .get()
         .to(path)
         .willSucceed();
@@ -31,7 +30,7 @@ test('GET route defined and called - match', async () => {
 test('GET route with query params - match', async () => {
     const path = '/someQueryPath';
     const queryObject = {k1: 'v1', k2: 'v2'};
-    const route = http
+    const route = fakeServer.http
         .get()
         .to(path)
         .withQueryParams(queryObject)
@@ -47,7 +46,7 @@ test('GET route with query params - match', async () => {
 test('GET route with wrong query params - no match', async () => {
     const path = '/someQueryPath';
     const queryObject = {k1: 'v1', k2: 'v2'};
-    const route = http
+    const route = fakeServer.http
         .get()
         .to(path)
         .withQueryParams(queryObject)
@@ -63,7 +62,7 @@ test('GET route with wrong query params - no match', async () => {
 test('GET route with no query params and with query restrictions - no match', async () => {
     const path = '/someQueryPath';
     const queryObject = {k1: 'v1', k2: 'v2'};
-    const route = http
+    const route = fakeServer.http
         .get()
         .to(path)
         .withQueryParams(queryObject)
@@ -76,7 +75,7 @@ test('GET route with no query params and with query restrictions - no match', as
 
 test('GET route with query paraysm without specifying query restrictions -  match', async () => {
     const path = '/someQueryPath';
-    const route = http
+    const route = fakeServer.http
         .get()
         .to(path)
         .willSucceed();
@@ -90,7 +89,7 @@ test('GET route with query paraysm without specifying query restrictions -  matc
 
 test('DELETE route defined and called - match', async () => {
     const path = '/somePath';
-    const route = http
+    const route = fakeServer.http
         .delete()
         .to(path)
         .willSucceed();
@@ -102,7 +101,7 @@ test('DELETE route defined and called - match', async () => {
 
 test('route defined and not called - no match', () => {
     const path = '/somePath';
-    const route = http
+    const route = fakeServer.http
         .get()
         .to(path)
         .willSucceed();
@@ -113,7 +112,7 @@ test('route defined and not called - no match', () => {
 test('route defined with path regex - asserting on specific path that matches the regex - assertion success', async () => {
     const pathRegex = '/[a-zA-Z]+$';
     const actualPath = '/somePathThatMatchesTheRegex';
-    const route = http
+    const route = fakeServer.http
         .get()
         .to(pathRegex)
         .willSucceed();
@@ -126,7 +125,7 @@ test('route defined with path regex - asserting on specific path that matches th
 test('route defined with path regex - asserting on specific path that does not match the path regex - throws', () => {
     const pathRegex = '/[0-9]+$';
     const pathThatDoesNotMatchTheRegex = '/pathThatDoesNotMatchTheRegex';
-    const route = http
+    const route = fakeServer.http
         .get()
         .to(pathRegex)
         .willSucceed();
@@ -139,7 +138,7 @@ test('route defined with path and body regex - chaining assertions, specific pat
     const actualPath = '/somePath';
     const bodyRegex = '[0-9]+$';
     const actualBody = '123';
-    const route = http
+    const route = fakeServer.http
         .post()
         .to(pathRegex)
         .withBodyThatMatches(bodyRegex)

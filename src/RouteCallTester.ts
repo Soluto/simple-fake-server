@@ -1,5 +1,5 @@
 //@ts-ignore
-import isSubset from 'is-subset';
+import * as isSubset from 'is-subset';
 import {BodyRestriction} from './models/BodyRestriction';
 
 export default class RouteCallTester {
