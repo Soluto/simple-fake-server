@@ -27,7 +27,7 @@ export default class FakeHttpCalls {
         return this.create('DELETE');
     }
 
-    private will(method: string, pathRegex: string, bodyRestriction: BodyRestriction, queryParamsObject = {}) {
+    private will(method: string, pathRegex: string, bodyRestriction: BodyRestriction, queryParamsObject?: {}) {
         const routeCallTester = {call: new RouteCallTester(method, pathRegex, bodyRestriction, queryParamsObject)};
 
         return {
