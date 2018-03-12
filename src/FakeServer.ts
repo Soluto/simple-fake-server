@@ -2,11 +2,11 @@ import {Server} from 'http';
 import https, {Server as SecureServer} from 'https';
 import queryString from 'query-string';
 //@ts-ignore
-import koa from 'koa';
+import * as koa from 'koa';
 //@ts-ignore
-import cors from 'koa-cors';
+import * as cors from 'koa-cors';
 //@ts-ignore
-import koaBody from 'koa-body';
+import * as koaBody from 'koa-body';
 import deepEquals from 'deep-equal';
 //@ts-ignore
 import isSubset from 'is-subset';
