@@ -160,7 +160,7 @@ export default class FakeServer {
         this.callHistory.clear();
     }
 
-    set(method: string, pathRegex: string, bodyRestriction: BodyRestriction, queryParamsObject: {}, response: any) {
+    set(method: string, pathRegex: string, bodyRestriction: BodyRestriction, queryParamsObject?: {}, response?: any) {
         log(
             `fakeServer:: registering [${method} ${pathRegex}     body restriction: ${JSON.stringify(
                 bodyRestriction

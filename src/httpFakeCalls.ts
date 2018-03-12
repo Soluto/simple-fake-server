@@ -3,7 +3,7 @@ import {default as FakeServer} from './FakeServer';
 import {BodyRestriction} from './models/BodyRestriction';
 
 export default (fakeServer: FakeServer) => {
-    const will = (method: string, pathRegex: string, bodyRestriction: BodyRestriction, queryParamsObject = {}) => {
+    const will = (method: string, pathRegex: string, bodyRestriction: BodyRestriction, queryParamsObject?: {}) => {
         const routeCallTester = {call: new RouteCallTester(method, pathRegex, bodyRestriction, queryParamsObject)};
 
         return {
