@@ -7,6 +7,7 @@ import * as koa from 'koa';
 import * as cors from 'koa-cors';
 //@ts-ignore
 import * as koaBody from 'koa-body';
+//@ts-ignore
 import * as deepEquals from 'deep-equal';
 //@ts-ignore
 import * as isSubset from 'is-subset';
