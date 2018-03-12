@@ -173,8 +173,8 @@ export default class FakeServer {
         method: string,
         pathRegex: string,
         bodyRestriction: BodyRestriction,
-        queryParamsObject: {},
-        errorStatus: number
+        queryParamsObject?: {},
+        errorStatus?: number
     ) {
         log(
             `fakeServer:: registering [${method} ${pathRegex}     body restriction: ${JSON.stringify(
