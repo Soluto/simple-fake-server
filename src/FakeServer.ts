@@ -13,6 +13,7 @@ import isSubset from 'is-subset';
 import * as selfSignedCertificate from './selfSignedCertificate';
 import CallHistory from './CallHistory';
 import {BodyRestriction} from './models/BodyRestriction';
+import FakeHttpCalls from './FakeHttpCalls';
 
 export type MockedCall = {
     method: string;
@@ -33,6 +34,8 @@ const log = (message: string) => {
 };
 
 export default class FakeServer {
+    public http: FakeHttpCalls;
+
     callHistory: CallHistory;
     mockedCalls: MockedCall[];
     port: number;
@@ -40,14 +43,15 @@ export default class FakeServer {
     server: Server | SecureServer;
 
     constructor(port: number, tls = false) {
+        if (!port) {
+            throw new TypeError('No port provided!');
+        }
+
         this.callHistory = new CallHistory();
         this.mockedCalls = [];
         this.port = port;
         this.tls = tls;
-
-        if (!port) {
-            throw new TypeError('No port provided!');
-        }
+        this.http = new FakeHttpCalls(this);
     }
 
     start() {
