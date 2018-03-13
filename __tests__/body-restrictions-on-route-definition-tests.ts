@@ -6,12 +6,10 @@ const port = 5555;
 const path = '/somePath';
 const lettersRegex = '[a-zA-Z]+$';
 let fakeServer: FakeServer;
-let http: FakeHttpCalls;
 
 beforeEach(() => {
     fakeServer = new FakeServer(port);
     fakeServer.start();
-    http = fakeServer.http;
 });
 
 afterEach(() => {
@@ -21,7 +19,7 @@ afterEach(() => {
 // route defined with regex body restriction
 
 test('regex restriction, request body matches regex - match', async () => {
-    const route = http
+    const route = fakeServer.http
         .post()
         .to(path)
         .withBodyThatMatches(lettersRegex)
@@ -38,7 +36,7 @@ test('regex restriction, request body matches regex - match', async () => {
 });
 
 test('regex restriction, request has "application/json", request body matches regex - match', async () => {
-    const route = http
+    const route = fakeServer.http
         .post()
         .to(path)
         .withBodyThatMatches('{.*}')
@@ -55,7 +53,7 @@ test('regex restriction, request has "application/json", request body matches re
 });
 
 test('route defined with regex body restriction, request body does not match regex - no match', async () => {
-    const route = http
+    const route = fakeServer.http
         .post()
         .to(path)
         .withBodyThatMatches(lettersRegex)
@@ -72,7 +70,7 @@ test('route defined with regex body restriction, request body does not match reg
 });
 
 test('route defined with regex body restriction, request has "application/json", request body does not match regex - no match', async () => {
-    const route = http
+    const route = fakeServer.http
         .post()
         .to(path)
         .withBodyThatMatches(lettersRegex)
@@ -93,7 +91,7 @@ test('route defined with regex body restriction, request has "application/json",
 test('minimal object restriction, request has "application/json", request body is equal to the body route object - match', async () => {
     const expectedMinimalBody = {a: 1, b: 2};
     const actualBody = {a: 1, b: 2};
-    const route = http
+    const route = fakeServer.http
         .post()
         .to(path)
         .withBodyThatContains(expectedMinimalBody)
@@ -111,7 +109,7 @@ test('minimal object restriction, request has "application/json", request body i
 test('minimal object restriction, request has "application/json", request body is equal to the body route object but with different property order - match', async () => {
     const expectedMinimalBody = {a: 1, b: 2};
     const actualBody = {b: 2, a: 1};
-    const route = http
+    const route = fakeServer.http
         .post()
         .to(path)
         .withBodyThatContains(expectedMinimalBody)
@@ -129,7 +127,7 @@ test('minimal object restriction, request has "application/json", request body i
 test('minimal object restriction, request has "application/json", request body is a superset of the body route object - match', async () => {
     const expectedMinimalBody = {a: 1, b: 2};
     const actualBody = {a: 1, b: 2, c: 3};
-    const route = http
+    const route = fakeServer.http
         .post()
         .to(path)
         .withBodyThatContains(expectedMinimalBody)
@@ -147,7 +145,7 @@ test('minimal object restriction, request has "application/json", request body i
 test('minimal object restriction, request has "application/json", request body is not a superset of the body route object - no match', async () => {
     const expectedMinimalBody = {a: 1, b: 2};
     const actualBody = {x: 1, y: 2};
-    const route = http
+    const route = fakeServer.http
         .post()
         .to(path)
         .withBodyThatContains(expectedMinimalBody)
@@ -165,7 +163,7 @@ test('minimal object restriction, request has "application/json", request body i
 test('minimal object restriction, request has "application/json", request body is not a superset of the body route object (missing property) - no match', async () => {
     const expectedMinimalBody = {a: 1, b: 2};
     const actualBody = {a: 1};
-    const route = http
+    const route = fakeServer.http
         .post()
         .to(path)
         .withBodyThatContains(expectedMinimalBody)
@@ -183,7 +181,7 @@ test('minimal object restriction, request has "application/json", request body i
 test('minimal object restriction, request has "application/json", request body is not a superset of the body route object (different value) - no match', async () => {
     const expectedMinimalBody = {a: 1, b: 2};
     const actualBody = {a: 1, b: 1};
-    const route = http
+    const route = fakeServer.http
         .post()
         .to(path)
         .withBodyThatContains(expectedMinimalBody)
@@ -201,7 +199,7 @@ test('minimal object restriction, request has "application/json", request body i
 test('minimal object restriction, request has "application/json", request body cannot be parsed to an object - no match', async () => {
     const expectedMinimalBody = {a: 1, b: 2};
     const actualBody = 'abc';
-    const route = http
+    const route = fakeServer.http
         .post()
         .to(path)
         .withBodyThatContains(expectedMinimalBody)
@@ -219,7 +217,7 @@ test('minimal object restriction, request has "application/json", request body c
 test('minimal object restriction, request does not have "application/json" - no match', async () => {
     const expectedMinimalBody = {a: 1, b: 2};
     const actualBody = {a: 1, b: 2};
-    const route = http
+    const route = fakeServer.http
         .post()
         .to(path)
         .withBodyThatContains(expectedMinimalBody)
@@ -239,7 +237,7 @@ test('minimal object restriction, request does not have "application/json" - no 
 test('object restriction, request has "application/json", request body is equal to the body route object - match', async () => {
     const expectedBody = {a: 1, b: 2};
     const actualBody = {a: 1, b: 2};
-    const route = http
+    const route = fakeServer.http
         .post()
         .to(path)
         .withBody(expectedBody)
@@ -257,7 +255,7 @@ test('object restriction, request has "application/json", request body is equal 
 test('object restriction, request has "application/json", request body is equal to the body route object but with different property order - match', async () => {
     const expectedBody = {a: 1, b: 2};
     const actualBody = {b: 2, a: 1};
-    const route = http
+    const route = fakeServer.http
         .post()
         .to(path)
         .withBody(expectedBody)
@@ -275,7 +273,7 @@ test('object restriction, request has "application/json", request body is equal 
 test('object restriction, request has "application/json", request body is a superset of the body route object - no match', async () => {
     const expectedBody = {a: 1, b: 2};
     const actualBody = {a: 1, b: 2, c: 3};
-    const route = http
+    const route = fakeServer.http
         .post()
         .to(path)
         .withBody(expectedBody)
@@ -293,7 +291,7 @@ test('object restriction, request has "application/json", request body is a supe
 test('object restriction, request has "application/json", request body is a subset of the body route object - no match', async () => {
     const expectedBody = {a: 1, b: 2};
     const actualBody = {a: 1};
-    const route = http
+    const route = fakeServer.http
         .post()
         .to(path)
         .withBody(expectedBody)
@@ -311,7 +309,7 @@ test('object restriction, request has "application/json", request body is a subs
 test('object restriction, request has "application/json", request body is different than the body route object - no match', async () => {
     const expectedBody = {a: 1, b: 2};
     const actualBody = {a: 1, b: 1};
-    const route = http
+    const route = fakeServer.http
         .post()
         .to(path)
         .withBody(expectedBody)
@@ -329,7 +327,7 @@ test('object restriction, request has "application/json", request body is differ
 test('object restriction, request has "application/json", request body cannot be parsed to an object - no match', async () => {
     const expectedBody = {a: 1, b: 2};
     const actualBody = 'abc';
-    const route = http
+    const route = fakeServer.http
         .post()
         .to(path)
         .withBody(expectedBody)
@@ -347,7 +345,7 @@ test('object restriction, request has "application/json", request body cannot be
 test('object restriction, request does not have "application/json" - no match', async () => {
     const expectedBody = {a: 1, b: 2};
     const actualBody = {a: 1, b: 2};
-    const route = http
+    const route = fakeServer.http
         .post()
         .to(path)
         .withBody(expectedBody)
@@ -365,7 +363,7 @@ test('object restriction, request does not have "application/json" - no match', 
 // route defined with no body restriction
 
 test('no body restriction, request body empty - match', async () => {
-    const route = http
+    const route = fakeServer.http
         .post()
         .to(path)
         .willSucceed();
@@ -376,7 +374,7 @@ test('no body restriction, request body empty - match', async () => {
 });
 
 test('no body restriction, request has "application/json", request body empty - match', async () => {
-    const route = http
+    const route = fakeServer.http
         .post()
         .to(path)
         .willSucceed();
@@ -387,7 +385,7 @@ test('no body restriction, request has "application/json", request body empty - 
 });
 
 test('no body restriction, request body not empty - match', async () => {
-    const route = http
+    const route = fakeServer.http
         .post()
         .to(path)
         .willSucceed();
@@ -402,7 +400,7 @@ test('no body restriction, request body not empty - match', async () => {
 });
 
 test('no body restriction, request has "application/json", request body not empty - match', async () => {
-    const route = http
+    const route = fakeServer.http
         .post()
         .to(path)
         .willSucceed();

@@ -1,15 +1,16 @@
 import {Server} from 'http';
 import https, {Server as SecureServer} from 'https';
-import queryString from 'query-string';
+import * as queryString from 'query-string';
 //@ts-ignore
-import koa from 'koa';
+import * as koa from 'koa';
 //@ts-ignore
-import cors from 'koa-cors';
+import * as cors from 'koa-cors';
 //@ts-ignore
-import koaBody from 'koa-body';
-import deepEquals from 'deep-equal';
+import * as koaBody from 'koa-body';
 //@ts-ignore
-import isSubset from 'is-subset';
+import * as deepEquals from 'deep-equal';
+//@ts-ignore
+import * as isSubset from 'is-subset';
 import * as selfSignedCertificate from './selfSignedCertificate';
 import CallHistory from './CallHistory';
 import {BodyRestriction} from './models/BodyRestriction';
