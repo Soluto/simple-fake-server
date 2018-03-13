@@ -1,5 +1,5 @@
 import {Server} from 'http';
-import https, {Server as SecureServer} from 'https';
+import * as https from 'https';
 import * as queryString from 'query-string';
 //@ts-ignore
 import * as koa from 'koa';
@@ -33,7 +33,7 @@ export default class FakeServer {
     mockedCalls: MockedCall[];
     port: number;
     tls: boolean;
-    server: Server | SecureServer;
+    server: Server | https.Server;
     logger: (message: string) => void;
 
     constructor(port: number, tls = false, logger: (message: string) => void = () => {}) {
