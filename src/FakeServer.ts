@@ -26,15 +26,16 @@ export type MockedCall = {
     response?: any;
 };
 
+let log: (message: string) => void;
+
 export default class FakeServer {
     public http: FakeHttpCalls;
 
-    callHistory: CallHistory;
-    mockedCalls: MockedCall[];
-    port: number;
-    tls: boolean;
-    server: Server | SecureServer;
-    logger: (message: string) => void;
+    private callHistory: CallHistory;
+    private mockedCalls: MockedCall[];
+    private port: number;
+    private tls: boolean;
+    private server: Server | SecureServer;
 
     constructor(port: number, tls = false, logger: (message: string) => void = () => {}) {
         if (!port) {
@@ -46,7 +47,8 @@ export default class FakeServer {
         this.port = port;
         this.tls = tls;
         this.http = new FakeHttpCalls(this);
-        this.logger = logger;
+
+        log = logger;
     }
 
     start() {
@@ -121,14 +123,14 @@ export default class FakeServer {
                 const firstMatch = matched[matched.length - 1];
 
                 if (firstMatch.isError) {
-                    this.logger(
+                    log(
                         `fakeServer:: call to [${this.req.method} ${this.url} ${JSON.stringify(
                             this.request.body
                         )}]. Respond with error: [${firstMatch.errorStatus}]`
                     );
                     this.status = firstMatch.errorStatus;
                 } else {
-                    this.logger(
+                    log(
                         `fakeServer:: call to [${this.req.method} ${this.url} ${JSON.stringify(
                             this.request.body
                         )}]. Respond with: [${JSON.stringify(firstMatch.response)}]`
@@ -136,9 +138,7 @@ export default class FakeServer {
                     this.body = firstMatch.response;
                 }
             } else {
-                this.logger(
-                    `fakeServer:: no match for [${this.req.method} ${this.url} ${JSON.stringify(this.request.body)}]`
-                );
+                log(`fakeServer:: no match for [${this.req.method} ${this.url} ${JSON.stringify(this.request.body)}]`);
                 this.status = 400;
                 this.body = `no match for [${this.req.method} ${this.url} ${JSON.stringify(this.request.body)}]`;
             }
@@ -162,7 +162,7 @@ export default class FakeServer {
     }
 
     set(method: string, pathRegex: string, bodyRestriction: BodyRestriction, queryParamsObject?: {}, response?: any) {
-        this.logger(
+        log(
             `fakeServer:: registering [${method} ${pathRegex}     body restriction: ${JSON.stringify(
                 bodyRestriction
             )}] with response [${JSON.stringify(response)}]`
@@ -177,7 +177,7 @@ export default class FakeServer {
         queryParamsObject?: {},
         errorStatus?: number
     ) {
-        this.logger(
+        log(
             `fakeServer:: registering [${method} ${pathRegex}     body restriction: ${JSON.stringify(
                 bodyRestriction
             )}] with error code [${errorStatus}]`
