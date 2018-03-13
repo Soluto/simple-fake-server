@@ -121,14 +121,14 @@ export default class FakeServer {
                 const firstMatch = matched[matched.length - 1];
 
                 if (firstMatch.isError) {
-                    this.logger(
+                    self.logger(
                         `fakeServer:: call to [${this.req.method} ${this.url} ${JSON.stringify(
                             this.request.body
                         )}]. Respond with error: [${firstMatch.errorStatus}]`
                     );
                     this.status = firstMatch.errorStatus;
                 } else {
-                    this.logger(
+                    self.logger(
                         `fakeServer:: call to [${this.req.method} ${this.url} ${JSON.stringify(
                             this.request.body
                         )}]. Respond with: [${JSON.stringify(firstMatch.response)}]`
@@ -136,7 +136,7 @@ export default class FakeServer {
                     this.body = firstMatch.response;
                 }
             } else {
-                this.logger(
+                self.logger(
                     `fakeServer:: no match for [${this.req.method} ${this.url} ${JSON.stringify(this.request.body)}]`
                 );
                 this.status = 400;
