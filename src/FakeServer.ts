@@ -59,7 +59,11 @@ export default class FakeServer {
 
         app.use(function*(next: any): Iterator<void> {
             this.header['content-type'] =
-                this.headers['content-type'] && this.headers['content-type'].replace(';charset=UTF-8', '');
+                this.headers['content-type'] && 
+                this.headers['content-type']
+                    .replace(';charset=UTF-8', '')
+                    .replace(';charset=utf-8', '');
+            
             yield next;
         });
         app.use(koaBody());
