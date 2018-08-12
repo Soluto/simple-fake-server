@@ -99,6 +99,30 @@ test('DELETE route defined and called - match', async () => {
     expect(fakeServer.hasMade(route.call)).toEqual(true);
 });
 
+test('PUT route defined and called - match', async () => {
+    const path = '/somePath';
+    const route = fakeServer.http
+        .put()
+        .to(path)
+        .willSucceed();
+
+    await fetch(`http://localhost:${port}${path}`, {method: 'PUT'});
+
+    expect(fakeServer.hasMade(route.call)).toEqual(true);
+});
+
+test('PATCH route defined and called - match', async () => {
+    const path = '/somePath';
+    const route = fakeServer.http
+        .patch()
+        .to(path)
+        .willSucceed();
+
+    await fetch(`http://localhost:${port}${path}`, {method: 'PATCH'});
+
+    expect(fakeServer.hasMade(route.call)).toEqual(true);
+});
+
 test('route defined and not called - no match', () => {
     const path = '/somePath';
     const route = fakeServer.http

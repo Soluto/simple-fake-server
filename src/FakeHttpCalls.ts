@@ -22,6 +22,10 @@ export default class FakeHttpCalls {
         return this.create('PUT');
     }
 
+    public patch() {
+        return this.create('PATCH');
+    }
+
     // tslint:disable-next-line:no-reserved-keywords
     public delete() {
         return this.create('DELETE');
