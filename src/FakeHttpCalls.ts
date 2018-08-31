@@ -79,15 +79,13 @@ export default class FakeHttpCalls {
 
     private create(method: string) {
         return {
-            to: (pathRegex: string) =>
-                Object.assign(
-                    {},
-                    this.withBodyThatMatches(method, pathRegex),
-                    this.withBodyThatContains(method, pathRegex),
-                    this.withBody(method, pathRegex),
-                    this.withQueryParams(method, pathRegex),
-                    this.will(method, pathRegex, {})
-                ),
+            to: (pathRegex: string) => ({
+                ...this.withBodyThatMatches(method, pathRegex),
+                ...this.withBodyThatContains(method, pathRegex),
+                ...this.withBody(method, pathRegex),
+                ...this.withQueryParams(method, pathRegex),
+                ...this.will(method, pathRegex, {}),
+            }),
         };
     }
 }
