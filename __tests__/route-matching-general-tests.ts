@@ -1,10 +1,8 @@
 import fetch from 'node-fetch';
 import {FakeServer} from '../src';
-import FakeHttpCalls from '../src/FakeHttpCalls';
 
 const port = 4444;
-let fakeServer;
-let http: FakeHttpCalls;
+let fakeServer: FakeServer;
 
 beforeEach(() => {
     fakeServer = new FakeServer(port);
@@ -13,6 +11,20 @@ beforeEach(() => {
 
 afterEach(() => {
     fakeServer.stop();
+});
+
+test('GET route defined, one call matches and two dont, callsMade returns only the matching call', async () => {
+    const path = '/somePath';
+    const route = fakeServer.http
+        .get()
+        .to(path)
+        .willSucceed();
+
+    await fetch(`http://localhost:${port}${path}`, {method: 'GET'});
+    await fetch(`http://localhost:${port}${path}`, {method: 'PUT'});
+    await fetch(`http://localhost:${port}${path}`, {method: 'POST'});
+
+    expect(fakeServer.callsMade(route.call).length).toEqual(1);
 });
 
 test('GET route defined and called - match', async () => {

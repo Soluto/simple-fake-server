@@ -12,7 +12,7 @@ import * as deepEquals from 'deep-equal';
 //@ts-ignore
 import * as isSubset from 'is-subset';
 import * as selfSignedCertificate from './selfSignedCertificate';
-import CallHistory from './CallHistory';
+import CallHistory, {Call} from './CallHistory';
 import {BodyRestriction} from './models/BodyRestriction';
 import FakeHttpCalls from './FakeHttpCalls';
 
@@ -179,7 +179,15 @@ export default class FakeServer {
     }
 
     hasMade(call: MockedCall) {
-        return this.callHistory.get().some(serverCall => {
+        return this.callHistory.get().some(this._getCallMatcher(call));
+    }
+
+    callsMade(call: MockedCall) {
+        return this.callHistory.get().filter(this._getCallMatcher(call));
+    }
+
+    private _getCallMatcher(call: MockedCall) {
+        return (serverCall: Call) => {
             if (serverCall.method !== call.method) {
                 return false;
             }
@@ -214,6 +222,6 @@ export default class FakeServer {
             }
 
             return true;
-        });
+        };
     }
 }
