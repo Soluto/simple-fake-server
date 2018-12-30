@@ -21,8 +21,7 @@ export type MockedCall = {
     pathRegex: string;
     bodyRestriction?: BodyRestriction;
     queryParamsObject?: {};
-    errorStatus?: number;
-    isError?: boolean;
+    statusCode?: number;
     response?: any;
 };
 
@@ -59,11 +58,9 @@ export default class FakeServer {
 
         app.use(function*(next: any): Iterator<void> {
             this.header['content-type'] =
-                this.headers['content-type'] && 
-                this.headers['content-type']
-                    .replace(';charset=UTF-8', '')
-                    .replace(';charset=utf-8', '');
-            
+                this.headers['content-type'] &&
+                this.headers['content-type'].replace(';charset=UTF-8', '').replace(';charset=utf-8', '');
+
             yield next;
         });
         app.use(koaBody());
@@ -129,21 +126,16 @@ export default class FakeServer {
                 });
                 const firstMatch = matched[matched.length - 1];
 
-                if (firstMatch.isError) {
-                    self.logger(
-                        `fakeServer:: call to [${this.req.method} ${this.url} ${JSON.stringify(
-                            this.request.body
-                        )}]. Respond with error: [${firstMatch.errorStatus}]`
-                    );
-                    this.status = firstMatch.errorStatus;
-                } else {
-                    self.logger(
-                        `fakeServer:: call to [${this.req.method} ${this.url} ${JSON.stringify(
-                            this.request.body
-                        )}]. Respond with: [${JSON.stringify(firstMatch.response)}]`
-                    );
-                    this.body = firstMatch.response;
-                }
+                self.logger(
+                    `fakeServer:: call to [${this.req.method} ${this.url} ${JSON.stringify(
+                        this.request.body
+                    )}]. Respond with status: [${firstMatch.statusCode}] and body: [${JSON.stringify(
+                        firstMatch.response
+                    )}]`
+                );
+
+                this.status = firstMatch.statusCode;
+                this.body = firstMatch.response;
             } else {
                 self.logger(
                     `fakeServer:: no match for [${this.req.method} ${this.url} ${JSON.stringify(this.request.body)}]`
@@ -170,28 +162,20 @@ export default class FakeServer {
         this.callHistory.clear();
     }
 
-    set(method: string, pathRegex: string, bodyRestriction: BodyRestriction, queryParamsObject?: {}, response?: any) {
-        this.logger(
-            `fakeServer:: registering [${method} ${pathRegex}     body restriction: ${JSON.stringify(
-                bodyRestriction
-            )}] with response [${JSON.stringify(response)}]`
-        );
-        this.mockedCalls.push({method, pathRegex, bodyRestriction, queryParamsObject, response});
-    }
-
-    setError(
+    set(
         method: string,
         pathRegex: string,
         bodyRestriction: BodyRestriction,
         queryParamsObject?: {},
-        errorStatus?: number
+        response?: any,
+        statusCode?: number
     ) {
         this.logger(
             `fakeServer:: registering [${method} ${pathRegex}     body restriction: ${JSON.stringify(
                 bodyRestriction
-            )}] with error code [${errorStatus}]`
+            )}] with status [${statusCode}] and response [${JSON.stringify(response)}]`
         );
-        this.mockedCalls.push({method, pathRegex, bodyRestriction, queryParamsObject, errorStatus, isError: true});
+        this.mockedCalls.push({method, pathRegex, bodyRestriction, queryParamsObject, response, statusCode});
     }
 
     hasMade(call: MockedCall) {
