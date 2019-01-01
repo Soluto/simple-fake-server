@@ -35,8 +35,8 @@ export default class FakeHttpCalls {
         const routeCallTester = {call: new RouteCallTester(method, pathRegex, bodyRestriction, queryParamsObject)};
 
         return {
-            willReturn: (response: any) => {
-                this.fakeServer.set(method, pathRegex, bodyRestriction, queryParamsObject, response);
+            willReturn: (response: any, statusCode?: number) => {
+                this.fakeServer.set(method, pathRegex, bodyRestriction, queryParamsObject, response, statusCode);
 
                 return routeCallTester;
             },
@@ -46,7 +46,7 @@ export default class FakeHttpCalls {
                 return routeCallTester;
             },
             willFail: (errorStatus: number) => {
-                this.fakeServer.setError(method, pathRegex, bodyRestriction, queryParamsObject, errorStatus);
+                this.fakeServer.set(method, pathRegex, bodyRestriction, queryParamsObject, null, errorStatus);
 
                 return routeCallTester;
             },
