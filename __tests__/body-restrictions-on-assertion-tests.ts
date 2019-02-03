@@ -1,6 +1,5 @@
 import fetch from 'node-fetch';
 import {FakeServer} from '../src';
-import FakeHttpCalls from '../src/FakeHttpCalls';
 
 const port = 6666;
 const path = '/somePath';
@@ -71,7 +70,7 @@ test('regex restriction, passing something other than string to specific string 
         .withBodyThatMatches(lettersRegex)
         .willSucceed();
 
-    expect(() => route.call.withBodyText({})).toThrow();
+    expect(() => route.call.withBodyText({} as string)).toThrow();
 });
 
 test('regex restriction, assert on a specific object - exception', () => {

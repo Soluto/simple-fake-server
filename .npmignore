@@ -1,3 +1,9 @@
 .babelrc
 .npmrc
 src/
+__tests__
+.prettierrc.json
+.lintstagedrc.json
+node_modules
+.gitignore
+jest.config.json

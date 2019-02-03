@@ -43,9 +43,9 @@ describe('Home Page', () => {
 ```js
 let verbSpec = fakeServer.http.get();  // or fakeServer.http.post() or fakeServer.http.put() - is used to match the request's verb.
 let pathSpec = verbSpec.to(pathRegex); // is used to match the request url.  
-pathSpec.willReturn(response); // sets the response that the fake server will return for requests matching the path spec.  
+pathSpec.willReturn(response: any, statusCode?: number); // sets the response that the fake server will return for requests matching the path spec, default status code is 200.  
 pathSpec.willSucceed(); // returns status code 200 with no body for requests matching the path spec.  
-pathSepc.willFail(errorStatusCode); // returns an error response with the provided status code.
+pathSepc.willFail(errorStatusCode?: number); // returns an error response with the provided status code, default code is 500.
 ```
 
 Those methods can be chained:
