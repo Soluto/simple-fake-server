@@ -2,6 +2,27 @@ import RouteCallTester from './RouteCallTester';
 import {default as FakeServer} from './FakeServer';
 import {BodyRestriction} from './models/BodyRestriction';
 
+export interface With extends Will {
+    withBodyThatMatches(regex: string): Will;
+    withBodyThatContains(minimalObject: {}): Will;
+    withBody(object: {}): Will;
+    withQueryParams(queryParamsObject: {}): Will;
+}
+
+export interface Will {
+    willReturn(response: any, statusCode?: number): FakeRoute;
+    willSucceed(): FakeRoute;
+    willFail(errorStatus: number): FakeRoute;
+}
+
+export interface FakeRoute {
+    call: RouteCallTester;
+}
+
+export interface FakeHttpMethod {
+    to(pathRegex: string): With;
+}
+
 export default class FakeHttpCalls {
     private fakeServer: FakeServer;
 
@@ -9,77 +30,77 @@ export default class FakeHttpCalls {
         this.fakeServer = fakeServer;
     }
 
-    public post() {
+    public post(): FakeHttpMethod {
         return this.create('POST');
     }
 
     // tslint:disable-next-line:no-reserved-keywords
-    public get() {
+    public get(): FakeHttpMethod {
         return this.create('GET');
     }
 
-    public put() {
+    public put(): FakeHttpMethod {
         return this.create('PUT');
     }
 
-    public patch() {
+    public patch(): FakeHttpMethod {
         return this.create('PATCH');
     }
 
     // tslint:disable-next-line:no-reserved-keywords
-    public delete() {
+    public delete(): FakeHttpMethod {
         return this.create('DELETE');
     }
 
-    private will(method: string, pathRegex: string, bodyRestriction: BodyRestriction, queryParamsObject?: {}) {
-        const routeCallTester = {call: new RouteCallTester(method, pathRegex, bodyRestriction, queryParamsObject)};
+    private will(method: string, pathRegex: string, bodyRestriction: BodyRestriction, queryParamsObject?: {}): Will {
+        const fakeRoute: FakeRoute = {call: new RouteCallTester(method, pathRegex, bodyRestriction, queryParamsObject)};
 
         return {
-            willReturn: (response: any, statusCode?: number) => {
+            willReturn: (response: any, statusCode?: number): FakeRoute => {
                 this.fakeServer.set(method, pathRegex, bodyRestriction, queryParamsObject, response, statusCode);
 
-                return routeCallTester;
+                return fakeRoute;
             },
-            willSucceed: () => {
+            willSucceed: (): FakeRoute => {
                 this.fakeServer.set(method, pathRegex, bodyRestriction, queryParamsObject, null);
 
-                return routeCallTester;
+                return fakeRoute;
             },
-            willFail: (errorStatus: number) => {
+            willFail: (errorStatus: number): FakeRoute => {
                 this.fakeServer.set(method, pathRegex, bodyRestriction, queryParamsObject, null, errorStatus);
 
-                return routeCallTester;
+                return fakeRoute;
             },
         };
     }
 
     private withBodyThatMatches(method: string, pathRegex: string) {
         return {
-            withBodyThatMatches: (regex: string) => this.will(method, pathRegex, {regex}),
+            withBodyThatMatches: (regex: string): Will => this.will(method, pathRegex, {regex}),
         };
     }
 
     private withBodyThatContains(method: string, pathRegex: string) {
         return {
-            withBodyThatContains: (minimalObject: {}) => this.will(method, pathRegex, {minimalObject}),
+            withBodyThatContains: (minimalObject: {}): Will => this.will(method, pathRegex, {minimalObject}),
         };
     }
 
     private withBody(method: string, pathRegex: string) {
         return {
-            withBody: (object: {}) => this.will(method, pathRegex, {object}),
+            withBody: (object: {}): Will => this.will(method, pathRegex, {object}),
         };
     }
 
     private withQueryParams(method: string, pathRegex: string) {
         return {
-            withQueryParams: (queryParamsObject: {}) => this.will(method, pathRegex, {}, queryParamsObject),
+            withQueryParams: (queryParamsObject: {}): Will => this.will(method, pathRegex, {}, queryParamsObject),
         };
     }
 
-    private create(method: string) {
+    private create(method: string): FakeHttpMethod {
         return {
-            to: (pathRegex: string) => ({
+            to: (pathRegex: string): With => ({
                 ...this.withBodyThatMatches(method, pathRegex),
                 ...this.withBodyThatContains(method, pathRegex),
                 ...this.withBody(method, pathRegex),
