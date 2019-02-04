@@ -1,13 +1,17 @@
 # simple-fake-server.js
 A small, simple http server for mocking and asserting http calls.  
-This server was developed mainly to isolate the client side code during automation (selenium) tests.  
+This server was developed mainly to isolate the client side code during automation and integration tests.  
 
 + [Installation](#installation)
 + [Usage Example](#usage-example)
 + [Defining Fake Routes](#defining-routes)
     + [Supported HTTP Methods](#supported-http-methods)
     + [Response](#response)
-    + [Restrictions](#restrictions)
+    + [Route Restrictions](#route-restrictions)
++ [Assertions](#assertions)
+    + [Assertion Methods](#assertion-methods)
+    + [Assertion Restrictions](#assertion-restrictions)
++ [More Usage Examples](#more-usage-examples)
 
 ## Installation
 `npm install simple-fake-server --save-dev`
@@ -47,7 +51,7 @@ describe('Test Example', () => {
 let route = fakeServer.http
     .get()  // Http Method (mandatory). See Supported HTTP Methods section.
     .to(pathRegex) // Route Path (mandatory). May be regex
-    .withBody(object) // Route Restriction (optional). See Restrictions section.
+    .withBody(object) // Route Restriction (optional). See Route Restrictions section.
     .willSucceed() // Route Response (mandatory). See Response Section
 ```
 
@@ -70,87 +74,94 @@ Response is mandatory and need to be set on any defined route.
 
 * **`willReturn(response: any, statusCode?: number)`** - a request to route that was defined with willReturn will return status code `statusCode` (default is 200 if none provided) and `response` body.
 
-### Restrictions
+### Route Restrictions
 
 Restrictions are optional and can be defined after `to(path)`. **Only one** restriction can be set per route definition.  
 
 
-* **`withBody(object)`**  
-Will match only requests with content-type header set to 'application/json' and bodies that are objects that **deeply equal** the given object:
+* **`withBody(body: object)`**  
+Will match only requests with content-type header set to 'application/json' and bodies that are objects that **deeply equal** the given body:
 
 ```js
 const withBodyRoute = fakeServer.http.post().to('/some/path').withBody({ a: 1, b: 2 }).willSucceed();
+
+// Request to /some/path with body { a: 1, b: 2 } => Success, 200 status code.
+// Request to /some/path with body { a: 1, b: 2, c: 3 } => Fail, 400 status code.
 ```
 
-  On this example request with body of `{ a: 1, b: 2 }` will succeed with status 200 while `{ a: 1, b: 2, c: 3 }` will fail with status 400.
-
-* **`withBodyThatMatches(regex)`**   
+* **`withBodyThatMatches(regex: string)`**   
 Will match only requests with bodies that match the given **regex**.  
 i.e. route defined with `withBodyThatMatches('[a-zA-Z]+$')` will accept request body `abc` but will reject `123`.
 
-* **`withBodyThatContains(minimalObject)`**   
-Will match only requests with content-type header set to 'application/json' and bodies that are *supersets* of the given minimal object.  
+* **`withBodyThatContains(minimalBody: object)`**   
+Will match only requests with content-type header set to 'application/json' and bodies that are *supersets* of the given minimal body.  
 i.e. route defined with `withBodyThatContains({ a: 1, b: 2 })` will accept request body `{ a: 1, b: 2, c: 3}`.
 
-* **`withQueryParams(queryParamsObject)`**   
-Will only match requests that match exactly the query params set on `queryParamsObject`.  
+* **`withQueryParams(queryParams: object)`**   
+Will only match requests that match exactly the query params set on `queryParams`.  
 i.e. route defined with `withQueryParams({ someQuery: true })` will match requests to `some/path?someQuery=true` but will reject `some/path?someQuery=false` or `some/path?someQuery=true&other=something`.
 
 <br/><br/>
-NOTE: a request that failed to fulfill a constrain will return 400 and won't return true when asserting `hasMade` (more on this on next section.)
+NOTE: a request that failed to fulfill a constrain will return 400 and will result in false when asserting with `hasMade` (more on this on the next section).
 
 ## Assertions
 
 Each defined route exposes a `RouteCallTester` that can be accessed from `route.call`:
 
 ```js
-let route = fakeServer.http.get().to('/some/path/[a-zA-Z]+$').willSucceed();
+let route = fakeServer.http.get().to('/some/path').willSucceed();
 
 const routeCallTester = route.call;
 ```
- 
-You can use `withPath(specificPath)` to make the test specific to a certain path, rather than the whole path regex:
+
+### Assertion Methods
+
+fakeServer instance exposes 3 methods that can be used for assertions.
+
+* **`hasMade(routeCallTester: RouteCallTester)`**   
+Returns true/false, based on weather this route was called since the server was started.  
+Usage example:
 ```js
-fakeServer.hasMade(route.call.withPath('/some/path/abc'));
+var route = fakeServer.http.get().to('/your/api').willSucceed();
+
+console.log(fakeServer.hasMade(route.call)); // false
+await fetch('/your/api', { method: 'GET' });
+console.log(fakeServer.hasMade(route.call)); // true
 ```
 
+* **`callsMade(routeCallTester: RouteCallTester)`**  
+Returns an array of all calls made to the provided route.   
+Each entry of the array is an object containing `method`, `path`, `headers` and `body`.
 
-### When Testing If Route Was Called
+* **`clearCallHistory()`**  
+Self explanatory. After calling clearCallHistory hasMade will always return false and callsMade will always return an empty array.
 
-After the route is defined, you can test if there were any calls made to the route with a *specific* body.
+### Assertion Restrictions
 
-`withBodyText(str);` will restrict `hasMade()` to return true only if there were any requests to the route with a body that equals the *specific* string `str`.
-It can be called only if route was defined with no body restriction or if the route was defined with a regex body restriction (using `withBodyThatMatches(regex)`) and `str` matches the regex.
+It's possible to chain some restrictions to the routeCallTester. It's useful when the route was defined with a regex or a body constrain and you want to make sure *exactly* what was the route called with.
 
-```js
-const route1 = fakeServer.http.post().to('/some/path').willSucceed();
-const route2 = fakeServer.http.post().to('/some/path').withBodyThatMatches('[a-zA-Z]+$').willSucceed();
-
-// posting a request to '/some/path' with the body 'abc'...
-
-fakeServer.hasMade(route1.call.withBodyText('xyz')).should.equal(false);
-fakeServer.hasMade(route2.call.withBodyText('xyz')).should.equal(false);
-fakeServer.hasMade(route1.call.withBodyText('abc')).should.equal(true);
-fakeServer.hasMade(route2.call.withBodyText('abc')).should.equal(true);
-
-route2.call.withBodyText('123'); // throws exception - specific string does not match the regex
-```
-
-`withSpecificBody(obj);` will restrict `hasMade()` to return true only if there were any requests to the route with content-type header set to 'application/json' the body deeply equals the *specific* object `obj`.
-It can be called only if route was defined with no body restriction or if the route was defined with a minimal object body restriction (using `withBodyThatContains(minimalObject)`) and `obj` is a superset of the minimal object.
+* **`withPath(specificPath: string)`**  
+Comes useful when defining a route with regex and you'd like to assert a specific path was called.  
+Usage example:
 
 ```js
-const route1 = fakeServer.http.post().to('/some/path').willSucceed();
-const route2 = fakeServer.http.post().to('/some/path').withBodyThatContains({ a: 1, b: 2 }).willSucceed();
+const route = fakeServer.http.post().to('/some/path/[a-zA-Z]+$').willSucceed();
+await fetch('/some/path/xyz', { method: 'GET' });
 
-// posting a request to '/some/path' with content-type header set to 'application/json' and body JSON.stringify({ a: 1, b: 2, c: 3 })...
-
-fakeServer.hasMade(route1.call.withSpecificBody({ a: 1, b: 2 })).should.equal(false);
-fakeServer.hasMade(route2.call.withSpecificBody({ a: 1, b: 2 })).should.equal(false);
-fakeServer.hasMade(route1.call.withSpecificBody({ c: 3, b: 2, a: 1 })).should.equal(true);
-fakeServer.hasMade(route2.call.withSpecificBody({ c: 3, b: 2, a: 1 })).should.equal(true);
-
-route2.call.withSpecificBody({ a: 1, c: 3 }); // throws exception - specific body is not a superset of the minimal object
+console.log(fakeServer.hasMade(route.call.withPath('/some/path/xyz'))); // true
+console.log(fakeServer.hasMade(route.call.withPath('/some/path/abc'))); // false
 ```
 
-More examples can be found in this project's tests.
+* **`withBodyText(text: string)`**  
+Comes useful when defining a route with `withBodyThatMatches` using regex and you'd like to assert a specific body text was called with.  
+
+* **`withSpecificBody(body: object)`**  
+Comes useful when defining a route with `withBodyThatContains` and you'd like to assert a specific body object was called with.  
+
+## More Usage Examples
+
+You can check out our tests section to see a bunch of different usage examples.
+
+* [General Route Matching](./__tests__/route-matching-general-tests.ts)
+* [Body Restrictions](./__tests__/body-restrictions-on-route-definition-tests.ts)
+* [Assertion Restrictions](./__tests__/body-restrictions-on-assertion-tests.ts)

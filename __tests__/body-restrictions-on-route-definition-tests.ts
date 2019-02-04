@@ -1,6 +1,5 @@
 import fetch from 'node-fetch';
 import {FakeServer} from '../src';
-import FakeHttpCalls from '../src/FakeHttpCalls';
 
 const port = 5555;
 const path = '/somePath';
@@ -37,6 +36,10 @@ afterEach(() => {
 
                 expect(res.status).toEqual(defaultStatus);
                 expect(fakeServer.hasMade(route.call)).toEqual(true);
+
+                const callsMade = fakeServer.callsMade(route.call);
+                expect(callsMade[0].path).toEqual(path);
+                expect(callsMade[0].body).toEqual(actualBody);
             });
 
             test('regex restriction, request has "application/json", request body matches regex - match', async () => {
