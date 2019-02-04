@@ -75,7 +75,7 @@ Response is mandatory and need to be set on any defined route.
 Restrictions are optional and can be defined after `to(path)`. **Only one** restriction can be set per route definition.  
 
 
-#### **`withBody(object)`**
+* **`withBody(object)`**  
 Will match only requests with content-type header set to 'application/json' and bodies that are objects that **deeply equal** the given object:
 
 ```js
@@ -84,20 +84,20 @@ const withBodyRoute = fakeServer.http.post().to('/some/path').withBody({ a: 1, b
 
   On this example request with body of `{ a: 1, b: 2 }` will succeed with status 200 while `{ a: 1, b: 2, c: 3 }` will fail with status 400.
 
-#### **`withBodyThatMatches(regex)`** 
+* **`withBodyThatMatches(regex)`**   
 Will match only requests with bodies that match the given **regex**.  
 i.e. route defined with `withBodyThatMatches('[a-zA-Z]+$')` will accept request body `abc` but will reject `123`.
 
-#### **`withBodyThatContains(minimalObject)`** 
+* **`withBodyThatContains(minimalObject)`**   
 Will match only requests with content-type header set to 'application/json' and bodies that are *supersets* of the given minimal object.  
 i.e. route defined with `withBodyThatContains({ a: 1, b: 2 })` will accept request body `{ a: 1, b: 2, c: 3}`.
 
-#### **`withQueryParams(queryParamsObject)`** 
+* **`withQueryParams(queryParamsObject)`**   
 Will only match requests that match exactly the query params set on `queryParamsObject`.  
 i.e. route defined with `withQueryParams({ someQuery: true })` will match requests to `some/path?someQuery=true` but will reject `some/path?someQuery=false` or `some/path?someQuery=true&other=something`.
 
 <br/><br/>
-NOTE: a request that failed to fulfill a constrain will return 400 and won't return true when asserting `hasMade` (more on this on next section).
+NOTE: a request that failed to fulfill a constrain will return 400 and won't return true when asserting `hasMade` (more on this on next section.)
 
 ## Assertions
 
