@@ -102,7 +102,7 @@ Will only match requests that match exactly the query params set on `queryParams
 i.e. route defined with `withQueryParams({ someQuery: true })` will match requests to `some/path?someQuery=true` but will reject `some/path?someQuery=false` or `some/path?someQuery=true&other=something`.
 
 <br/><br/>
-NOTE: a request that failed to fulfill a constrain will return 400 and will result in false when asserting with `hasMade` (more on this on the next section).
+NOTE: a request that failed to fulfill a restriction will return 400 and will result in false when asserting with `hasMade` (more on this on the next section).
 
 ## Assertions
 
@@ -130,15 +130,15 @@ console.log(fakeServer.hasMade(route.call)); // true
 ```
 
 * **`callsMade(routeCallTester: RouteCallTester)`**  
-Returns an array of all calls made to the provided route.   
+Returns an array of all calls made that match the provided route.   
 Each entry of the array is an object containing `method`, `path`, `headers` and `body`.
 
 * **`clearCallHistory()`**  
-Self explanatory. After calling clearCallHistory hasMade will always return false and callsMade will always return an empty array.
+Self explanatory. After calling clearCallHistory hasMade will always return false and callsMade will always return an empty array until the next call is made.
 
 ### Assertion Restrictions
 
-It's possible to chain some restrictions to the routeCallTester. It's useful when the route was defined with a regex or a body constrain and you want to make sure *exactly* what was the route called with.
+It's possible to chain some restrictions to the routeCallTester. It's useful when the route was defined with a regex or a body restriction and you want to make sure *exactly* what was the route called with.
 
 * **`withPath(specificPath: string)`**  
 Comes useful when defining a route with regex and you'd like to assert a specific path was called.  
