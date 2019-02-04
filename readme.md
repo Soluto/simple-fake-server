@@ -116,10 +116,10 @@ const routeCallTester = route.call;
 
 ### Assertion Methods
 
-fakeServer instance exposes 3 methods that can be used for assertions.
+fakeServer instance exposes 3 methods that can be helpful for your tests assertions.
 
 * **`hasMade(routeCallTester: RouteCallTester)`**   
-Returns true/false, based on weather this route was called since the server was started.  
+Returns true/false, based on whether this route was called since the server was started.  
 Usage example:
 ```js
 var route = fakeServer.http.get().to('/your/api').willSucceed();
@@ -145,7 +145,7 @@ Comes useful when defining a route with regex and you'd like to assert a specifi
 Usage example:
 
 ```js
-const route = fakeServer.http.post().to('/some/path/[a-zA-Z]+$').willSucceed();
+const route = fakeServer.http.get().to('/some/path/[a-zA-Z]+$').willSucceed();
 await fetch('/some/path/xyz', { method: 'GET' });
 
 console.log(fakeServer.hasMade(route.call.withPath('/some/path/xyz'))); // true
