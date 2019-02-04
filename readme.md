@@ -10,7 +10,7 @@ This server was developed mainly to isolate the client side code during automati
     + [Route Restrictions](#route-restrictions)
 + [Assertions](#assertions)
     + [Assertion Methods](#assertion-methods)
-    + [Assertion Restrictions](#assertion-restrictions)
+    + [Assertion Constrains](#assertion-constrains)
 + [More Usage Examples](#more-usage-examples)
 
 ## Installation
@@ -76,7 +76,8 @@ Response is mandatory and need to be set on any defined route.
 
 ### Route Restrictions
 
-Restrictions are optional and can be defined after `to(path)`. **Only one** restriction can be set per route definition.  
+Restrictions are optional and can be defined after `to(path)`. Only **one** restriction can be set per route definition.  
+Chaining more than one restriction will result in an error.
 
 
 * **`withBody(body: object)`**  
@@ -90,7 +91,7 @@ const withBodyRoute = fakeServer.http.post().to('/some/path').withBody({ a: 1, b
 ```
 
 * **`withBodyThatMatches(regex: string)`**   
-Will match only requests with bodies that match the given **regex**.  
+Will match only requests with body that match the given **regex**.  
 i.e. route defined with `withBodyThatMatches('[a-zA-Z]+$')` will accept request body `abc` but will reject `123`.
 
 * **`withBodyThatContains(minimalBody: object)`**   
@@ -102,7 +103,9 @@ Will only match requests that match exactly the query params set on `queryParams
 i.e. route defined with `withQueryParams({ someQuery: true })` will match requests to `some/path?someQuery=true` but will reject `some/path?someQuery=false` or `some/path?someQuery=true&other=something`.
 
 <br/><br/>
-NOTE: a request that failed to fulfill a restriction will return 400 and will result in false when asserting with `hasMade` (more on this on the next section).
+NOTES: 
+* A request that failed to fulfill a restriction will return 400 and will result in false when asserting with `hasMade` (more on this on the next section).
+* When setting 2 or more routes with the same path, but with different body restrictions, it's enough to fulfill just 1 of the restrictions to get a match.
 
 ## Assertions
 
@@ -136,9 +139,9 @@ Each entry of the array is an object containing `method`, `path`, `headers` and 
 * **`clearCallHistory()`**  
 Self explanatory. After calling clearCallHistory hasMade will always return false and callsMade will always return an empty array until the next call is made.
 
-### Assertion Restrictions
+### Assertion Constrains
 
-It's possible to chain some restrictions to the routeCallTester. It's useful when the route was defined with a regex or a body restriction and you want to make sure *exactly* what was the route called with.
+It's possible to add a constrain to the routeCallTester. It's useful when the route was defined with a regex or a body restriction and you want to make sure *exactly* what was the route called with.
 
 * **`withPath(specificPath: string)`**  
 Comes useful when defining a route with regex and you'd like to assert a specific path was called.  
@@ -164,4 +167,4 @@ You can check out our tests section to see a bunch of different usage examples.
 
 * [General Route Matching](./__tests__/route-matching-general-tests.ts)
 * [Body Restrictions on Route Definition](./__tests__/body-restrictions-on-route-definition-tests.ts)
-* [Body Restrictions on Assertions](./__tests__/body-restrictions-on-assertion-tests.ts)
+* [Assertions Constrains](./__tests__/body-restrictions-on-assertion-tests.ts)

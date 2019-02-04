@@ -438,7 +438,8 @@ afterEach(() => {
 
                 const res = await fetch(`http://localhost:${port}${path}`, {
                     method: 'POST',
-                    headers: {'Content-Type': 'application/json', body: 'some body'},
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({some: 'body'}),
                 });
 
                 expect(res.status).toEqual(defaultStatus);
@@ -460,7 +461,7 @@ afterEach(() => {
 
                 const res = await fetch(`http://localhost:${port}${path}`, {
                     method: 'POST',
-                    headers: {'Content-Type': 'application/json', body: 'some body'},
+                    headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({a: 1, b: 2}),
                 });
 
