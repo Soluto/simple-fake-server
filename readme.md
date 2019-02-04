@@ -163,5 +163,5 @@ Comes useful when defining a route with `withBodyThatContains` and you'd like to
 You can check out our tests section to see a bunch of different usage examples.
 
 * [General Route Matching](./__tests__/route-matching-general-tests.ts)
-* [Body Restrictions](./__tests__/body-restrictions-on-route-definition-tests.ts)
-* [Assertion Restrictions](./__tests__/body-restrictions-on-assertion-tests.ts)
+* [Body Restrictions on Route Definition](./__tests__/body-restrictions-on-route-definition-tests.ts)
+* [Body Restrictions on Assertions](./__tests__/body-restrictions-on-assertion-tests.ts)
