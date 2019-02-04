@@ -29,7 +29,7 @@ describe('Test Example', () => {
     });
 
     it('Does something', async () => {
-        var route = fakeServer.http.get().to('/your/api').willReturn({ message: "hello world" });
+        const route = fakeServer.http.get().to('/your/api').willReturn({ message: "hello world" });
 
         const response = await fetch('http://localhost:1234/your/api', { method: 'GET' });
         const body = await response.json();
@@ -48,7 +48,7 @@ describe('Test Example', () => {
 ## Defining Routes
 
 ```js
-let route = fakeServer.http
+const route = fakeServer.http
     .get()  // Http Method (mandatory). See Supported HTTP Methods section.
     .to(pathRegex) // Route Path (mandatory). May be regex
     .withBody(object) // Route Restriction (optional). See Route Restrictions section.
@@ -112,7 +112,7 @@ NOTES:
 Each defined route exposes a `RouteCallTester` that can be accessed from `route.call`:
 
 ```js
-let route = fakeServer.http.get().to('/some/path').willSucceed();
+const route = fakeServer.http.get().to('/some/path').willSucceed();
 
 const routeCallTester = route.call;
 ```
@@ -125,7 +125,7 @@ fakeServer instance exposes 3 methods that can be helpful for your tests asserti
 Returns true/false, based on whether this route was called since the server was started.  
 Usage example:
 ```js
-var route = fakeServer.http.get().to('/your/api').willSucceed();
+const route = fakeServer.http.get().to('/your/api').willSucceed();
 
 console.log(fakeServer.hasMade(route.call)); // false
 await fetch('/your/api', { method: 'GET' });
