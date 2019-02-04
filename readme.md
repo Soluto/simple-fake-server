@@ -58,7 +58,7 @@ The following http methods are available under `fakeServer.http`:
 * post()
 * put()
 * delete()
-
+* patch()
 
 ### Response
 
@@ -75,35 +75,29 @@ Response is mandatory and need to be set on any defined route.
 Restrictions are optional and can be defined after `to(path)`. **Only one** restriction can be set per route definition.  
 
 
-* **`withBody(object)`** - will match only requests with content-type header set to 'application/json' and bodies that are objects that **deeply equal** the given object:
+#### **`withBody(object)`**
+Will match only requests with content-type header set to 'application/json' and bodies that are objects that **deeply equal** the given object:
 
 ```js
 const withBodyRoute = fakeServer.http.post().to('/some/path').withBody({ a: 1, b: 2 }).willSucceed();
-
-await fetch('/some/path', { method: 'POST',  headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({ a: 1, b: 2 }),
-}); //Will succeed with 200
-
-await fetch('/some/path', { method: 'POST',  headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({ a: 1, b: 2, c: 3 }),
-}); //Will fail with 400
 ```
 
-* **`withBodyThatMatches(regex)`** - will match only requests with bodies that match the given **regex**:
+  On this example request with body of `{ a: 1, b: 2 }` will succeed with status 200 while `{ a: 1, b: 2, c: 3 }` will fail with status 400.
 
-```js
-const withBodyThatMatchesRoute = fakeServer.http.post().to('/some/path').withBodyThatMatches('[a-zA-Z]+$').willSucceed();
+#### **`withBodyThatMatches(regex)`** 
+Will match only requests with bodies that match the given **regex**.  
+i.e. route defined with `withBodyThatMatches('[a-zA-Z]+$')` will accept request body `abc` but will reject `123`.
 
-await fetch('/some/path', { method: 'POST', body: 'abc' }); //Will succeed with 200 since body 'abc' matches [a-zA-Z]+$' regex.
-await fetch('/some/path', { method: 'POST', body: '123' }); //Will fail with 400
-```
-
-* **`withBodyThatContains(minimalObject)`** - will match only requests with content-type header set to 'application/json' and bodies that are *supersets* of the given minimal object.  
+#### **`withBodyThatContains(minimalObject)`** 
+Will match only requests with content-type header set to 'application/json' and bodies that are *supersets* of the given minimal object.  
 i.e. route defined with `withBodyThatContains({ a: 1, b: 2 })` will accept request body `{ a: 1, b: 2, c: 3}`.
 
-* **`withQueryParams(queryParamsObject)`** - will only match requests that match exactly the query params set on `queryParamsObject`.  
+#### **`withQueryParams(queryParamsObject)`** 
+Will only match requests that match exactly the query params set on `queryParamsObject`.  
 i.e. route defined with `withQueryParams({ someQuery: true })` will match requests to `some/path?someQuery=true` but will reject `some/path?someQuery=false` or `some/path?someQuery=true&other=something`.
 
+<br/><br/>
+NOTE: a request that failed to fulfill a constrain will return 400 and won't return true when asserting `hasMade` (more on this on next section).
 
 ## Assertions
 
