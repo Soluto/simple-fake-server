@@ -45,6 +45,9 @@ describe('Test Example', () => {
 });
 ```
 
+## Running inside a docker container
+see [simple-fake-server-server](http-host/readme.md)
+
 ## Defining Routes
 
 ```js
