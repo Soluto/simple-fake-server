@@ -27,13 +27,12 @@ export type MockedCall = {
 
 export default class FakeServer {
     public http: FakeHttpCalls;
-
-    callHistory: CallHistory;
-    mockedCalls: MockedCall[];
-    port: number;
-    tls: boolean;
-    server: Server | https.Server;
-    logger: (message: string) => void;
+    private callHistory: CallHistory;
+    private mockedCalls: MockedCall[];
+    private port: number;
+    private tls: boolean;
+    private server: Server | https.Server;
+    private logger: (message: string) => void;
 
     constructor(port: number, tls = false, logger: (message: string) => void = () => {}) {
         if (!port) {
@@ -48,7 +47,7 @@ export default class FakeServer {
         this.logger = logger;
     }
 
-    start() {
+    public start() {
         if (this.server) {
             return;
         }
@@ -152,13 +151,13 @@ export default class FakeServer {
             : https.createServer(selfSignedCertificate, app.callback()).listen(this.port);
     }
 
-    stop() {
+    public stop() {
         this.server.close();
         delete this.server;
         this.mockedCalls = [];
     }
 
-    clearCallHistory() {
+    public clearCallHistory() {
         this.callHistory.clear();
     }
 
@@ -178,11 +177,11 @@ export default class FakeServer {
         this.mockedCalls.push({method, pathRegex, bodyRestriction, queryParamsObject, response, statusCode});
     }
 
-    hasMade(call: MockedCall) {
+    public hasMade(call: MockedCall) {
         return this.callHistory.get().some(this._getCallMatcher(call));
     }
 
-    callsMade(call: MockedCall) {
+    public callsMade(call: MockedCall) {
         return this.callHistory.get().filter(this._getCallMatcher(call));
     }
 

@@ -1,6 +1,5 @@
 import fetch from 'node-fetch';
 import {FakeServer} from '../src';
-import FakeHttpCalls from '../src/FakeHttpCalls';
 
 const port = 5555;
 const path = '/somePath';
@@ -37,6 +36,10 @@ afterEach(() => {
 
                 expect(res.status).toEqual(defaultStatus);
                 expect(fakeServer.hasMade(route.call)).toEqual(true);
+
+                const callsMade = fakeServer.callsMade(route.call);
+                expect(callsMade[0].path).toEqual(path);
+                expect(callsMade[0].body).toEqual(actualBody);
             });
 
             test('regex restriction, request has "application/json", request body matches regex - match', async () => {
@@ -435,11 +438,36 @@ afterEach(() => {
 
                 const res = await fetch(`http://localhost:${port}${path}`, {
                     method: 'POST',
-                    headers: {'Content-Type': 'application/json', body: 'some body'},
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({some: 'body'}),
                 });
 
                 expect(res.status).toEqual(defaultStatus);
                 expect(fakeServer.hasMade(route.call)).toEqual(true);
+            });
+
+            test('defining 2 routes with the same path with restrictions, make a call that matches only one - success + match', async () => {
+                const route1 = fakeServer.http
+                    .post()
+                    .to(path)
+                    .withBodyThatContains({c: 3, d: 4})
+                    [method]();
+
+                const route2 = fakeServer.http
+                    .post()
+                    .to(path)
+                    .withBodyThatContains({a: 1, b: 2})
+                    [method]();
+
+                const res = await fetch(`http://localhost:${port}${path}`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({a: 1, b: 2}),
+                });
+
+                expect(res.status).toEqual(defaultStatus);
+                expect(fakeServer.hasMade(route1.call)).toEqual(false);
+                expect(fakeServer.hasMade(route2.call)).toEqual(true);
             });
         });
     }

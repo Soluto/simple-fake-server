@@ -60,6 +60,23 @@ afterEach(() => {
                 expect(fakeServer.hasMade(route.call)).toEqual(true);
             });
 
+            test('GET route with extra query params - no match', async () => {
+                const path = '/someQueryPath';
+                const queryObject = {k1: 'v1'};
+                const route = fakeServer.http
+                    .get()
+                    .to(path)
+                    .withQueryParams(queryObject)
+                    [method]();
+
+                const queryParams = '?k1=v1&k2=v2';
+
+                const res = await fetch(`http://localhost:${port}${path}${queryParams}`, {method: 'GET'});
+
+                expect(res.status).toEqual(400);
+                expect(fakeServer.hasMade(route.call)).toEqual(false);
+            });
+
             test('GET route with wrong query params - no match', async () => {
                 const path = '/someQueryPath';
                 const queryObject = {k1: 'v1', k2: 'v2'};
@@ -70,6 +87,23 @@ afterEach(() => {
                     [method]();
 
                 const wrongQueryParams = '?k1=v1&k3=v3';
+
+                const res = await fetch(`http://localhost:${port}${path}${wrongQueryParams}`, {method: 'GET'});
+
+                expect(res.status).toEqual(400);
+                expect(fakeServer.hasMade(route.call)).toEqual(false);
+            });
+
+            test('GET route with partial query params - no match', async () => {
+                const path = '/someQueryPath';
+                const queryObject = {k1: 'v1', k2: 'v2'};
+                const route = fakeServer.http
+                    .get()
+                    .to(path)
+                    .withQueryParams(queryObject)
+                    [method]();
+
+                const wrongQueryParams = '?k1=v1';
 
                 const res = await fetch(`http://localhost:${port}${path}${wrongQueryParams}`, {method: 'GET'});
 
