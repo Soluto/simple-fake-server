@@ -17,11 +17,11 @@ This is a small server to host a [simple-fake-server](https://github.com/Soluto/
   my-api:
     build: .
     environment:
-      - TWEEL_URL=http://tweek-fake-server:2000
+      - OTHER_API_URL=http://fake-server:2000
     ports:
       - '3000:3000'
-  tweek-fake-server:
-    image: acreastus.azurecr.io/simple-fake-server-server:latest
+  fake-server:
+    image: simple-fake-server-server:latest
     ports:
       - '3001:3000' # management port for tests
 ```
