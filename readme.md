@@ -1,4 +1,4 @@
-# simple-fake-server.js
+# simple-fake-server
 A small, simple http server for mocking and asserting http calls.  
 This server was developed mainly to isolate the client side code during automation and integration tests.  
 
