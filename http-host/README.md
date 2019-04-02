@@ -37,7 +37,8 @@ describe('test', () => {
             url: 'api/v1/keys/foo',
             response: JSON.stringify("bar"),
             isJson: true,
-            statusCode: 200
+            statusCode: 200,
+            delay: 500
         });
 
         await axios.post('http://localhost:3000/action');
