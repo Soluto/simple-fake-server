@@ -71,11 +71,11 @@ The following http methods are available under `fakeServer.http`:
 
 Response is mandatory and need to be set on any defined route.
 
-* **`willSucceed()`** - a request to route that was defined with willSucceed will return status code 200 and `{}` body.
+* **`willSucceed(delay?: number)`** - a request to route that was defined with willSucceed will return status code 200 and `{}` body, will delay (in ms) the response if provided.
 
-* **`willFail(errorStatusCode?: number)`** - a request to route that was defined with willFail will return status code `errorStatusCode` (default is 500 if none provided) and `{}` body.
+* **`willFail(errorStatusCode?: number, delay?: number)`** - a request to route that was defined with willFail will return status code `errorStatusCode` (default is 500 if none provided), `{}` body and will delay (in ms) the response if provided.
 
-* **`willReturn(response: any, statusCode?: number)`** - a request to route that was defined with willReturn will return status code `statusCode` (default is 200 if none provided) and `response` body.
+* **`willReturn(response: any, statusCode?: number, delay?: number)`** - a request to route that was defined with willReturn will return status code `statusCode` (default is 200 if none provided), `response` body and will delay (in ms) the response if provided.
 
 ### Route Restrictions
 
