@@ -2,26 +2,30 @@ import RouteCallTester from './RouteCallTester';
 import {default as FakeServer} from './FakeServer';
 import {BodyRestriction} from './models/BodyRestriction';
 
+export interface Matchers extends With {
+    withBodyThatMatches(regex: string): With;
+    withBodyThatContains(minimalObject: {}): With;
+    withBody(object: {}): With;
+    withQueryParams(queryParamsObject: {}): With;
+}
+
 export interface With extends Will {
-    withBodyThatMatches(regex: string): Will;
-    withBodyThatContains(minimalObject: {}): Will;
-    withBody(object: {}): Will;
-    withQueryParams(queryParamsObject: {}): Will;
+    withDelay(delay: number): With;
 }
 
 export interface Will {
-    willReturn(response: any, statusCode?: number, delay?: number): FakeRoute;
-    willSucceed(delay?: number): FakeRoute;
-    willFail(errorStatus?: number, delay?: number): FakeRoute;
+    willReturn(response: any, statusCode?: number): FakeRoute;
+    willSucceed(): FakeRoute;
+    willFail(errorStatus?: number): FakeRoute;
 }
 
 export interface FakeRoute {
     call: RouteCallTester;
 }
 
-export interface FakeHttpMethod {
-    to(pathRegex: string): With;
-}
+export interface FakeHttpMethod extends FakeHttpCallBuilder {}
+
+export type HTTPMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
 export default class FakeHttpCalls {
     private fakeServer: FakeServer;
@@ -30,83 +34,97 @@ export default class FakeHttpCalls {
         this.fakeServer = fakeServer;
     }
 
-    public post(): FakeHttpMethod {
-        return this.create('POST');
+    public post = () => this.method('POST');
+    public get = () => this.method('GET');
+    public put = () => this.method('PUT');
+    public patch = () => this.method('PATCH');
+    public delete = () => this.method('DELETE');
+
+    private method = (method: HTTPMethod) => new FakeHttpCallBuilder(this.fakeServer, method);
+}
+
+class FakeHttpCallBuilder {
+    private fakeServer: FakeServer;
+    private method: HTTPMethod;
+    private pathRegex: string;
+    private bodyRestriction: BodyRestriction = {};
+    private queryParamsObject: object;
+    private delay: number;
+
+    constructor(fakeServer: FakeServer, method: HTTPMethod) {
+        this.fakeServer = fakeServer;
+        this.method = method;
     }
 
-    // tslint:disable-next-line:no-reserved-keywords
-    public get(): FakeHttpMethod {
-        return this.create('GET');
-    }
+    public to = (pathRegex: string) => {
+        this.pathRegex = pathRegex;
 
-    public put(): FakeHttpMethod {
-        return this.create('PUT');
-    }
+        return this.createMatchers();
+    };
 
-    public patch(): FakeHttpMethod {
-        return this.create('PATCH');
-    }
+    private withBodyThatMatches = (regex: string) => {
+        this.bodyRestriction.regex = regex;
+        return this.createMatchers();
+    };
 
-    // tslint:disable-next-line:no-reserved-keywords
-    public delete(): FakeHttpMethod {
-        return this.create('DELETE');
-    }
+    private withBodyThatContains = (minimalObject: {}) => {
+        this.bodyRestriction.minimalObject = minimalObject;
+        return this.createMatchers();
+    };
 
-    private will(method: string, pathRegex: string, bodyRestriction: BodyRestriction, queryParamsObject?: {}): Will {
-        const fakeRoute: FakeRoute = {call: new RouteCallTester(method, pathRegex, bodyRestriction, queryParamsObject)};
+    private withBody = (object: {}) => {
+        this.bodyRestriction.object = object;
+        return this.createMatchers();
+    };
 
-        return {
-            willReturn: (response: any, statusCode: number = 200, delay: number = 0): FakeRoute => {
-                this.fakeServer.set(method, pathRegex, bodyRestriction, queryParamsObject, response, statusCode, delay);
+    private withQueryParams = (queryParamsObject: {}) => {
+        this.queryParamsObject = queryParamsObject;
+        return this.createMatchers();
+    };
 
-                return fakeRoute;
-            },
-            willSucceed: (delay: number = 0): FakeRoute => {
-                this.fakeServer.set(method, pathRegex, bodyRestriction, queryParamsObject, {}, 200, delay);
+    private withDelay = (delayMs: number) => {
+        this.delay = delayMs;
+        return this.createMatchers();
+    };
 
-                return fakeRoute;
-            },
-            willFail: (errorStatus: number = 500, delay: number = 0): FakeRoute => {
-                this.fakeServer.set(method, pathRegex, bodyRestriction, queryParamsObject, {}, errorStatus, delay);
-
-                return fakeRoute;
-            },
+    private willReturn = (response: any, statusCode: number = 200): FakeRoute => {
+        const fakeRoute: FakeRoute = {
+            call: new RouteCallTester(this.method, this.pathRegex, this.bodyRestriction, this.queryParamsObject),
         };
-    }
 
-    private withBodyThatMatches(method: string, pathRegex: string) {
-        return {
-            withBodyThatMatches: (regex: string): Will => this.will(method, pathRegex, {regex}),
-        };
-    }
+        this.fakeServer.set(
+            this.method,
+            this.pathRegex,
+            this.bodyRestriction,
+            this.queryParamsObject,
+            response,
+            statusCode,
+            this.delay
+        );
 
-    private withBodyThatContains(method: string, pathRegex: string) {
-        return {
-            withBodyThatContains: (minimalObject: {}): Will => this.will(method, pathRegex, {minimalObject}),
-        };
-    }
+        return fakeRoute;
+    };
 
-    private withBody(method: string, pathRegex: string) {
-        return {
-            withBody: (object: {}): Will => this.will(method, pathRegex, {object}),
-        };
-    }
+    private willSucceed = (): FakeRoute => this.willReturn({}, 200);
 
-    private withQueryParams(method: string, pathRegex: string) {
-        return {
-            withQueryParams: (queryParamsObject: {}): Will => this.will(method, pathRegex, {}, queryParamsObject),
-        };
-    }
+    private willFail = (errorStatus: number = 500) => this.willReturn({}, errorStatus);
 
-    private create(method: string): FakeHttpMethod {
-        return {
-            to: (pathRegex: string): With => ({
-                ...this.withBodyThatMatches(method, pathRegex),
-                ...this.withBodyThatContains(method, pathRegex),
-                ...this.withBody(method, pathRegex),
-                ...this.withQueryParams(method, pathRegex),
-                ...this.will(method, pathRegex, {}),
-            }),
-        };
-    }
+    private createMatchers = (): Matchers => ({
+        ...this.createWith(),
+        withBodyThatMatches: this.withBodyThatMatches,
+        withBodyThatContains: this.withBodyThatContains,
+        withBody: this.withBody,
+        withQueryParams: this.withQueryParams,
+    });
+
+    private createWith = (): With => ({
+        ...this.createWill(),
+        withDelay: this.withDelay,
+    });
+
+    private createWill = (): Will => ({
+        willReturn: this.willReturn,
+        willSucceed: this.willSucceed,
+        willFail: this.willFail,
+    });
 }

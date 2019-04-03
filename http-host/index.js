@@ -34,8 +34,12 @@ app.post('/fake_server_admin/calls', ({ body: { method: mockedMethod, url: mocke
       .to(mockedUrl);
   }
 
+  if (delay) {
+    mock = mock.withDelay(delay);
+  }
+
   call = mock
-    .willReturn(isJson ? JSON.parse(mockedResponse || '{}') : mockedResponse, statusCode, dalay);
+    .willReturn(isJson ? JSON.parse(mockedResponse || '{}') : mockedResponse, statusCode);
 
   mockedCalls[callId] = call;
   res.send({ callId });
