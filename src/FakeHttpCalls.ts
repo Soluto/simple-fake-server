@@ -2,7 +2,7 @@ import RouteCallTester from './RouteCallTester';
 import {default as FakeServer} from './FakeServer';
 import {BodyRestriction} from './models/BodyRestriction';
 
-export interface Matchers extends With {
+export interface WithRestrictions extends With {
     withBodyThatMatches(regex: string): With;
     withBodyThatContains(minimalObject: {}): With;
     withBody(object: {}): With;
@@ -59,32 +59,32 @@ class FakeHttpCallBuilder {
     public to = (pathRegex: string) => {
         this.pathRegex = pathRegex;
 
-        return this.createMatchers();
+        return this.createWithRestrictions();
     };
 
     private withBodyThatMatches = (regex: string) => {
         this.bodyRestriction.regex = regex;
-        return this.createMatchers();
+        return this.createWithRestrictions();
     };
 
     private withBodyThatContains = (minimalObject: {}) => {
         this.bodyRestriction.minimalObject = minimalObject;
-        return this.createMatchers();
+        return this.createWithRestrictions();
     };
 
     private withBody = (object: {}) => {
         this.bodyRestriction.object = object;
-        return this.createMatchers();
+        return this.createWithRestrictions();
     };
 
     private withQueryParams = (queryParamsObject: {}) => {
         this.queryParamsObject = queryParamsObject;
-        return this.createMatchers();
+        return this.createWithRestrictions();
     };
 
     private withDelay = (delayMs: number) => {
         this.delay = delayMs;
-        return this.createMatchers();
+        return this.createWithRestrictions();
     };
 
     private willReturn = (response: any, statusCode: number = 200): FakeRoute => {
@@ -109,7 +109,7 @@ class FakeHttpCallBuilder {
 
     private willFail = (errorStatus: number = 500) => this.willReturn({}, errorStatus);
 
-    private createMatchers = (): Matchers => ({
+    private createWithRestrictions = (): WithRestrictions => ({
         ...this.createWith(),
         withBodyThatMatches: this.withBodyThatMatches,
         withBodyThatContains: this.withBodyThatContains,
