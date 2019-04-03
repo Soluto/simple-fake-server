@@ -55,6 +55,7 @@ const route = fakeServer.http
     .get()  // Http Method (mandatory). See Supported HTTP Methods section.
     .to(pathRegex) // Route Path (mandatory). May be regex
     .withBody(object) // Route Restriction (optional). See Route Restrictions section.
+    .withDelay(ms) // Delay response in ms (optional)
     .willSucceed() // Route Response (mandatory). See Response Section
 ```
 
@@ -71,11 +72,11 @@ The following http methods are available under `fakeServer.http`:
 
 Response is mandatory and need to be set on any defined route.
 
-* **`willSucceed(delay?: number)`** - a request to route that was defined with willSucceed will return status code 200 and `{}` body, will delay (in ms) the response if provided.
+* **`willSucceed()`** - a request to route that was defined with willSucceed will return status code 200 and `{}` body.
 
-* **`willFail(errorStatusCode?: number, delay?: number)`** - a request to route that was defined with willFail will return status code `errorStatusCode` (default is 500 if none provided), `{}` body and will delay (in ms) the response if provided.
+* **`willFail(errorStatusCode?: number)`** - a request to route that was defined with willFail will return status code `errorStatusCode` (default is 500 if none provided) and `{}` body.
 
-* **`willReturn(response: any, statusCode?: number, delay?: number)`** - a request to route that was defined with willReturn will return status code `statusCode` (default is 200 if none provided), `response` body and will delay (in ms) the response if provided.
+* **`willReturn(response: any, statusCode?: number)`** - a request to route that was defined with willReturn will return status code `statusCode` (default is 200 if none provided) and `response` body.
 
 ### Route Restrictions
 
@@ -109,6 +110,13 @@ i.e. route defined with `withQueryParams({ someQuery: true })` will match reques
 NOTES: 
 * A request that failed to fulfill a restriction will return 400 and will result in false when asserting with `hasMade` (more on this on the next section).
 * When setting 2 or more routes with the same path, but with different body restrictions, it's enough to fulfill just 1 of the restrictions to get a match.
+
+
+### Extras (optional)
+
+* **`withDelay(delayMs: number)`** - will delay the response.  
+i.e. route defined with `withDelay(2000)` will return a response after 2 seconds.
+
 
 ## Assertions
 
