@@ -1,5 +1,1 @@
-export function sleep(ms: number): any {
-    return function(callback: Function) {
-        setTimeout(callback, ms);
-    };
-}
+export const sleep: any = (ms: number) => (callback: Function) => setTimeout(callback, ms);

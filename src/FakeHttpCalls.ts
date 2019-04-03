@@ -23,9 +23,13 @@ export interface FakeRoute {
     call: RouteCallTester;
 }
 
-export interface FakeHttpMethod extends FakeHttpCallBuilder {}
-
-export type HTTPMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
+export const enum HTTPMethod {
+    get = 'GET',
+    post = 'POST',
+    put = 'PUT',
+    patch = 'PATCH',
+    delete = 'DELETE',
+}
 
 export default class FakeHttpCalls {
     private fakeServer: FakeServer;
@@ -34,11 +38,11 @@ export default class FakeHttpCalls {
         this.fakeServer = fakeServer;
     }
 
-    public post = () => this.method('POST');
-    public get = () => this.method('GET');
-    public put = () => this.method('PUT');
-    public patch = () => this.method('PATCH');
-    public delete = () => this.method('DELETE');
+    public post = () => this.method(HTTPMethod.post);
+    public get = () => this.method(HTTPMethod.get);
+    public put = () => this.method(HTTPMethod.put);
+    public patch = () => this.method(HTTPMethod.patch);
+    public delete = () => this.method(HTTPMethod.delete);
 
     private method = (method: HTTPMethod) => new FakeHttpCallBuilder(this.fakeServer, method);
 }
