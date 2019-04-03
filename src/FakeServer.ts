@@ -15,6 +15,7 @@ import * as selfSignedCertificate from './selfSignedCertificate';
 import CallHistory, {Call} from './CallHistory';
 import {BodyRestriction} from './models/BodyRestriction';
 import FakeHttpCalls from './FakeHttpCalls';
+import {sleep} from './utils';
 
 export type MockedCall = {
     method: string;
@@ -23,6 +24,7 @@ export type MockedCall = {
     queryParamsObject?: {};
     statusCode?: number;
     response?: any;
+    delay?: number;
 };
 
 export default class FakeServer {
@@ -123,7 +125,12 @@ export default class FakeServer {
                     headers: this.request.header,
                     body: this.request.body,
                 });
+
                 const firstMatch = matched[matched.length - 1];
+
+                if (firstMatch.delay) {
+                    yield sleep(firstMatch.delay);
+                }
 
                 self.logger(
                     `fakeServer:: call to [${this.req.method} ${this.url} ${JSON.stringify(
@@ -167,14 +174,15 @@ export default class FakeServer {
         bodyRestriction: BodyRestriction,
         queryParamsObject?: {},
         response?: any,
-        statusCode?: number
+        statusCode?: number,
+        delay?: number
     ) {
         this.logger(
             `fakeServer:: registering [${method} ${pathRegex}     body restriction: ${JSON.stringify(
                 bodyRestriction
-            )}] with status [${statusCode}] and response [${JSON.stringify(response)}]`
+            )}] with status [${statusCode}] with delay [${delay}] and response [${JSON.stringify(response)}]`
         );
-        this.mockedCalls.push({method, pathRegex, bodyRestriction, queryParamsObject, response, statusCode});
+        this.mockedCalls.push({method, pathRegex, bodyRestriction, queryParamsObject, response, statusCode, delay});
     }
 
     public hasMade(call: MockedCall) {

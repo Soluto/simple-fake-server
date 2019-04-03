@@ -15,14 +15,14 @@ let mockedCalls = {};
 
 app.use(bodyParser.json());
 
-app.post('/fake_server_admin/calls', ({ body: { method: mockedMethod, url: mockedUrl, body: mockedReqBody, query, response: mockedResponse, isJson, statusCode } }, res) => {
+app.post('/fake_server_admin/calls', ({ body: { method: mockedMethod, url: mockedUrl, body: mockedReqBody, query, response: mockedResponse, isJson, statusCode, delay } }, res) => {
   console.log(`Simple-Fake-Server got mock call to ${mockedMethod} ${mockedUrl} \n mocked Body : ${mockedReqBody}, mockedStatus: ${statusCode}`);
   const callId = uuid();
   let call;
   let mock;
 
   if (mockedReqBody) {
-    mock = fakeServer.http[mockedMethod]()
+    mock = fakeServer.http[mockedMethod]() 
       .to(mockedUrl)
       .withBody(JSON.parse(mockedReqBody));
   } else if (query) {
@@ -33,13 +33,13 @@ app.post('/fake_server_admin/calls', ({ body: { method: mockedMethod, url: mocke
     mock = fakeServer.http[mockedMethod]()
       .to(mockedUrl);
   }
-  if (statusCode && statusCode !== 200) {
-    call = mock
-      .willFail(statusCode);
-  } else {
-    call = mock
-      .willReturn(isJson ? JSON.parse(mockedResponse) : mockedResponse);
+
+  if (delay) {
+    mock = mock.withDelay(delay);
   }
+
+  call = mock
+    .willReturn(isJson ? JSON.parse(mockedResponse || '{}') : mockedResponse, statusCode);
 
   mockedCalls[callId] = call;
   res.send({ callId });

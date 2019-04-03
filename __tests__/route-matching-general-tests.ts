@@ -295,4 +295,23 @@ describe('Route Matching - willReturn', () => {
         expect(fakeServer.hasMade(route.call.withPath(actualPath).withBodyText(actualBody))).toEqual(true);
         expect(fakeServer.hasMade(route.call.withBodyText(actualBody).withPath(actualPath))).toEqual(true);
     });
+
+    test('with delay', async () => {
+        const delay = 1000;
+        const path = '/somePath';
+
+        const route = fakeServer.http
+            .get()
+            .to(path)
+            .withDelay(delay)
+            .willSucceed();
+
+        const startTime = Date.now();
+        const res = await fetch(`http://localhost:${port}${path}`, {method: 'GET'});
+        const duration = Date.now() - startTime;
+
+        expect(res.status).toEqual(200);
+        expect(fakeServer.hasMade(route.call)).toEqual(true);
+        expect(duration).toBeGreaterThan(delay);
+    });
 });

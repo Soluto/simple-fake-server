@@ -55,6 +55,7 @@ const route = fakeServer.http
     .get()  // Http Method (mandatory). See Supported HTTP Methods section.
     .to(pathRegex) // Route Path (mandatory). May be regex
     .withBody(object) // Route Restriction (optional). See Route Restrictions section.
+    .withDelay(ms) // Delay response in ms (optional)
     .willSucceed() // Route Response (mandatory). See Response Section
 ```
 
@@ -109,6 +110,13 @@ i.e. route defined with `withQueryParams({ someQuery: true })` will match reques
 NOTES: 
 * A request that failed to fulfill a restriction will return 400 and will result in false when asserting with `hasMade` (more on this on the next section).
 * When setting 2 or more routes with the same path, but with different body restrictions, it's enough to fulfill just 1 of the restrictions to get a match.
+
+
+### Extras (optional)
+
+* **`withDelay(delayMs: number)`** - will delay the response.  
+i.e. route defined with `withDelay(2000)` will return a response after 2 seconds.
+
 
 ## Assertions
 
