@@ -55,6 +55,7 @@ app.post('/fake_server_admin/clear', (req, res) => {
 app.get('/fake_server_admin/calls', ({ query: { callId } }, res) => {
   if (!callId) {
     res.send(fakeServer.callHistory);
+    return;
   }
 
   const mockedCall = mockedCalls[callId] || { call: {} };
@@ -64,13 +65,12 @@ app.get('/fake_server_admin/calls', ({ query: { callId } }, res) => {
       new RegExp(mockedCall.call.pathRegex).test(c.path),
   );
 
-  if (!mockedCall) {
+  if (!mockedCall || !madeCalls.length) {
     res.send({ hasBeenMade: false });
-  } else if (!madeCalls.length) {
-    res.send({ hasBeenMade: false });
-  } else {
-    res.send({ hasBeenMade: true, madeCalls });
+    return;
   }
+
+  res.send({ hasBeenMade: true, madeCalls });
 });
 
 app.listen(adminPort, () =>
