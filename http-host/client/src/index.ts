@@ -57,7 +57,7 @@ export default class Server {
         return calls;
     }
 
-    async getCall(callId: string): Promise<Call> {
+    async getCall(callId: string): Promise<{hasBeenMade: boolean; madeCalls: Call[]}> {
         const res = await fetch(this.buildUrl(`calls?callId=${callId}`));
 
         return res.json();
