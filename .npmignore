@@ -7,3 +7,5 @@ __tests__
 node_modules
 .gitignore
 jest.config.json
+http-host
+.idea
