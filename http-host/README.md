@@ -48,7 +48,30 @@ describe('test', () => {
     });
 });
 ```
+or using our client:
+```js
+import Server from 'simple-fake-server-server-client';
 
+const server = new Server({port: 3001});
+
+describe('test', () => {
+    afterEach(() => server.clear());
+
+    it('test', async () => {
+        const callId = await server.mock({
+            url: 'api/v1/keys/foo',
+            response: JSON.stringify("bar"),
+            isJson: true
+        });
+
+        await axios.post('http://localhost:3000/action');
+
+        const {hasBeenMade} = await server.getCall(callId);
+
+        expect(hasBeenMade).to.eq(true);
+    });
+});
+```
 ## Env vars:  
 `ADMIN_PORT` - Port for the admin calls (default 3000)  
 `PORT` - Port for the fake calls (default 2000)  

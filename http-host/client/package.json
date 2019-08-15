@@ -1,0 +1,20 @@
+{
+    "name": "simple-fake-server-server-client",
+    "version": "1.0.0",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "scripts": {
+        "build": "tsc",
+        "prepublish": "npm run build"
+    },
+    "devDependencies": {
+        "@types/node-fetch": "^2.5.0",
+        "ts-node": "^8.3.0",
+        "typescript": "^3.5.3"
+    },
+    "dependencies": {
+        "node-fetch": "^2.6.0",
+        "simple-fake-server": "^2.3.1",
+        "tslib": "^1.10.0"
+    }
+}

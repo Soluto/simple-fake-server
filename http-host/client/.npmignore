@@ -1,0 +1,4 @@
+src/
+example/
+.prettierrc.yml
+tsconfig.json
