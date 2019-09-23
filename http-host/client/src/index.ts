@@ -1,5 +1,6 @@
 import fetch from 'node-fetch';
 import {Call} from 'simple-fake-server';
+import {createReadStream} from 'fs';
 
 export type MockOptions = {
     method?: 'get' | 'post' | 'put' | 'patch' | 'delete';
@@ -9,6 +10,8 @@ export type MockOptions = {
     response?: any;
     isJson?: boolean;
     statusCode?: number;
+    respondAsStream?: boolean;
+    responseHeaders?: {[key: string]: string};
 };
 
 export type ConnectionOptions = {
@@ -27,7 +30,17 @@ export default class Server {
         return `${this._url}/fake_server_admin/${path}`;
     }
 
-    async mock({method, url, body, query, response, isJson, statusCode}: MockOptions): Promise<string> {
+    async mock({
+        method,
+        url,
+        body,
+        query,
+        response,
+        isJson,
+        statusCode,
+        respondAsStream,
+        responseHeaders,
+    }: MockOptions): Promise<string> {
         const res = await fetch(this.buildUrl('calls'), {
             method: 'POST',
             headers: {
@@ -41,6 +54,8 @@ export default class Server {
                 ...(response && {response}),
                 isJson: isJson || false,
                 statusCode: statusCode || 200,
+                respondAsStream,
+                responseHeaders,
             }),
         });
 

@@ -23,6 +23,7 @@ export type MockedCall = {
     queryParamsObject?: {};
     statusCode?: number;
     response?: any;
+    responseHeaders?: {[key: string]: string};
 };
 
 export default class FakeServer {
@@ -135,6 +136,11 @@ export default class FakeServer {
 
                 this.status = firstMatch.statusCode;
                 this.body = firstMatch.response;
+                const responseObject = this.response;
+                if (firstMatch.responseHeaders) {
+                    const hdrs = firstMatch.responseHeaders;
+                    Object.keys(hdrs).forEach(key => responseObject.set(key, hdrs[key]));
+                }
             } else {
                 self.logger(
                     `fakeServer:: no match for [${this.req.method} ${this.url} ${JSON.stringify(this.request.body)}]`
@@ -167,14 +173,23 @@ export default class FakeServer {
         bodyRestriction: BodyRestriction,
         queryParamsObject?: {},
         response?: any,
-        statusCode?: number
+        statusCode?: number,
+        responseHeaders?: {[key: string]: string}
     ) {
         this.logger(
             `fakeServer:: registering [${method} ${pathRegex}     body restriction: ${JSON.stringify(
                 bodyRestriction
             )}] with status [${statusCode}] and response [${JSON.stringify(response)}]`
         );
-        this.mockedCalls.push({method, pathRegex, bodyRestriction, queryParamsObject, response, statusCode});
+        this.mockedCalls.push({
+            method,
+            pathRegex,
+            bodyRestriction,
+            queryParamsObject,
+            response,
+            statusCode,
+            responseHeaders,
+        });
     }
 
     public hasMade(call: MockedCall) {

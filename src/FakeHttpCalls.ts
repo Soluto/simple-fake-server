@@ -10,7 +10,7 @@ export interface With extends Will {
 }
 
 export interface Will {
-    willReturn(response: any, statusCode?: number): FakeRoute;
+    willReturn(response: any, statusCode?: number, responseHeaders?: {[key: string]: string}): FakeRoute;
     willSucceed(): FakeRoute;
     willFail(errorStatus: number): FakeRoute;
 }
@@ -56,18 +56,30 @@ export default class FakeHttpCalls {
         const fakeRoute: FakeRoute = {call: new RouteCallTester(method, pathRegex, bodyRestriction, queryParamsObject)};
 
         return {
-            willReturn: (response: any, statusCode: number = 200): FakeRoute => {
-                this.fakeServer.set(method, pathRegex, bodyRestriction, queryParamsObject, response, statusCode);
+            willReturn: (
+                response: any,
+                statusCode: number = 200,
+                responseHeaders: {[key: string]: string} = {}
+            ): FakeRoute => {
+                this.fakeServer.set(
+                    method,
+                    pathRegex,
+                    bodyRestriction,
+                    queryParamsObject,
+                    response,
+                    statusCode,
+                    responseHeaders
+                );
 
                 return fakeRoute;
             },
             willSucceed: (): FakeRoute => {
-                this.fakeServer.set(method, pathRegex, bodyRestriction, queryParamsObject, {}, 200);
+                this.fakeServer.set(method, pathRegex, bodyRestriction, queryParamsObject, {}, 200, {});
 
                 return fakeRoute;
             },
             willFail: (errorStatus: number = 500): FakeRoute => {
-                this.fakeServer.set(method, pathRegex, bodyRestriction, queryParamsObject, {}, errorStatus);
+                this.fakeServer.set(method, pathRegex, bodyRestriction, queryParamsObject, {}, errorStatus, {});
 
                 return fakeRoute;
             },
