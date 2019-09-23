@@ -1,6 +1,4 @@
 import fetch from 'node-fetch';
-import getStream from 'get-stream';
-import {createReadStream} from 'fs';
 import {FakeServer} from '../src';
 
 const port = 4444;
@@ -256,38 +254,6 @@ describe('Route Matching - willReturn', () => {
         expect(body.name).toEqual('Morty');
         expect(res.status).toEqual(200);
         expect(fakeServer.hasMade(route.call)).toEqual(true);
-    });
-
-    test('GET route defined with status code 200, response headers and called - match', async () => {
-        const path = '/somePath';
-        const route = fakeServer.http
-            .get()
-            .to(path)
-            .willReturn({name: 'Cloud'}, 200, {imontop: 'Of The World'});
-
-        const res = await fetch(`http://localhost:${port}${path}`, {method: 'GET'});
-        const body = await res.json();
-
-        expect(body.name).toEqual('Cloud');
-        expect(res.status).toEqual(200);
-        expect(res.headers.get('imontop')).toEqual('Of The World');
-        expect(fakeServer.hasMade(route.call)).toEqual(true);
-    });
-
-    test('GET route defined with stream response - match', async () => {
-        const bodyAsStream = createReadStream('./__tests__/fileToStream.txt');
-        const path = '/somePath';
-        const route = fakeServer.http
-            .get()
-            .to(path)
-            .willReturn(bodyAsStream);
-
-        const res = await fetch(`http://localhost:${port}${path}`, {method: 'GET'});
-        expect(res.headers.get('content-type')).toEqual('application/octet-stream');
-        expect(res.status).toEqual(200);
-        expect(fakeServer.hasMade(route.call)).toEqual(true);
-        const body = await getStream(res.body);
-        expect(body).toEqual('Rivers are huuuuge Streams!\nBut this one is small.');
     });
 
     test('GET route defined with custom status code and called - match', async () => {
