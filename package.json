@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "deep-equal": "1.0.1",
+    "get-stream": "^5.1.0",
     "is-subset": "0.1.1",
     "koa": "1.5.1",
     "koa-body": "3.0.0",

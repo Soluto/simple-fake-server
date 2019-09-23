@@ -1,4 +1,5 @@
 import fetch from 'node-fetch';
+import getStream from 'get-stream';
 import {createReadStream} from 'fs';
 import {FakeServer} from '../src';
 
@@ -13,17 +14,6 @@ beforeEach(() => {
 afterEach(() => {
     fakeServer.stop();
 });
-const streamToString = async (readableStream): Promise<string> =>
-    new Promise((resolve, reject) => {
-        const chunks: Array<string> = [];
-        readableStream.on('data', data => {
-            chunks.push(data.toString());
-        });
-        readableStream.on('end', () => {
-            resolve(chunks.join(''));
-        });
-        readableStream.on('error', reject);
-    });
 
 [{method: 'willSucceed', defaultStatus: 200}, {method: 'willFail', defaultStatus: 500}].forEach(
     ({method, defaultStatus}) => {
@@ -296,7 +286,7 @@ describe('Route Matching - willReturn', () => {
         expect(res.headers.get('content-type')).toEqual('application/octet-stream');
         expect(res.status).toEqual(200);
         expect(fakeServer.hasMade(route.call)).toEqual(true);
-        const body = await streamToString(res.body);
+        const body = await getStream(res.body);
         expect(body).toEqual('Rivers are huuuuge Streams!\nBut this one is small.');
     });
 
