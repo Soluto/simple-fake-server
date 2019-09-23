@@ -1,6 +1,6 @@
 import fetch from 'node-fetch';
 import getStream from 'get-stream';
-import {createReadStream} from 'fs';
+import intoStream from 'into-stream';
 import {FakeServer} from '../src';
 
 const port = 4444;
@@ -33,7 +33,8 @@ describe('Route Matching - willReturn Response Elements', () => {
     });
 
     test('GET route defined with response as stream', async () => {
-        const bodyAsStream = createReadStream('./__tests__/test-files/fileToStream.txt');
+        const stringTobeStreamed = 'Rivers are huge Streams';
+        const bodyAsStream = intoStream(stringTobeStreamed);
         const path = '/somePath';
         const route = fakeServer.http
             .get()
@@ -45,6 +46,6 @@ describe('Route Matching - willReturn Response Elements', () => {
         expect(res.status).toEqual(200);
         expect(fakeServer.hasMade(route.call)).toEqual(true);
         const body = await getStream(res.body);
-        expect(body).toEqual('Rivers are huuuuge Streams!\nBut this one is small.');
+        expect(body).toEqual(stringTobeStreamed);
     });
 });

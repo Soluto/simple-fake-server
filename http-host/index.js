@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const { FakeServer } = require('simple-fake-server');
 const stream = require('stream');
+const intoStream = require('into-stream');
 const uuid = require('uuid/v4');
 
 const app = express();
@@ -34,20 +35,14 @@ app.post('/fake_server_admin/calls', ({ body: { method: mockedMethod, url: mocke
     mock = fakeServer.http[mockedMethod]()
       .to(mockedUrl);
   }
-  if (statusCode && statusCode !== 200 && statusCode !== 201) {
+  if (statusCode && statusCode >= 400) {
     call = mock
       .willFail(statusCode);
   } else {
     let finalResponse = mockedResponse;
     if (finalResponse) {
       finalResponse = isJson ? JSON.parse(finalResponse) : finalResponse;
-      if (respondAsStream) {
-        const streamResponse = new stream.Readable();
-        streamResponse._read = () => {};
-        streamResponse.push(String(finalResponse));
-        streamResponse.push(null);
-        finalResponse = streamResponse;
-      }
+      finalResponse = respondAsStream ? intoStream(finalResponse) : finalResponse;
     }
     call = mock
       .willReturn(finalResponse, statusCode, responseHeaders);
