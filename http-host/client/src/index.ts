@@ -1,6 +1,5 @@
 import fetch from 'node-fetch';
 import {Call} from 'simple-fake-server';
-import {createReadStream} from 'fs';
 
 export type MockOptions = {
     method?: 'get' | 'post' | 'put' | 'patch' | 'delete';
