@@ -20,7 +20,7 @@
     "koa": "1.5.1",
     "koa-body": "3.0.0",
     "koa-cors": "0.0.16",
-    "lodash": "^4.17.11",
+    "lodash": "^4.17.12",
     "query-string": "5.0.1"
   },
   "devDependencies": {
