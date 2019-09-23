@@ -129,9 +129,9 @@ export default class FakeServer {
                 self.logger(
                     `fakeServer:: call to [${this.req.method} ${this.url} ${JSON.stringify(
                         this.request.body
-                    )}]. Respond with status: [${firstMatch.statusCode}] and body: [${JSON.stringify(
+                    )}]. Respond with status: [${firstMatch.statusCode}], body: [${JSON.stringify(
                         firstMatch.response
-                    )}]`
+                    )}] and headers [${JSON.stringify(firstMatch.responseHeaders)}]`
                 );
 
                 this.status = firstMatch.statusCode;
