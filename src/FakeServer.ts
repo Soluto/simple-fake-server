@@ -131,7 +131,7 @@ export default class FakeServer {
                         this.request.body
                     )}]. Respond with status: [${firstMatch.statusCode}], body: [${JSON.stringify(
                         firstMatch.response
-                    )}] and headers [${JSON.stringify(firstMatch.responseHeaders)}]`
+                    )}] ${firstMatch.responseHeaders && `and headers [${JSON.stringify(firstMatch.responseHeaders)}]`}`
                 );
 
                 this.status = firstMatch.statusCode;
