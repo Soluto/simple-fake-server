@@ -1,6 +1,8 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const { FakeServer } = require('simple-fake-server');
+const stream = require('stream');
+const intoStream = require('into-stream');
 const uuid = require('uuid/v4');
 
 const app = express();
@@ -15,8 +17,8 @@ let mockedCalls = {};
 
 app.use(bodyParser.json());
 
-app.post('/fake_server_admin/calls', ({ body: { method: mockedMethod, url: mockedUrl, body: mockedReqBody, query, response: mockedResponse, isJson, statusCode } }, res) => {
-  console.log(`Simple-Fake-Server got mock call to ${mockedMethod} ${mockedUrl} \n mocked Body : ${mockedReqBody}, mockedStatus: ${statusCode}`);
+app.post('/fake_server_admin/calls', ({ body: { method: mockedMethod, url: mockedUrl, body: mockedReqBody, query, response: mockedResponse, respondAsJson, statusCode, respondAsStream, responseHeaders } }, res) => {
+  console.log(`Simple-Fake-Server got mock call to ${mockedMethod} ${mockedUrl} \n mocked Body : ${mockedReqBody}, mockedStatus: ${statusCode}, mockedResponseHeaders: ${responseHeaders}`);
   const callId = uuid();
   let call;
   let mock;
@@ -33,12 +35,17 @@ app.post('/fake_server_admin/calls', ({ body: { method: mockedMethod, url: mocke
     mock = fakeServer.http[mockedMethod]()
       .to(mockedUrl);
   }
-  if (statusCode && statusCode !== 200) {
+  if (statusCode && statusCode >= 400) {
     call = mock
       .willFail(statusCode);
   } else {
+    let finalResponse = mockedResponse;
+    if (finalResponse) {
+      finalResponse = respondAsJson ? JSON.parse(finalResponse) : finalResponse;
+      finalResponse = respondAsStream ? intoStream(finalResponse) : finalResponse;
+    }
     call = mock
-      .willReturn(isJson ? JSON.parse(mockedResponse) : mockedResponse);
+      .willReturn(finalResponse, statusCode, responseHeaders);
   }
 
   mockedCalls[callId] = call;

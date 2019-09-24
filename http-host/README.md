@@ -36,7 +36,7 @@ describe('test', () => {
             method: "get",
             url: 'api/v1/keys/foo',
             response: JSON.stringify("bar"),
-            isJson: true,
+            respondAsJson: true,
             statusCode: 200
         });
 
@@ -61,7 +61,7 @@ describe('test', () => {
         const callId = await server.mock({
             url: 'api/v1/keys/foo',
             response: JSON.stringify("bar"),
-            isJson: true
+            respondAsJson: true
         });
 
         await axios.post('http://localhost:3000/action');

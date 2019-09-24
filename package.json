@@ -1,6 +1,6 @@
 {
   "name": "simple-fake-server",
-  "version": "2.3.1",
+  "version": "3.0.0",
   "description": "A small, simple http server for mocking and asserting http calls.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -16,11 +16,12 @@
   },
   "dependencies": {
     "deep-equal": "1.0.1",
+    "get-stream": "^5.1.0",
     "is-subset": "0.1.1",
     "koa": "1.5.1",
     "koa-body": "3.0.0",
     "koa-cors": "0.0.16",
-    "lodash": "^4.17.11",
+    "lodash": "^4.17.12",
     "query-string": "5.0.1"
   },
   "devDependencies": {
@@ -28,6 +29,7 @@
     "@types/node": "^9.3.0",
     "@types/query-string": "^5.1.0",
     "husky": "^0.14.3",
+    "into-stream": "^5.1.0",
     "jest": "^22.1.4",
     "lint-staged": "^6.0.1",
     "node-fetch": "^1.7.3",

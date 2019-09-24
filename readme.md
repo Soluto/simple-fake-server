@@ -171,3 +171,4 @@ You can check out our tests section to see a bunch of different usage examples.
 * [General Route Matching](./__tests__/route-matching-general-tests.ts)
 * [Body Restrictions on Route Definition](./__tests__/body-restrictions-on-route-definition-tests.ts)
 * [Assertions Constrains](./__tests__/body-restrictions-on-assertion-tests.ts)
+* [Mocking Response Elements](./__tests__/mocking-response-elements.ts)

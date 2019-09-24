@@ -23,6 +23,7 @@ export type MockedCall = {
     queryParamsObject?: {};
     statusCode?: number;
     response?: any;
+    responseHeaders?: Record<string, string>;
 };
 
 export default class FakeServer {
@@ -128,13 +129,19 @@ export default class FakeServer {
                 self.logger(
                     `fakeServer:: call to [${this.req.method} ${this.url} ${JSON.stringify(
                         this.request.body
-                    )}]. Respond with status: [${firstMatch.statusCode}] and body: [${JSON.stringify(
+                    )}]. Respond with status: [${firstMatch.statusCode}], body: [${JSON.stringify(
                         firstMatch.response
-                    )}]`
+                    )}]${
+                        firstMatch.responseHeaders ? ` and headers [${JSON.stringify(firstMatch.responseHeaders)}]` : ''
+                    }`
                 );
 
                 this.status = firstMatch.statusCode;
                 this.body = firstMatch.response;
+                if (firstMatch.responseHeaders) {
+                    const headers = firstMatch.responseHeaders;
+                    Object.keys(headers).forEach(key => this.response.set(key, headers[key]));
+                }
             } else {
                 self.logger(
                     `fakeServer:: no match for [${this.req.method} ${this.url} ${JSON.stringify(this.request.body)}]`
@@ -167,14 +174,23 @@ export default class FakeServer {
         bodyRestriction: BodyRestriction,
         queryParamsObject?: {},
         response?: any,
-        statusCode?: number
+        statusCode?: number,
+        responseHeaders?: Record<string, string>
     ) {
         this.logger(
             `fakeServer:: registering [${method} ${pathRegex}     body restriction: ${JSON.stringify(
                 bodyRestriction
             )}] with status [${statusCode}] and response [${JSON.stringify(response)}]`
         );
-        this.mockedCalls.push({method, pathRegex, bodyRestriction, queryParamsObject, response, statusCode});
+        this.mockedCalls.push({
+            method,
+            pathRegex,
+            bodyRestriction,
+            queryParamsObject,
+            response,
+            statusCode,
+            responseHeaders,
+        });
     }
 
     public hasMade(call: MockedCall) {

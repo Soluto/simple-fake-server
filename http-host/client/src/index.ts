@@ -7,8 +7,10 @@ export type MockOptions = {
     body?: any;
     query?: Record<string, any>;
     response?: any;
-    isJson?: boolean;
+    respondAsJson?: boolean;
     statusCode?: number;
+    respondAsStream?: boolean;
+    responseHeaders?: Record<string, string>;
 };
 
 export type ConnectionOptions = {
@@ -27,7 +29,17 @@ export default class Server {
         return `${this._url}/fake_server_admin/${path}`;
     }
 
-    async mock({method, url, body, query, response, isJson, statusCode}: MockOptions): Promise<string> {
+    async mock({
+        method,
+        url,
+        body,
+        query,
+        response,
+        respondAsJson,
+        statusCode,
+        respondAsStream,
+        responseHeaders,
+    }: MockOptions): Promise<string> {
         const res = await fetch(this.buildUrl('calls'), {
             method: 'POST',
             headers: {
@@ -39,8 +51,10 @@ export default class Server {
                 query,
                 ...(body && {body: JSON.stringify(body)}),
                 ...(response && {response}),
-                isJson: isJson || false,
+                respondAsJson: respondAsJson || false,
                 statusCode: statusCode || 200,
+                respondAsStream: respondAsStream || false,
+                responseHeaders,
             }),
         });
 
