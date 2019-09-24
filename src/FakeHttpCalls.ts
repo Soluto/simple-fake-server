@@ -10,7 +10,7 @@ export interface With extends Will {
 }
 
 export interface Will {
-    willReturn(response: any, statusCode?: number, responseHeaders?: {[key: string]: string}): FakeRoute;
+    willReturn(response: any, statusCode?: number, responseHeaders?: Record<string, string>): FakeRoute;
     willSucceed(): FakeRoute;
     willFail(errorStatus: number): FakeRoute;
 }
@@ -59,7 +59,7 @@ export default class FakeHttpCalls {
             willReturn: (
                 response: any,
                 statusCode: number = 200,
-                responseHeaders: {[key: string]: string} = {}
+                responseHeaders: Record<string, string>
             ): FakeRoute => {
                 this.fakeServer.set(
                     method,

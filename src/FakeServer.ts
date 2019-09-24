@@ -23,7 +23,7 @@ export type MockedCall = {
     queryParamsObject?: {};
     statusCode?: number;
     response?: any;
-    responseHeaders?: {[key: string]: string};
+    responseHeaders?: Record<string, string>;
 };
 
 export default class FakeServer {
@@ -138,10 +138,9 @@ export default class FakeServer {
 
                 this.status = firstMatch.statusCode;
                 this.body = firstMatch.response;
-                const responseObject = this.response;
                 if (firstMatch.responseHeaders) {
-                    const hdrs = firstMatch.responseHeaders;
-                    Object.keys(hdrs).forEach(key => responseObject.set(key, hdrs[key]));
+                    const headers = firstMatch.responseHeaders;
+                    Object.keys(headers).forEach(key => this.response.set(key, headers[key]));
                 }
             } else {
                 self.logger(
@@ -176,7 +175,7 @@ export default class FakeServer {
         queryParamsObject?: {},
         response?: any,
         statusCode?: number,
-        responseHeaders?: {[key: string]: string}
+        responseHeaders?: Record<string, string>
     ) {
         this.logger(
             `fakeServer:: registering [${method} ${pathRegex}     body restriction: ${JSON.stringify(
