@@ -81,22 +81,3 @@ export default class Server {
         await fetch(this.buildUrl('clear'), {method: 'POST'});
     }
 }
-
-const sari = async () => {
-    const azureFakeStorageServer = new Server();
-    azureFakeStorageServer.clear();
-    const sessionCallId = await azureFakeStorageServer.mock({
-        method: 'get',
-        url: '/date/abc',
-        statusCode: 201,
-        responseHeaders: {etag: 'version1'},
-        response: 'streaming',
-        respondAsStream: true,
-    });
-
-    const response = await fetch('http://localhost:2000/date/abc', {
-        method: 'get',
-    });
-    console.log('response', response.headers);
-};
-sari();
