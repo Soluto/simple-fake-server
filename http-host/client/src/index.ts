@@ -7,7 +7,7 @@ export type MockOptions = {
     body?: any;
     query?: Record<string, any>;
     response?: any;
-    isJson?: boolean;
+    respondAsJson?: boolean;
     statusCode?: number;
     respondAsStream?: boolean;
     responseHeaders?: Record<string, string>;
@@ -35,7 +35,7 @@ export default class Server {
         body,
         query,
         response,
-        isJson,
+        respondAsJson,
         statusCode,
         respondAsStream,
         responseHeaders,
@@ -51,9 +51,9 @@ export default class Server {
                 query,
                 ...(body && {body: JSON.stringify(body)}),
                 ...(response && {response}),
-                isJson: isJson || false,
+                respondAsJson: respondAsJson || false,
                 statusCode: statusCode || 200,
-                respondAsStream,
+                respondAsStream: respondAsStream || false,
                 responseHeaders,
             }),
         });
