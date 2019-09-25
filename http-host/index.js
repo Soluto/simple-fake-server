@@ -26,7 +26,7 @@ app.post('/fake_server_admin/calls', ({ body: { method: mockedMethod, url: mocke
   if (mockedReqBody) {
     mock = fakeServer.http[mockedMethod]()
       .to(mockedUrl)
-      .withBody(JSON.parse(mockedReqBody));
+      .withBodyThatContains(JSON.parse(mockedReqBody));
   } else if (query) {
     mock = fakeServer.http[mockedMethod]()
       .to(mockedUrl)
