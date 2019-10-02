@@ -27,10 +27,10 @@ app.post('/fake_server_admin/calls', ({ body: { method: mockedMethod, url: mocke
     mock = fakeServer.http[mockedMethod]()
       .to(mockedUrl);
     if (allowSupersetOfBody) {
-      mock.withBodyThatContains(JSON.parse(mockedReqBody));
+      mock = mock.withBodyThatContains(JSON.parse(mockedReqBody));
     }
     else {
-      mock.withBody(JSON.parse(mockedReqBody));
+      mock = mock.withBody(JSON.parse(mockedReqBody));
     }
 
   } else if (query) {
