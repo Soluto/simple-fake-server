@@ -4,4 +4,5 @@ export type BodyRestriction = {
     exactText?: string;
     exactObject?: {};
     object?: {};
+    checkCorrectContentTypeForObject?: boolean;
 };

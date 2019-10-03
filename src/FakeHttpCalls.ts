@@ -4,7 +4,7 @@ import {BodyRestriction} from './models/BodyRestriction';
 
 export interface With extends Will {
     withBodyThatMatches(regex: string): Will;
-    withBodyThatContains(minimalObject: {}): Will;
+    withBodyThatContains(minimalObject: {}, checkCorrectContentTypeForObject: boolean): Will;
     withBody(object: {}): Will;
     withQueryParams(queryParamsObject: {}): Will;
 }
@@ -94,7 +94,8 @@ export default class FakeHttpCalls {
 
     private withBodyThatContains(method: string, pathRegex: string) {
         return {
-            withBodyThatContains: (minimalObject: {}): Will => this.will(method, pathRegex, {minimalObject}),
+            withBodyThatContains: (minimalObject: {}, checkCorrectContentTypeForObject = true): Will =>
+                this.will(method, pathRegex, {minimalObject, checkCorrectContentTypeForObject}),
         };
     }
 

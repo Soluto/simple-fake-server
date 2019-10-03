@@ -17,17 +17,21 @@ let mockedCalls = {};
 
 app.use(bodyParser.json());
 
-app.post('/fake_server_admin/calls', ({ body: { method: mockedMethod, url: mockedUrl, body: mockedReqBody, query, response: mockedResponse, respondAsJson, statusCode, respondAsStream, responseHeaders, allowSupersetOfBody } }, res) => {
+app.post('/fake_server_admin/calls', ({ body: { method: mockedMethod, url: mockedUrl, body: mockedReqBody, query, response: mockedResponse, respondAsJson, statusCode, respondAsStream, responseHeaders, allowSupersetOfBody, checkCorrectContentTypeForObject } }, res) => {
   console.log(`Simple-Fake-Server got mock call to ${mockedMethod} ${mockedUrl} \n mocked Body : ${mockedReqBody}, mockedStatus: ${statusCode}, mockedResponseHeaders: ${responseHeaders}`);
   const callId = uuid();
   let call;
   let mock;
 
+  if (checkCorrectContentTypeForObject === null || checkCorrectContentTypeForObject === undefined) {
+    checkCorrectContentTypeForObject = true;
+  }
+
   if (mockedReqBody) {
     mock = fakeServer.http[mockedMethod]()
       .to(mockedUrl);
     if (allowSupersetOfBody) {
-      mock = mock.withBodyThatContains(JSON.parse(mockedReqBody));
+      mock = mock.withBodyThatContains(JSON.parse(mockedReqBody), checkCorrectContentTypeForObject);
     }
     else {
       mock = mock.withBody(JSON.parse(mockedReqBody));
