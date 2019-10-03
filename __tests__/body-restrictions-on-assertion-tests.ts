@@ -92,7 +92,7 @@ test('minimal object restriction, assert on a specific object that matches the m
     const route = fakeServer.http
         .post()
         .to(path)
-        .withBodyThatContains(expectedMinimalBody)
+        .withBodyThatContains(expectedMinimalBody, true)
         .willSucceed();
 
     await fetch(`http://localhost:${port}${path}`, {
@@ -111,7 +111,7 @@ test('minimal object restriction, assert on a specific object that matches the m
     const route = fakeServer.http
         .post()
         .to(path)
-        .withBodyThatContains(expectedMinimalBody)
+        .withBodyThatContains(expectedMinimalBody, true)
         .willSucceed();
 
     await fetch(`http://localhost:${port}${path}`, {
@@ -129,7 +129,7 @@ test('minimal object restriction, assert on a specific object that does not matc
     const route = fakeServer.http
         .post()
         .to(path)
-        .withBodyThatContains(expectedMinimalBody)
+        .withBodyThatContains(expectedMinimalBody, true)
         .willSucceed();
 
     expect(() => route.call.withSpecificBody(testBody)).toThrow();

@@ -6,7 +6,7 @@ import * as koa from 'koa';
 //@ts-ignore
 import * as cors from 'koa-cors';
 //@ts-ignore
-import * as koaBody from 'koa-body';
+import * as koaBody from 'koa-bodyparser';
 //@ts-ignore
 import * as deepEquals from 'deep-equal';
 //@ts-ignore
@@ -63,7 +63,7 @@ export default class FakeServer {
 
             yield next;
         });
-        app.use(koaBody());
+        app.use(koaBody({enableTypes: ['json', 'form', 'text']}));
         app.use(cors());
         app.use(function*(): Iterator<void> {
             const matched = self.mockedCalls.filter(
@@ -75,6 +75,8 @@ export default class FakeServer {
                     if (!new RegExp(pathRegex).test(this.url)) {
                         return false;
                     }
+
+                    const checkCorrectContentTypeForObject = bodyRestriction.checkCorrectContentTypeForObject !== false;
 
                     const contentTypeIsApplicationJson = this.request.header['content-type'] === 'application/json';
 
@@ -99,13 +101,21 @@ export default class FakeServer {
                             return false;
                         }
                     }
-                    if (
-                        bodyRestriction.minimalObject &&
-                        (!contentTypeIsApplicationJson || !isSubset(this.request.body, bodyRestriction.minimalObject))
-                    ) {
-                        return false;
-                    }
+                    if (bodyRestriction.minimalObject) {
+                        let body: object;
 
+                        if (contentTypeIsApplicationJson) {
+                            body = this.request.body;
+                        } else {
+                            if (checkCorrectContentTypeForObject) {
+                                return false;
+                            }
+
+                            body = JSON.parse(this.request.rawBody);
+                        }
+
+                        return isSubset(body, bodyRestriction.minimalObject);
+                    }
                     if (
                         bodyRestriction.object &&
                         (!contentTypeIsApplicationJson || !deepEquals(this.request.body, bodyRestriction.object))
