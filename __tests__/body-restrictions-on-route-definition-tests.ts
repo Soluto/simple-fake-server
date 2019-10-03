@@ -104,7 +104,7 @@ afterEach(() => {
                 const route = fakeServer.http
                     .post()
                     .to(path)
-                    .withBodyThatContains(expectedMinimalBody)
+                    .withBodyThatContains(expectedMinimalBody, true)
                     [method]();
 
                 const res = await fetch(`http://localhost:${port}${path}`, {
@@ -123,7 +123,7 @@ afterEach(() => {
                 const route = fakeServer.http
                     .post()
                     .to(path)
-                    .withBodyThatContains(expectedMinimalBody)
+                    .withBodyThatContains(expectedMinimalBody, true)
                     [method]();
 
                 const res = await fetch(`http://localhost:${port}${path}`, {
@@ -142,7 +142,7 @@ afterEach(() => {
                 const route = fakeServer.http
                     .post()
                     .to(path)
-                    .withBodyThatContains(expectedMinimalBody)
+                    .withBodyThatContains(expectedMinimalBody, true)
                     [method]();
 
                 const res = await fetch(`http://localhost:${port}${path}`, {
@@ -161,7 +161,7 @@ afterEach(() => {
                 const route = fakeServer.http
                     .post()
                     .to(path)
-                    .withBodyThatContains(expectedMinimalBody)
+                    .withBodyThatContains(expectedMinimalBody, true)
                     [method]();
 
                 const res = await fetch(`http://localhost:${port}${path}`, {
@@ -180,7 +180,7 @@ afterEach(() => {
                 const route = fakeServer.http
                     .post()
                     .to(path)
-                    .withBodyThatContains(expectedMinimalBody)
+                    .withBodyThatContains(expectedMinimalBody, true)
                     [method]();
 
                 const res = await fetch(`http://localhost:${port}${path}`, {
@@ -199,7 +199,7 @@ afterEach(() => {
                 const route = fakeServer.http
                     .post()
                     .to(path)
-                    .withBodyThatContains(expectedMinimalBody)
+                    .withBodyThatContains(expectedMinimalBody, true)
                     [method]();
 
                 const res = await fetch(`http://localhost:${port}${path}`, {
@@ -218,7 +218,7 @@ afterEach(() => {
                 const route = fakeServer.http
                     .post()
                     .to(path)
-                    .withBodyThatContains(expectedMinimalBody)
+                    .withBodyThatContains(expectedMinimalBody, true)
                     [method]();
 
                 const res = await fetch(`http://localhost:${port}${path}`, {
@@ -237,7 +237,7 @@ afterEach(() => {
                 const route = fakeServer.http
                     .post()
                     .to(path)
-                    .withBodyThatContains(expectedMinimalBody)
+                    .withBodyThatContains(expectedMinimalBody, true)
                     [method]();
 
                 const res = await fetch(`http://localhost:${port}${path}`, {

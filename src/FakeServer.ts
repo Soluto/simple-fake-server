@@ -63,7 +63,7 @@ export default class FakeServer {
 
             yield next;
         });
-        app.use(koaBody());
+        app.use(koaBody({enableTypes: ['json', 'form', 'text']}));
         app.use(cors());
         app.use(function*(): Iterator<void> {
             const matched = self.mockedCalls.filter(

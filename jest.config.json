@@ -3,5 +3,6 @@
     "transform": {
         "^.+\\.(ts|tsx)$": "<rootDir>/preprocessor.js"
     },
-    "testMatch": ["**/__tests__/**/*.ts?(x)", "**/?(*.)(spec|test).ts?(x)"]
+    "testMatch": ["**/__tests__/**/*.ts?(x)", "**/?(*.)(spec|test).ts?(x)"],
+    "testURL": "http://localhost/" 
 }
