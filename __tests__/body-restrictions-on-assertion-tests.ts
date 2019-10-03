@@ -17,7 +17,7 @@ afterEach(() => {
 
 // route defined with regex body restriction
 
-test.only('regex restriction, assert on a specific string that matches the regex, request body equals test string - assertion success', async () => {
+test('regex restriction, assert on a specific string that matches the regex, request body equals test string - assertion success', async () => {
     const route = fakeServer.http
         .post()
         .to(path)
