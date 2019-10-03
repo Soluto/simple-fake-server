@@ -18,9 +18,7 @@ export default class RouteCallTester {
     withPath(path: string) {
         if (!new RegExp(this.pathRegex).test(path)) {
             throw new Error(
-                `misuse: withPath() is intended to let you test calls to a specific path within the route's path regex ${
-                    this.pathRegex
-                }. however, you called withPath() with the path ${path}, which does not match the route's path regex.`
+                `misuse: withPath() is intended to let you test calls to a specific path within the route's path regex ${this.pathRegex}. however, you called withPath() with the path ${path}, which does not match the route's path regex.`
             );
         }
 
@@ -37,9 +35,7 @@ export default class RouteCallTester {
         }
         if (this.bodyRestriction.regex && !new RegExp(this.bodyRestriction.regex).test(bodyText)) {
             throw new Error(
-                `misuse: withBodyText() is intended to let you test calls with specific body within the route's body regex ${
-                    this.bodyRestriction.regex
-                }. however, you called withBodyText() with the body ${bodyText}, which does not match the route's body regex.`
+                `misuse: withBodyText() is intended to let you test calls with specific body within the route's body regex ${this.bodyRestriction.regex}. however, you called withBodyText() with the body ${bodyText}, which does not match the route's body regex.`
             );
         }
 
@@ -52,7 +48,7 @@ export default class RouteCallTester {
         if (
             !(
                 numberOfBodyRestrictionKeys === 0 ||
-                (numberOfBodyRestrictionKeys === 1 && this.bodyRestriction.minimalObject)
+                (numberOfBodyRestrictionKeys <= 2 && this.bodyRestriction.minimalObject)
             )
         ) {
             throw new Error(
@@ -61,9 +57,7 @@ export default class RouteCallTester {
         }
         if (this.bodyRestriction.minimalObject && !isSubset(bodyObject, this.bodyRestriction.minimalObject)) {
             throw new Error(
-                `misuse: withSpecificBody() is intended to let you test calls with specific body object within the route's body minimal object ${
-                    this.bodyRestriction.minimalObject
-                }. however, you called withSpecificBody() with the body ${bodyObject}, which does not match the route's body minimal object.`
+                `misuse: withSpecificBody() is intended to let you test calls with specific body object within the route's body minimal object ${this.bodyRestriction.minimalObject}. however, you called withSpecificBody() with the body ${bodyObject}, which does not match the route's body minimal object.`
             );
         }
 
