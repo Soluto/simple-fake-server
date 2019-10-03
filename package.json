@@ -1,6 +1,6 @@
 {
   "name": "simple-fake-server",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "description": "A small, simple http server for mocking and asserting http calls.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
