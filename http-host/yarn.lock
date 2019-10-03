@@ -41,7 +41,7 @@ bytes@3.1.0:
   resolved "https://registry.yarnpkg.com/bytes/-/bytes-3.1.0.tgz#f6cf7933a360e0588fa9fde85651cdc7f805d1f6"
   integrity sha512-zauLjrfCG+xvoyaqLoV8bLVXXNGC4JqlxFCutSDWA6fJrTo2ZuvLYTqZ7aHBLZSMOopbzwv8f+wZcVzfVTI2Dg==
 
-co-body@^5.1.1:
+co-body@^5.1.0:
   version "5.2.0"
   resolved "https://registry.yarnpkg.com/co-body/-/co-body-5.2.0.tgz#5a0a658c46029131e0e3a306f67647302f71c124"
   integrity sha512-sX/LQ7LqUhgyaxzbe7IqwPeTr2yfpfUIQ/dgpKo6ZI4y4lpQA0YxAomWIY+7I7rHWcG02PG+OuPREzMW/5tszQ==
@@ -93,6 +93,11 @@ cookies@~0.7.0:
   dependencies:
     depd "~1.1.2"
     keygrip "~1.0.3"
+
+copy-to@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/copy-to/-/copy-to-2.0.1.tgz#2680fbb8068a48d08656b6098092bdafc906f4a5"
+  integrity sha1-JoD7uAaKSNCGVrYJgJK9r8kG9KU=
 
 core-util-is@~1.0.0:
   version "1.0.2"
@@ -219,11 +224,6 @@ finalhandler@~1.1.2:
     statuses "~1.5.0"
     unpipe "~1.0.0"
 
-formidable@^1.0.17:
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/formidable/-/formidable-1.2.1.tgz#70fb7ca0290ee6ff961090415f4b3df3d2082659"
-  integrity sha512-Fs9VRguL0gqGHkXS5GQiMCr1VhZBxz0JnJs4JmMp/2jL18Fmbzvv7vOFRU+U8TBkHEE/CX1qDXzJplVULgsLeg==
-
 forwarded@~0.1.2:
   version "0.1.2"
   resolved "https://registry.yarnpkg.com/forwarded/-/forwarded-0.1.2.tgz#98c23dab1175657b8c0573e8ceccd91b0ff18c84"
@@ -329,13 +329,13 @@ keygrip@~1.0.3:
   resolved "https://registry.yarnpkg.com/keygrip/-/keygrip-1.0.3.tgz#399d709f0aed2bab0a059e0cdd3a5023a053e1dc"
   integrity sha512-/PpesirAIfaklxUzp4Yb7xBper9MwP6hNRA6BGGUFCgbJ+BM5CKBtsoxinNXkLHAr+GXS1/lSlF2rP7cv5Fl+g==
 
-koa-body@3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/koa-body/-/koa-body-3.0.0.tgz#2c5dadb05d7dd135ea11660a1f25cd5d2037d5f2"
-  integrity sha512-779XtdFb8DcsYR5o3cupdfZFsT5Y70VOVH6mTSl/fB5cvlyzcsnmY6p96bg3CFll9ris5otjwoa2TTvhrd/51g==
+koa-bodyparser@2:
+  version "2.5.0"
+  resolved "https://registry.yarnpkg.com/koa-bodyparser/-/koa-bodyparser-2.5.0.tgz#3eb7243f47998a2e772db05f6dc4e0f4f3ccbdf0"
+  integrity sha1-PrckP0eZii53LbBfbcTg9PPMvfA=
   dependencies:
-    co-body "^5.1.1"
-    formidable "^1.0.17"
+    co-body "^5.1.0"
+    copy-to "^2.0.1"
 
 koa-compose@^2.3.0:
   version "2.5.1"
@@ -599,16 +599,16 @@ setprototypeof@1.1.1:
   resolved "https://registry.yarnpkg.com/setprototypeof/-/setprototypeof-1.1.1.tgz#7e95acb24aa92f5885e0abef5ba131330d4ae683"
   integrity sha512-JvdAWfbXeIGaZ9cILp38HntZSFSo3mWg6xGcJJsd+d4aRMOqauag1C63dJfDw7OaMYwEbHMOxEZ1lqVRYP2OAw==
 
-simple-fake-server@^3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/simple-fake-server/-/simple-fake-server-3.0.0.tgz#7f15a5ddecfb215c518a2448c4933f79b6726b01"
-  integrity sha512-1gtHxiURrRrciSLu3d5e2FEylvmfW0ZqeyePkOHFi4tLFZOCo9MvdlwQN0YaHmCAIEK3Crbps/a2BKQPAJ+Cuw==
+simple-fake-server@^3.1.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/simple-fake-server/-/simple-fake-server-3.1.0.tgz#f999ccc9516f1b9d4addb9dfd65259e108cf9613"
+  integrity sha512-qvPP+4Ml7F5r3nUY9yJImv/9sIcb9YFyzal5ZZM1aPvyQv7I87UiKWwydFgj8Evim8zdJBht+TskZByJpwl66A==
   dependencies:
     deep-equal "1.0.1"
     get-stream "^5.1.0"
     is-subset "0.1.1"
     koa "1.5.1"
-    koa-body "3.0.0"
+    koa-bodyparser "2"
     koa-cors "0.0.16"
     lodash "^4.17.12"
     query-string "5.0.1"
