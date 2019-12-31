@@ -17,7 +17,7 @@ let mockedCalls = {};
 
 app.use(bodyParser.json());
 
-app.post('/fake_server_admin/calls', ({ body: { method: mockedMethod, url: mockedUrl, body: mockedReqBody, query, response: mockedResponse, respondAsJson, statusCode, respondAsStream, responseHeaders, allowSupersetOfBody, checkCorrectContentTypeForObject } }, res) => {
+app.post('/fake_server_admin/calls', ({ body: { method: mockedMethod, url: mockedUrl, body: mockedReqBody, query, response: mockedResponse, respondAsJson, statusCode, respondAsStream, respondAsBuffer, responseHeaders, allowSupersetOfBody, checkCorrectContentTypeForObject } }, res) => {
   console.log(`Simple-Fake-Server got mock call to ${mockedMethod} ${mockedUrl} \n mocked Body : ${mockedReqBody}, mockedStatus: ${statusCode}, mockedResponseHeaders: ${responseHeaders}`);
   const callId = uuid();
   let call;
@@ -53,6 +53,7 @@ app.post('/fake_server_admin/calls', ({ body: { method: mockedMethod, url: mocke
     if (finalResponse) {
       finalResponse = respondAsJson ? JSON.parse(finalResponse) : finalResponse;
       finalResponse = respondAsStream ? intoStream(finalResponse) : finalResponse;
+      finalResponse = respondAsBuffer ? Buffer.from(finalResponse.data) : finalResponse;
     }
     call = mock
       .willReturn(finalResponse, statusCode, responseHeaders);
