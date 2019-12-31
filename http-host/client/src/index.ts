@@ -11,6 +11,7 @@ export type MockOptions = {
     statusCode?: number;
     respondAsStream?: boolean;
     responseHeaders?: Record<string, string>;
+    respondAsBuffer?: boolean;
 };
 
 export type ConnectionOptions = {
@@ -38,6 +39,7 @@ export default class Server {
         respondAsJson,
         statusCode,
         respondAsStream,
+        respondAsBuffer,
         responseHeaders,
     }: MockOptions): Promise<string> {
         const res = await fetch(this.buildUrl('calls'), {
@@ -54,6 +56,7 @@ export default class Server {
                 respondAsJson: respondAsJson || false,
                 statusCode: statusCode || 200,
                 respondAsStream: respondAsStream || false,
+                respondAsBuffer: respondAsBuffer || false,
                 responseHeaders,
             }),
         });
