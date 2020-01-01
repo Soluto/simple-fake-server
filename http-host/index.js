@@ -1,7 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const { FakeServer } = require('simple-fake-server');
-const stream = require('stream');
 const intoStream = require('into-stream');
 const uuid = require('uuid/v4');
 
@@ -15,7 +14,7 @@ fakeServer.start();
 
 let mockedCalls = {};
 
-app.use(bodyParser.json());
+app.use(bodyParser({limit: '10mb'}).json());
 
 app.post('/fake_server_admin/calls', ({ body: { method: mockedMethod, url: mockedUrl, body: mockedReqBody, query, response: mockedResponse, respondAsJson, statusCode, respondAsStream, respondAsBuffer, responseHeaders, allowSupersetOfBody, checkCorrectContentTypeForObject } }, res) => {
   console.log(`Simple-Fake-Server got mock call to ${mockedMethod} ${mockedUrl} \n mocked Body : ${mockedReqBody}, mockedStatus: ${statusCode}, mockedResponseHeaders: ${responseHeaders}`);
