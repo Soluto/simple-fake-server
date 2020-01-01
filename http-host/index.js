@@ -14,7 +14,7 @@ fakeServer.start();
 
 let mockedCalls = {};
 
-app.use(bodyParser({limit: '10mb'}).json());
+app.use(bodyParser.json({limit: '10mb'}));
 
 app.post('/fake_server_admin/calls', ({ body: { method: mockedMethod, url: mockedUrl, body: mockedReqBody, query, response: mockedResponse, respondAsJson, statusCode, respondAsStream, respondAsBuffer, responseHeaders, allowSupersetOfBody, checkCorrectContentTypeForObject } }, res) => {
   console.log(`Simple-Fake-Server got mock call to ${mockedMethod} ${mockedUrl} \n mocked Body : ${mockedReqBody}, mockedStatus: ${statusCode}, mockedResponseHeaders: ${responseHeaders}`);
