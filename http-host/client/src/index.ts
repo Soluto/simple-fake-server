@@ -50,7 +50,7 @@ export default class Server {
             body: JSON.stringify({
                 method: method || 'get',
                 url,
-                query,
+                ...(query && {query: JSON.stringify(query)}),
                 ...(body && {body: JSON.stringify(body)}),
                 ...(response && {response}),
                 respondAsJson: respondAsJson || false,
