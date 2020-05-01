@@ -8,11 +8,12 @@
   "license": "MIT",
   "scripts": {
     "precommit": "lint-staged",
-    "prepare": "npm run build",
+    "prepare": "yarn run snyk-protect && npm run build",
     "build": "rimraf dist && tsc -p tsconfig.json",
     "test": "jest --config jest.config.json",
     "prettify": "prettier --write **/*.ts **/*.tsx",
-    "prepush": "npm run test"
+    "prepush": "npm run test",
+    "snyk-protect": "snyk protect"
   },
   "dependencies": {
     "deep-equal": "1.0.1",
@@ -22,7 +23,8 @@
     "koa-bodyparser": "2",
     "koa-cors": "0.0.16",
     "lodash": "^4.17.12",
-    "query-string": "5.0.1"
+    "query-string": "5.0.1",
+    "snyk": "^1.316.1"
   },
   "devDependencies": {
     "@types/jest": "^22.0.1",
@@ -41,5 +43,6 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/Soluto/simple-fake-server"
-  }
+  },
+  "snyk": true
 }
