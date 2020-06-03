@@ -188,7 +188,7 @@ export default class FakeServer {
         responseHeaders?: Record<string, string>
     ) {
         this.logger(
-            `fakeServer:: registering [${method} ${pathRegex}     body restriction: ${JSON.stringify(
+            `fakeServer:: registering [${method} ${pathRegex}, body restriction: ${JSON.stringify(
                 bodyRestriction
             )}] with status [${statusCode}] and response [${JSON.stringify(response)}]`
         );
@@ -240,6 +240,9 @@ export default class FakeServer {
                         return false;
                     }
                 } else if (call.bodyRestriction.minimalObject) {
+                    this.logger(
+                        `fakeServer:: matching by bodyRestriction.minimalObject: minimalObject=${call.bodyRestriction.minimalObject}, body=${serverCall.body}`
+                    );
                     if (!isSubset(serverCall.body, call.bodyRestriction.minimalObject)) {
                         return false;
                     }
