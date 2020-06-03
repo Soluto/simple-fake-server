@@ -12,6 +12,7 @@ export type MockOptions = {
     respondAsStream?: boolean;
     responseHeaders?: Record<string, string>;
     respondAsBuffer?: boolean;
+    allowSupersetOfBody?: boolean;
 };
 
 export type ConnectionOptions = {
@@ -41,6 +42,7 @@ export default class Server {
         respondAsStream,
         respondAsBuffer,
         responseHeaders,
+        allowSupersetOfBody,
     }: MockOptions): Promise<string> {
         const res = await fetch(this.buildUrl('calls'), {
             method: 'POST',
@@ -58,6 +60,7 @@ export default class Server {
                 respondAsStream: respondAsStream || false,
                 respondAsBuffer: respondAsBuffer || false,
                 responseHeaders,
+                allowSupersetOfBody,
             }),
         });
 
