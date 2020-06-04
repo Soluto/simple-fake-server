@@ -72,6 +72,7 @@ export default class FakeServer {
                 headers: this.request.header,
                 body: this.request.body,
             };
+
             const matched = self.mockedCalls.filter((mockedCall) => self.match(mockedCall)(serverCall));
 
             if (matched.length >= 1) {
@@ -83,7 +84,7 @@ export default class FakeServer {
                 });
                 const firstMatch = matched[matched.length - 1];
                 self.logger(
-                    `fakeServer:: call to [${this.req.method} ${this.url} ${JSON.stringify(
+                    `FakeServer:: call to [${this.req.method} ${this.url} ${JSON.stringify(
                         this.request.body
                     )}]. Respond with status: [${firstMatch.statusCode}], body: [${JSON.stringify(
                         firstMatch.response
@@ -94,7 +95,6 @@ export default class FakeServer {
 
                 this.status = firstMatch.statusCode;
                 this.body = firstMatch.response;
-                console.log('ccccccccc', firstMatch.statusCode);
 
                 if (firstMatch.responseHeaders) {
                     const headers = firstMatch.responseHeaders;
@@ -136,7 +136,7 @@ export default class FakeServer {
         responseHeaders?: Record<string, string>
     ) {
         this.logger(
-            `fakeServer:: registering [${method} ${pathRegex}, body restriction: ${JSON.stringify(
+            `FakeServer:: registering [${method} ${pathRegex}, body restriction: ${JSON.stringify(
                 bodyRestriction
             )}] with status [${statusCode}] and response [${JSON.stringify(response)}]`
         );
@@ -164,25 +164,23 @@ export default class FakeServer {
             const contentTypeIsApplicationJson = serverCall.headers['content-type'] === 'application/json';
             const callBodyAsString = contentTypeIsApplicationJson ? JSON.stringify(serverCall.body) : serverCall.body;
             const {bodyRestriction, queryParamsObject, pathRegex, method} = mockedCall;
+            this.logger(
+                `FakeServer: matching server call with predefined mocked call.
+                 serverCall=${JSON.stringify(serverCall)},
+                 mockedCall=${JSON.stringify(mockedCall)}`
+            );
 
-            this.logger(`FakeServer: trying to match method. method=${method}, serverCallMethod=${serverCall.method}`);
             if (serverCall.method !== method) {
+                this.logger('FakeServer: call was not matched by method');
                 return false;
             }
-            this.logger('FakeServer: call method match');
 
             if (!new RegExp(pathRegex).test(serverCall.path)) {
-                this.logger(
-                    `FakeServer: trying to match call path by regex. pathRegex=${pathRegex}, path=${serverCall.path}`
-                );
+                this.logger('FakeServer: call was not matched by regex');
                 return false;
             }
-            this.logger('FakeServer: call path match by regex');
 
             if (queryParamsObject) {
-                this.logger(
-                    `FakeServer: trying to match call query params. queryParamsObject=${queryParamsObject}, path=${serverCall.path}`
-                );
                 const splitUrl = serverCall.path.split('?');
 
                 if (splitUrl.length < 2) {
@@ -191,9 +189,9 @@ export default class FakeServer {
                 const queryParamsOnUrl = queryString.parse(splitUrl[1]);
 
                 if (!deepEquals(queryParamsOnUrl, mockedCall.queryParamsObject)) {
+                    this.logger('FakeServer: call was not matched by query params');
                     return false;
                 }
-                this.logger('FakeServer: call query params match');
             }
 
             if (contentTypeIsApplicationJson && !bodyRestriction) {
@@ -201,48 +199,31 @@ export default class FakeServer {
             }
 
             if (bodyRestriction?.exactText) {
-                this.logger(
-                    `FakeServer: trying to match call body by exactText. exactText=${bodyRestriction.exactText}, body=${callBodyAsString}`
-                );
                 if (callBodyAsString !== bodyRestriction.exactText) {
+                    this.logger('FakeServer: call body was not matched by exactText');
                     return false;
                 }
-                this.logger('FakeServer: call body matched by exactText');
             }
 
             if (bodyRestriction?.regex) {
-                this.logger(
-                    `FakeServer: trying to match call body by exactText. regex=${bodyRestriction.regex}, body=${callBodyAsString}`
-                );
                 if (!new RegExp(bodyRestriction.regex).test(callBodyAsString)) {
+                    this.logger('FakeServer: call body was not matched by regex');
                     return false;
                 }
-                this.logger('FakeServer: call body matched by regex');
             }
 
-            if (bodyRestriction?.exactObject) {
-                this.logger(
-                    `FakeServer: trying to match call body by exactObject. exactObject=${bodyRestriction.exactObject}, body=${serverCall.body}`
-                );
-                if (!deepEquals(serverCall.body, bodyRestriction.exactObject)) {
+            if (bodyRestriction?.object) {
+                if (!deepEquals(serverCall.body, bodyRestriction.object)) {
+                    this.logger('FakeServer: call body was not matched by exactObject');
                     return false;
                 }
-                this.logger('FakeServer: call body matched by exactObject');
-            }
-
-            if (contentTypeIsApplicationJson) {
             }
 
             if (bodyRestriction?.minimalObject) {
-                this.logger(
-                    `FakeServer: trying to match call body by minimalObject. minimalObject=${bodyRestriction.minimalObject}, body=${serverCall.body}`
-                );
                 if (!isSubset(serverCall.body, bodyRestriction.minimalObject)) {
+                    this.logger('FakeServer: call body was not matched by minimalObject');
                     return false;
                 }
-                console.log('2222222');
-
-                this.logger('FakeServer: call body matched by minimalObject');
             }
 
             return true;
