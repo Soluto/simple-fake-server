@@ -73,6 +73,7 @@ export default class FakeServer {
                 body: this.request.body,
             };
             const matched = self.mockedCalls.filter((mockedCall) => self.match(mockedCall)(serverCall));
+
             if (matched.length >= 1) {
                 self.callHistory.push({
                     method: this.req.method,
@@ -93,6 +94,8 @@ export default class FakeServer {
 
                 this.status = firstMatch.statusCode;
                 this.body = firstMatch.response;
+                console.log('ccccccccc', firstMatch.statusCode);
+
                 if (firstMatch.responseHeaders) {
                     const headers = firstMatch.responseHeaders;
                     Object.keys(headers).forEach((key) => this.response.set(key, headers[key]));
@@ -193,6 +196,10 @@ export default class FakeServer {
                 this.logger('FakeServer: call query params match');
             }
 
+            if (contentTypeIsApplicationJson && !bodyRestriction) {
+                return false;
+            }
+
             if (bodyRestriction?.exactText) {
                 this.logger(
                     `FakeServer: trying to match call body by exactText. exactText=${bodyRestriction.exactText}, body=${callBodyAsString}`
@@ -223,6 +230,9 @@ export default class FakeServer {
                 this.logger('FakeServer: call body matched by exactObject');
             }
 
+            if (contentTypeIsApplicationJson) {
+            }
+
             if (bodyRestriction?.minimalObject) {
                 this.logger(
                     `FakeServer: trying to match call body by minimalObject. minimalObject=${bodyRestriction.minimalObject}, body=${serverCall.body}`
@@ -230,6 +240,8 @@ export default class FakeServer {
                 if (!isSubset(serverCall.body, bodyRestriction.minimalObject)) {
                     return false;
                 }
+                console.log('2222222');
+
                 this.logger('FakeServer: call body matched by minimalObject');
             }
 
