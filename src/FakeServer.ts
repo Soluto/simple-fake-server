@@ -73,7 +73,6 @@ export default class FakeServer {
                 body: this.request.body,
             };
             const matched = self.mockedCalls.filter((mockedCall) => self.match(mockedCall)(serverCall));
-
             if (matched.length >= 1) {
                 const firstMatch = matched[matched.length - 1];
                 self.logger(
@@ -157,15 +156,24 @@ export default class FakeServer {
             const callBodyAsString = contentTypeIsApplicationJson ? JSON.stringify(serverCall.body) : serverCall.body;
             const {bodyRestriction, queryParamsObject, pathRegex, method} = mockedCall;
 
+            this.logger(`FakeServer: trying to match method. method=${method}, serverCallMethod=${serverCall.method}`);
             if (serverCall.method !== method) {
                 return false;
             }
+            this.logger('FakeServer: call method match');
 
             if (!new RegExp(pathRegex).test(serverCall.path)) {
+                this.logger(
+                    `FakeServer: trying to match call path by regex. pathRegex=${pathRegex}, path=${serverCall.path}`
+                );
                 return false;
             }
+            this.logger('FakeServer: call path match by regex');
 
             if (queryParamsObject) {
+                this.logger(
+                    `FakeServer: trying to match call query params. queryParamsObject=${queryParamsObject}, path=${serverCall.path}`
+                );
                 const splitUrl = serverCall.path.split('?');
 
                 if (splitUrl.length < 2) {
@@ -176,34 +184,49 @@ export default class FakeServer {
                 if (!deepEquals(queryParamsOnUrl, mockedCall.queryParamsObject)) {
                     return false;
                 }
+                this.logger('FakeServer: call query params match');
             }
 
             if (bodyRestriction?.exactText) {
+                this.logger(
+                    `FakeServer: trying to match call body by exactText. exactText=${bodyRestriction.exactText}, body=${callBodyAsString}`
+                );
                 if (callBodyAsString !== bodyRestriction.exactText) {
                     return false;
                 }
+                this.logger('FakeServer: call body matched by exactText');
             }
 
             if (bodyRestriction?.regex) {
+                this.logger(
+                    `FakeServer: trying to match call body by exactText. regex=${bodyRestriction.regex}, body=${callBodyAsString}`
+                );
                 if (!new RegExp(bodyRestriction.regex).test(callBodyAsString)) {
                     return false;
                 }
+                this.logger('FakeServer: call body matched by regex');
             }
 
             if (bodyRestriction?.exactObject) {
+                this.logger(
+                    `FakeServer: trying to match call body by exactObject. exactObject=${bodyRestriction.exactObject}, body=${serverCall.body}`
+                );
                 if (!deepEquals(serverCall.body, bodyRestriction.exactObject)) {
                     return false;
                 }
+                this.logger('FakeServer: call body matched by exactObject');
             }
 
             if (bodyRestriction?.minimalObject) {
                 this.logger(
-                    `fakeServer:: matching by bodyRestriction.minimalObject: minimalObject=${bodyRestriction.minimalObject}, body=${serverCall.body}`
+                    `FakeServer: trying to match call body by minimalObject. minimalObject=${bodyRestriction.minimalObject}, body=${serverCall.body}`
                 );
                 if (!isSubset(serverCall.body, bodyRestriction.minimalObject)) {
                     return false;
                 }
+                this.logger('FakeServer: call body matched by minimalObject');
             }
+
             return true;
         };
     }
