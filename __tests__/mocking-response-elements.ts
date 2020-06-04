@@ -29,7 +29,7 @@ describe('Route Matching - willReturn Response Elements', () => {
         expect(fakeServer.hasMade(route.call)).toEqual(true);
     });
 
-    test.only('GET route defined with response as stream', async () => {
+    test('GET route defined with response as stream', async () => {
         const stringTobeStreamed = 'Rivers are huge Streams';
         const bodyAsStream = intoStream(stringTobeStreamed);
         const path = '/somePath';

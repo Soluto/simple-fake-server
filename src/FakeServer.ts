@@ -74,6 +74,12 @@ export default class FakeServer {
             };
             const matched = self.mockedCalls.filter((mockedCall) => self.match(mockedCall)(serverCall));
             if (matched.length >= 1) {
+                self.callHistory.push({
+                    method: this.req.method,
+                    path: this.url,
+                    headers: this.request.header,
+                    body: this.request.body,
+                });
                 const firstMatch = matched[matched.length - 1];
                 self.logger(
                     `fakeServer:: call to [${this.req.method} ${this.url} ${JSON.stringify(
