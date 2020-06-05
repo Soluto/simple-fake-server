@@ -599,10 +599,10 @@ setprototypeof@1.1.1:
   resolved "https://registry.yarnpkg.com/setprototypeof/-/setprototypeof-1.1.1.tgz#7e95acb24aa92f5885e0abef5ba131330d4ae683"
   integrity sha512-JvdAWfbXeIGaZ9cILp38HntZSFSo3mWg6xGcJJsd+d4aRMOqauag1C63dJfDw7OaMYwEbHMOxEZ1lqVRYP2OAw==
 
-simple-fake-server@^3.1.0:
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/simple-fake-server/-/simple-fake-server-3.1.0.tgz#f999ccc9516f1b9d4addb9dfd65259e108cf9613"
-  integrity sha512-qvPP+4Ml7F5r3nUY9yJImv/9sIcb9YFyzal5ZZM1aPvyQv7I87UiKWwydFgj8Evim8zdJBht+TskZByJpwl66A==
+simple-fake-server@^3.2.0:
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/simple-fake-server/-/simple-fake-server-3.2.0.tgz#16694e72a029cd3fd43d8f870149d011b64d7d30"
+  integrity sha512-zWEUksKkq2ImzklydOSzuSyAeJO5SsU+BuzI+B3c4T72pOU64guhqgq3Eorpz+r28NR9gF3rP0+D7Kh7jHTNoQ==
   dependencies:
     deep-equal "1.0.1"
     get-stream "^5.1.0"

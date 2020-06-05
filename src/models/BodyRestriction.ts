@@ -1,8 +1,6 @@
 export type BodyRestriction = {
     regex?: string;
-    minimalObject?: {};
+    partialObject?: {};
     exactText?: string;
-    exactObject?: {};
     object?: {};
-    checkCorrectContentTypeForObject?: boolean;
 };

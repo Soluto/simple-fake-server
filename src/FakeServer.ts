@@ -56,7 +56,7 @@ export default class FakeServer {
         const self = this;
         const app = koa();
 
-        app.use(function*(next: any): Iterator<void> {
+        app.use(function* (next: any): Iterator<void> {
             this.header['content-type'] =
                 this.headers['content-type'] &&
                 this.headers['content-type'].replace(';charset=UTF-8', '').replace(';charset=utf-8', '');
@@ -65,67 +65,15 @@ export default class FakeServer {
         });
         app.use(koaBody({enableTypes: ['json', 'form', 'text']}));
         app.use(cors());
-        app.use(function*(): Iterator<void> {
-            const matched = self.mockedCalls.filter(
-                ({method, pathRegex, queryParamsObject, bodyRestriction = {}}: MockedCall) => {
-                    if (method !== this.req.method) {
-                        return false;
-                    }
+        app.use(function* (): Iterator<void> {
+            const serverCall: Call = {
+                method: this.req.method,
+                path: this.url,
+                headers: this.request.header,
+                body: this.request.body,
+            };
 
-                    if (!new RegExp(pathRegex).test(this.url)) {
-                        return false;
-                    }
-
-                    const checkCorrectContentTypeForObject = bodyRestriction.checkCorrectContentTypeForObject !== false;
-
-                    const contentTypeIsApplicationJson = this.request.header['content-type'] === 'application/json';
-
-                    if (queryParamsObject) {
-                        const splitUrl = this.url.split('?');
-
-                        if (splitUrl.length < 2) {
-                            return false;
-                        }
-                        const queryParamsOnUrl = queryString.parse(splitUrl[1]);
-
-                        if (!deepEquals(queryParamsOnUrl, queryParamsObject)) {
-                            return false;
-                        }
-                    }
-                    if (bodyRestriction.regex) {
-                        const requestBodyAsString = contentTypeIsApplicationJson
-                            ? JSON.stringify(this.request.body)
-                            : this.request.body;
-
-                        if (!new RegExp(bodyRestriction.regex).test(requestBodyAsString)) {
-                            return false;
-                        }
-                    }
-                    if (bodyRestriction.minimalObject) {
-                        let body: object;
-
-                        if (contentTypeIsApplicationJson) {
-                            body = this.request.body;
-                        } else {
-                            if (checkCorrectContentTypeForObject) {
-                                return false;
-                            }
-
-                            body = JSON.parse(this.request.rawBody);
-                        }
-
-                        return isSubset(body, bodyRestriction.minimalObject);
-                    }
-                    if (
-                        bodyRestriction.object &&
-                        (!contentTypeIsApplicationJson || !deepEquals(this.request.body, bodyRestriction.object))
-                    ) {
-                        return false;
-                    }
-
-                    return true;
-                }
-            );
+            const matched = self.mockedCalls.filter((mockedCall) => self.match(mockedCall)(serverCall));
 
             if (matched.length >= 1) {
                 self.callHistory.push({
@@ -135,26 +83,26 @@ export default class FakeServer {
                     body: this.request.body,
                 });
                 const firstMatch = matched[matched.length - 1];
-
                 self.logger(
-                    `fakeServer:: call to [${this.req.method} ${this.url} ${JSON.stringify(
+                    `FakeServer:: call to [${this.req.method} ${this.url} ${JSON.stringify(
                         this.request.body
-                    )}]. Respond with status: [${firstMatch.statusCode}], body: [${JSON.stringify(
-                        firstMatch.response
-                    )}]${
-                        firstMatch.responseHeaders ? ` and headers [${JSON.stringify(firstMatch.responseHeaders)}]` : ''
-                    }`
+                    )}\r\nstatus: ${firstMatch.statusCode}\r\nbody:\r\n${JSON.stringify(firstMatch.response)}\r\n${
+                        firstMatch.responseHeaders ? `headers:\r\n${JSON.stringify(firstMatch.responseHeaders)}` : ''
+                    }\r\n`
                 );
 
                 this.status = firstMatch.statusCode;
                 this.body = firstMatch.response;
+
                 if (firstMatch.responseHeaders) {
                     const headers = firstMatch.responseHeaders;
-                    Object.keys(headers).forEach(key => this.response.set(key, headers[key]));
+                    Object.keys(headers).forEach((key) => this.response.set(key, headers[key]));
                 }
             } else {
                 self.logger(
-                    `fakeServer:: no match for [${this.req.method} ${this.url} ${JSON.stringify(this.request.body)}]`
+                    `FakeServer:: no match found for ${this.req.method} ${this.url}\r\nbody:\r\n${JSON.stringify(
+                        this.request.body
+                    )}]\r\n`
                 );
                 this.status = 400;
                 this.body = `no match for [${this.req.method} ${this.url} ${JSON.stringify(this.request.body)}]`;
@@ -188,9 +136,9 @@ export default class FakeServer {
         responseHeaders?: Record<string, string>
     ) {
         this.logger(
-            `fakeServer:: registering [${method} ${pathRegex}, body restriction: ${JSON.stringify(
+            `FakeServer:: registering ${method} ${pathRegex}\r\nbodyRestriction: ${JSON.stringify(
                 bodyRestriction
-            )}] with status [${statusCode}] and response [${JSON.stringify(response)}]`
+            )}\r\nstatus:${statusCode}\r\nresponse:\r\n${JSON.stringify(response)}\r\n`
         );
         this.mockedCalls.push({
             method,
@@ -204,48 +152,78 @@ export default class FakeServer {
     }
 
     public hasMade(call: MockedCall) {
-        return this.callHistory.get().some(this._getCallMatcher(call));
+        return this.callHistory.get().some(this.match(call));
     }
 
     public callsMade(call: MockedCall) {
-        return this.callHistory.get().filter(this._getCallMatcher(call));
+        return this.callHistory.get().filter(this.match(call));
     }
 
-    private _getCallMatcher(call: MockedCall) {
+    private match(mockedCall: MockedCall) {
         return (serverCall: Call) => {
-            if (serverCall.method !== call.method) {
-                return false;
-            }
-
-            if (!new RegExp(call.pathRegex).test(serverCall.path)) {
-                return false;
-            }
-
             const contentTypeIsApplicationJson = serverCall.headers['content-type'] === 'application/json';
             const callBodyAsString = contentTypeIsApplicationJson ? JSON.stringify(serverCall.body) : serverCall.body;
+            const {bodyRestriction, queryParamsObject, pathRegex, method} = mockedCall;
+            this.logger(
+                `FakeServer: matching server call with predefined mocked call\r\nserverCall:\r\n${JSON.stringify(
+                    serverCall
+                )}\r\nmockedCall:\r\n${JSON.stringify(mockedCall)}`
+            );
 
-            if (call.bodyRestriction) {
-                if (call.bodyRestriction.exactText) {
-                    if (callBodyAsString !== call.bodyRestriction.exactText) {
-                        return false;
-                    }
-                } else if (call.bodyRestriction.regex) {
-                    if (!new RegExp(call.bodyRestriction.regex).test(callBodyAsString)) {
-                        return false;
-                    }
+            if (serverCall.method !== method) {
+                this.logger('FakeServer: call was not matched by method\r\n');
+                return false;
+            }
+
+            if (!new RegExp(pathRegex).test(serverCall.path)) {
+                this.logger('FakeServer: call was not matched by regex\r\n');
+                return false;
+            }
+
+            if (queryParamsObject) {
+                const splitUrl = serverCall.path.split('?');
+
+                if (splitUrl.length < 2) {
+                    return false;
                 }
+                const queryParamsOnUrl = queryString.parse(splitUrl[1]);
 
-                if (call.bodyRestriction.exactObject) {
-                    if (!deepEquals(serverCall.body, call.bodyRestriction.exactObject)) {
-                        return false;
-                    }
-                } else if (call.bodyRestriction.minimalObject) {
-                    this.logger(
-                        `fakeServer:: matching by bodyRestriction.minimalObject: minimalObject=${call.bodyRestriction.minimalObject}, body=${serverCall.body}`
-                    );
-                    if (!isSubset(serverCall.body, call.bodyRestriction.minimalObject)) {
-                        return false;
-                    }
+                if (!deepEquals(queryParamsOnUrl, mockedCall.queryParamsObject)) {
+                    this.logger('FakeServer: call was not matched by query params\r\n');
+                    return false;
+                }
+            }
+
+            if (contentTypeIsApplicationJson && !bodyRestriction) {
+                this.logger('FakeServer: call body is json but content type is not application/json\r\n');
+                return false;
+            }
+
+            if (bodyRestriction?.exactText) {
+                if (callBodyAsString !== bodyRestriction.exactText) {
+                    this.logger('FakeServer: call body was not matched by exactText\r\n');
+                    return false;
+                }
+            }
+
+            if (bodyRestriction?.regex) {
+                if (!new RegExp(bodyRestriction.regex).test(callBodyAsString)) {
+                    this.logger('FakeServer: call body was not matched by regex\r\n');
+                    return false;
+                }
+            }
+
+            if (bodyRestriction?.object) {
+                if (!deepEquals(serverCall.body, bodyRestriction.object)) {
+                    this.logger('FakeServer: call body was not matched by object\r\n');
+                    return false;
+                }
+            }
+
+            if (bodyRestriction?.partialObject) {
+                if (!isSubset(serverCall.body, bodyRestriction.partialObject)) {
+                    this.logger('FakeServer: call body was not matched by partialObject\r\n');
+                    return false;
                 }
             }
 

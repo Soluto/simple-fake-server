@@ -18,10 +18,7 @@ afterEach(() => {
 describe('Route Matching - willReturn Response Elements', () => {
     test('GET route defined with mocked body and response headers', async () => {
         const path = '/somePath';
-        const route = fakeServer.http
-            .get()
-            .to(path)
-            .willReturn({name: 'Cloud'}, 200, {imontop: 'Of The World'});
+        const route = fakeServer.http.get().to(path).willReturn({name: 'Cloud'}, 200, {imontop: 'Of The World'});
 
         const res = await fetch(`http://localhost:${port}${path}`, {method: 'GET'});
         const body = await res.json();
@@ -36,10 +33,7 @@ describe('Route Matching - willReturn Response Elements', () => {
         const stringTobeStreamed = 'Rivers are huge Streams';
         const bodyAsStream = intoStream(stringTobeStreamed);
         const path = '/somePath';
-        const route = fakeServer.http
-            .get()
-            .to(path)
-            .willReturn(bodyAsStream);
+        const route = fakeServer.http.get().to(path).willReturn(bodyAsStream);
 
         const res = await fetch(`http://localhost:${port}${path}`, {method: 'GET'});
         expect(res.headers.get('content-type')).toEqual('application/octet-stream');

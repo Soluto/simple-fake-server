@@ -1,6 +1,6 @@
 {
   "name": "simple-fake-server",
-  "version": "3.1.2",
+  "version": "3.2.0",
   "description": "A small, simple http server for mocking and asserting http calls.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -11,7 +11,7 @@
     "prepare": "npm run build",
     "build": "rimraf dist && tsc -p tsconfig.json",
     "test": "jest --config jest.config.json",
-    "prettify": "prettier --write **/*.ts **/*.tsx",
+    "format": "prettier --write **/*.ts **/*.tsx",
     "prepush": "npm run test"
   },
   "dependencies": {
@@ -33,10 +33,10 @@
     "jest": "^22.1.4",
     "lint-staged": "^6.0.1",
     "node-fetch": "^1.7.3",
-    "prettier": "^1.10.2",
+    "prettier": "^2.0.5",
     "rimraf": "^2.6.2",
     "ts-jest": "^22.0.1",
-    "typescript": "^2.6.2"
+    "typescript": "^3.9.3"
   },
   "repository": {
     "type": "git",

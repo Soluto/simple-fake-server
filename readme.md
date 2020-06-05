@@ -97,8 +97,8 @@ const withBodyRoute = fakeServer.http.post().to('/some/path').withBody({ a: 1, b
 Will match only requests with body that match the given **regex**.  
 i.e. route defined with `withBodyThatMatches('[a-zA-Z]+$')` will accept request body `abc` but will reject `123`.
 
-* **`withBodyThatContains(minimalBody: object)`**   
-Will match only requests with content-type header set to 'application/json' and bodies that are *supersets* of the given minimal body.  
+* **`withBodyThatContains(partialObject: object)`**   
+Will match only requests with content-type header set to 'application/json' and bodies that are *supersets* of the given body.
 i.e. route defined with `withBodyThatContains({ a: 1, b: 2 })` will accept request body `{ a: 1, b: 2, c: 3}`.
 
 * **`withQueryParams(queryParams: object)`**   
