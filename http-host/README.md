@@ -21,7 +21,7 @@ This is a small server to host a [simple-fake-server](https://github.com/Soluto/
     ports:
       - '3000:3000'
   fake-server:
-    image: simple-fake-server-server:latest
+    image: soluto/simple-fake-server:latest
     ports:
       - '3001:3000' # management port for tests
 ```
