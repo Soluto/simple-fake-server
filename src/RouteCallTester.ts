@@ -48,19 +48,19 @@ export default class RouteCallTester {
         if (
             !(
                 numberOfBodyRestrictionKeys === 0 ||
-                (numberOfBodyRestrictionKeys <= 2 && this.bodyRestriction.minimalObject)
+                (numberOfBodyRestrictionKeys <= 2 && this.bodyRestriction.partialObject)
             )
         ) {
             throw new Error(
-                'misuse: withSpecificBody() be called only if route was defined with a body minimal object or with no body restrictions'
+                'misuse: withSpecificBody() be called only if route was defined with a body partial object or with no body restrictions'
             );
         }
-        if (this.bodyRestriction.minimalObject && !isSubset(bodyObject, this.bodyRestriction.minimalObject)) {
+        if (this.bodyRestriction.partialObject && !isSubset(bodyObject, this.bodyRestriction.partialObject)) {
             throw new Error(
-                `misuse: withSpecificBody() is intended to let you test calls with specific body object within the route's body minimal object ${this.bodyRestriction.minimalObject}. however, you called withSpecificBody() with the body ${bodyObject}, which does not match the route's body minimal object.`
+                `misuse: withSpecificBody() is intended to let you test calls with specific body object within the route's body partial object ${this.bodyRestriction.partialObject}. however, you called withSpecificBody() with the body ${bodyObject}, which does not match the route's body partial object.`
             );
         }
 
-        return new RouteCallTester(this.method, this.pathRegex, {...this.bodyRestriction, exactObject: bodyObject});
+        return new RouteCallTester(this.method, this.pathRegex, {...this.bodyRestriction, object: bodyObject});
     }
 }

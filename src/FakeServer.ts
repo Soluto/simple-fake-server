@@ -215,14 +215,14 @@ export default class FakeServer {
 
             if (bodyRestriction?.object) {
                 if (!deepEquals(serverCall.body, bodyRestriction.object)) {
-                    this.logger('FakeServer: call body was not matched by exactObject\r\n');
+                    this.logger('FakeServer: call body was not matched by object\r\n');
                     return false;
                 }
             }
 
-            if (bodyRestriction?.minimalObject) {
-                if (!isSubset(serverCall.body, bodyRestriction.minimalObject)) {
-                    this.logger('FakeServer: call body was not matched by minimalObject\r\n');
+            if (bodyRestriction?.partialObject) {
+                if (!isSubset(serverCall.body, bodyRestriction.partialObject)) {
+                    this.logger('FakeServer: call body was not matched by partialObject\r\n');
                     return false;
                 }
             }

@@ -63,13 +63,13 @@ test('regex restriction, assert on a specific object - exception', () => {
     expect(() => route.call.withSpecificBody({})).toThrow();
 });
 
-// route defined with minimal object body restriction
+// route defined with partial object body restriction
 
-test('minimal object restriction, assert on a specific object that matches the minimal object, request body equals test object - assertion success', async () => {
-    const expectedMinimalBody = {a: 1};
+test('partial object restriction, assert on a specific object that matches the partial object, request body equals test object - assertion success', async () => {
+    const expectedPartialBody = {a: 1};
     const actualBody = {a: 1, b: 2};
     const testBody = {a: 1, b: 2};
-    const route = fakeServer.http.post().to(path).withBodyThatContains(expectedMinimalBody, true).willSucceed();
+    const route = fakeServer.http.post().to(path).withBodyThatContains(expectedPartialBody).willSucceed();
 
     await fetch(`http://localhost:${port}${path}`, {
         method: 'POST',
@@ -80,11 +80,11 @@ test('minimal object restriction, assert on a specific object that matches the m
     expect(fakeServer.hasMade(route.call.withSpecificBody(testBody))).toEqual(true);
 });
 
-test.skip('minimal object restriction, assert on a specific object that matches the minimal object, request body does not equal test object (but matches minimal object) - assertion fails', async () => {
-    const expectedMinimalBody = {a: 1};
+test('partial object restriction, assert on a specific object that matches the partial object, request body does not equal test object (but matches partial object) - assertion fails', async () => {
+    const expectedPartialBody = {a: 1};
     const actualBody = {a: 1, b: 2};
     const testBody = {a: 1};
-    const route = fakeServer.http.post().to(path).withBodyThatContains(expectedMinimalBody, true).willSucceed();
+    const route = fakeServer.http.post().to(path).withBodyThatContains(expectedPartialBody).willSucceed();
 
     await fetch(`http://localhost:${port}${path}`, {
         method: 'POST',
@@ -95,21 +95,21 @@ test.skip('minimal object restriction, assert on a specific object that matches 
     expect(fakeServer.hasMade(route.call.withSpecificBody(testBody))).toEqual(false);
 });
 
-test('minimal object restriction, assert on a specific object that does not match the minimal object - exception', () => {
-    const expectedMinimalBody = {a: 1};
+test('partial object restriction, assert on a specific object that does not match the partial object - exception', () => {
+    const expectedPartialBody = {a: 1};
     const testBody = {b: 2};
-    const route = fakeServer.http.post().to(path).withBodyThatContains(expectedMinimalBody, true).willSucceed();
+    const route = fakeServer.http.post().to(path).withBodyThatContains(expectedPartialBody).willSucceed();
 
     expect(() => route.call.withSpecificBody(testBody)).toThrow();
 });
 
-test('minimal object restriction, passing something other than object to specific object method - exception', () => {
+test('partial object restriction, passing something other than object to specific object method - exception', () => {
     const route = fakeServer.http.post().to(path).withBodyThatContains({a: 1}).willSucceed();
 
     expect(() => route.call.withSpecificBody('')).toThrow();
 });
 
-test('minimal object restriction, assert on a specific string - exception', () => {
+test('partial object restriction, assert on a specific string - exception', () => {
     const route = fakeServer.http.post().to(path).withBodyThatContains({}).willSucceed();
 
     expect(() => route.call.withBodyText('')).toThrow();
@@ -173,7 +173,7 @@ test('no body restriction, assert on a specific object, application/json header 
     expect(fakeServer.hasMade(route.call.withSpecificBody(testBody))).toEqual(true);
 });
 
-test.skip('no body restriction, assert on a specific object, no application/json header, request body equals test object - assertion fails', async () => {
+test('no body restriction, assert on a specific object, no application/json header, request body equals test object - assertion fails', async () => {
     const actualBody = {a: 1, b: 2};
     const testBody = {a: 1, b: 2};
     const route = fakeServer.http.post().to(path).willSucceed();
