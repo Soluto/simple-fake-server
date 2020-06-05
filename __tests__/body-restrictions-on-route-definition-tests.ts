@@ -87,7 +87,7 @@ afterEach(() => {
         test('partial object restriction, request has "application/json", request body is equal to the body route object - match', async () => {
             const expectedPartialBody = {a: 1, b: 2};
             const actualBody = {a: 1, b: 2};
-            const route = fakeServer.http.post().to(path).withBodyThatContains(expectedPartialBody, true)[method]();
+            const route = fakeServer.http.post().to(path).withBodyThatContains(expectedPartialBody)[method]();
 
             const res = await fetch(`http://localhost:${port}${path}`, {
                 method: 'POST',
@@ -102,7 +102,7 @@ afterEach(() => {
         test('partial object restriction, request has "application/json", request body is equal to the body route object but with different property order - match', async () => {
             const expectedPartialBody = {a: 1, b: 2};
             const actualBody = {b: 2, a: 1};
-            const route = fakeServer.http.post().to(path).withBodyThatContains(expectedPartialBody, true)[method]();
+            const route = fakeServer.http.post().to(path).withBodyThatContains(expectedPartialBody)[method]();
 
             const res = await fetch(`http://localhost:${port}${path}`, {
                 method: 'POST',
@@ -117,7 +117,7 @@ afterEach(() => {
         test('partial object restriction, request has "application/json", request body is a superset of the body route object - match', async () => {
             const expectedPartialBody = {a: 1, b: 2};
             const actualBody = {a: 1, b: 2, c: 3};
-            const route = fakeServer.http.post().to(path).withBodyThatContains(expectedPartialBody, true)[method]();
+            const route = fakeServer.http.post().to(path).withBodyThatContains(expectedPartialBody)[method]();
 
             const res = await fetch(`http://localhost:${port}${path}`, {
                 method: 'POST',
@@ -132,7 +132,7 @@ afterEach(() => {
         test('partial object restriction, request has "application/json", request body is not a superset of the body route object - no match', async () => {
             const expectedPartialBody = {a: 1, b: 2};
             const actualBody = {x: 1, y: 2};
-            const route = fakeServer.http.post().to(path).withBodyThatContains(expectedPartialBody, true)[method]();
+            const route = fakeServer.http.post().to(path).withBodyThatContains(expectedPartialBody)[method]();
 
             const res = await fetch(`http://localhost:${port}${path}`, {
                 method: 'POST',
@@ -162,7 +162,7 @@ afterEach(() => {
         test('partial object restriction, request has "application/json", request body is not a superset of the body route object (different value) - no match', async () => {
             const expectedPartialBody = {a: 1, b: 2};
             const actualBody = {a: 1, b: 1};
-            const route = fakeServer.http.post().to(path).withBodyThatContains(expectedPartialBody, true)[method]();
+            const route = fakeServer.http.post().to(path).withBodyThatContains(expectedPartialBody)[method]();
 
             const res = await fetch(`http://localhost:${port}${path}`, {
                 method: 'POST',
@@ -177,7 +177,7 @@ afterEach(() => {
         test('partial object restriction, request has "application/json", request body cannot be parsed to an object - no match', async () => {
             const expectedPartialBody = {a: 1, b: 2};
             const actualBody = 'abc';
-            const route = fakeServer.http.post().to(path).withBodyThatContains(expectedPartialBody, true)[method]();
+            const route = fakeServer.http.post().to(path).withBodyThatContains(expectedPartialBody)[method]();
 
             const res = await fetch(`http://localhost:${port}${path}`, {
                 method: 'POST',
@@ -192,7 +192,7 @@ afterEach(() => {
         test('partial object restriction, request does not have "application/json" - no match', async () => {
             const expectedPartialBody = {a: 1, b: 2};
             const actualBody = {a: 1, b: 2};
-            const route = fakeServer.http.post().to(path).withBodyThatContains(expectedPartialBody, true)[method]();
+            const route = fakeServer.http.post().to(path).withBodyThatContains(expectedPartialBody)[method]();
 
             const res = await fetch(`http://localhost:${port}${path}`, {
                 method: 'POST',
