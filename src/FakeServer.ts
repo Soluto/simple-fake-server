@@ -57,7 +57,7 @@ export default class FakeServer {
         const self = this;
         const app = koa();
 
-        app.use(function*(next: any): Iterator<void> {
+        app.use(function* (next: any): Iterator<void> {
             this.header['content-type'] =
                 this.headers['content-type'] &&
                 this.headers['content-type'].replace(';charset=UTF-8', '').replace(';charset=utf-8', '');
@@ -66,7 +66,7 @@ export default class FakeServer {
         });
         app.use(koaBody());
         app.use(cors());
-        app.use(function*(): Iterator<void> {
+        app.use(function* (): Iterator<void> {
             const matched = self.mockedCalls.filter(
                 ({method, pathRegex, queryParamsObject, bodyRestriction = {}}: MockedCall) => {
                     if (method !== this.req.method) {
@@ -75,7 +75,7 @@ export default class FakeServer {
 
                     if (!new RegExp(pathRegex).test(this.url)) {
                         return false;
-                    }
+                    } //d
 
                     const contentTypeIsApplicationJson = this.request.header['content-type'] === 'application/json';
 
