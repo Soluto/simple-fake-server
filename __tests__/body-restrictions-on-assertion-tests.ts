@@ -18,7 +18,7 @@ afterEach(() => {
 // route defined with regex body restriction
 
 test('regex restriction, assert on a specific string that matches the regex, request body equals test string - assertion success', async () => {
-    const route = fakeServer.http.post().to(path).withBodyThatMatches(lettersRegex).willSucceed();
+    const route = fakeServer.post().to(path).withBodyThatMatches(lettersRegex).willSucceed();
     const actualBody = 'abc';
     const testString = 'abc';
 
@@ -32,7 +32,7 @@ test('regex restriction, assert on a specific string that matches the regex, req
 });
 
 test('regex restriction, assert on a specific string that matches the regex, request body does not equal test string (but matches regex) - assertion success', async () => {
-    const route = fakeServer.http.post().to(path).withBodyThatMatches(lettersRegex).willSucceed();
+    const route = fakeServer.post().to(path).withBodyThatMatches(lettersRegex).willSucceed();
     const actualBody = 'abc';
     const testString = 'def';
 
@@ -46,19 +46,19 @@ test('regex restriction, assert on a specific string that matches the regex, req
 });
 
 test('regex restriction, assert on a specific string that does not match the regex - exception', () => {
-    const route = fakeServer.http.post().to(path).withBodyThatMatches(lettersRegex).willSucceed();
+    const route = fakeServer.post().to(path).withBodyThatMatches(lettersRegex).willSucceed();
 
     expect(() => route.call.withBodyText('123')).toThrow();
 });
 
 test('regex restriction, passing something other than string to specific string method - exception', () => {
-    const route = fakeServer.http.post().to(path).withBodyThatMatches(lettersRegex).willSucceed();
+    const route = fakeServer.post().to(path).withBodyThatMatches(lettersRegex).willSucceed();
 
     expect(() => route.call.withBodyText({} as string)).toThrow();
 });
 
 test('regex restriction, assert on a specific object - exception', () => {
-    const route = fakeServer.http.post().to(path).withBodyThatMatches(lettersRegex).willSucceed();
+    const route = fakeServer.post().to(path).withBodyThatMatches(lettersRegex).willSucceed();
 
     expect(() => route.call.withSpecificBody({})).toThrow();
 });
@@ -69,7 +69,7 @@ test('partial object restriction, assert on a specific object that matches the p
     const expectedPartialBody = {a: 1};
     const actualBody = {a: 1, b: 2};
     const testBody = {a: 1, b: 2};
-    const route = fakeServer.http.post().to(path).withBodyThatContains(expectedPartialBody).willSucceed();
+    const route = fakeServer.post().to(path).withBodyThatContains(expectedPartialBody).willSucceed();
 
     await fetch(`http://localhost:${port}${path}`, {
         method: 'POST',
@@ -84,7 +84,7 @@ test('partial object restriction, assert on a specific object that matches the p
     const expectedPartialBody = {a: 1};
     const actualBody = {a: 1, b: 2};
     const testBody = {a: 1};
-    const route = fakeServer.http.post().to(path).withBodyThatContains(expectedPartialBody).willSucceed();
+    const route = fakeServer.post().to(path).withBodyThatContains(expectedPartialBody).willSucceed();
 
     await fetch(`http://localhost:${port}${path}`, {
         method: 'POST',
@@ -98,19 +98,19 @@ test('partial object restriction, assert on a specific object that matches the p
 test('partial object restriction, assert on a specific object that does not match the partial object - exception', () => {
     const expectedPartialBody = {a: 1};
     const testBody = {b: 2};
-    const route = fakeServer.http.post().to(path).withBodyThatContains(expectedPartialBody).willSucceed();
+    const route = fakeServer.post().to(path).withBodyThatContains(expectedPartialBody).willSucceed();
 
     expect(() => route.call.withSpecificBody(testBody)).toThrow();
 });
 
 test('partial object restriction, passing something other than object to specific object method - exception', () => {
-    const route = fakeServer.http.post().to(path).withBodyThatContains({a: 1}).willSucceed();
+    const route = fakeServer.post().to(path).withBodyThatContains({a: 1}).willSucceed();
 
     expect(() => route.call.withSpecificBody('')).toThrow();
 });
 
 test('partial object restriction, assert on a specific string - exception', () => {
-    const route = fakeServer.http.post().to(path).withBodyThatContains({}).willSucceed();
+    const route = fakeServer.post().to(path).withBodyThatContains({}).willSucceed();
 
     expect(() => route.call.withBodyText('')).toThrow();
 });
@@ -118,13 +118,13 @@ test('partial object restriction, assert on a specific string - exception', () =
 // route defined with object body restriction
 
 test('object restriction, assert on a specific string - exception', () => {
-    const route = fakeServer.http.post().to(path).withBody({}).willSucceed();
+    const route = fakeServer.post().to(path).withBody({}).willSucceed();
 
     expect(() => route.call.withBodyText('')).toThrow();
 });
 
 test('object restriction, assert on a specific object (again) - exception', () => {
-    const route = fakeServer.http.post().to(path).withBody({}).willSucceed();
+    const route = fakeServer.post().to(path).withBody({}).willSucceed();
 
     expect(() => route.call.withSpecificBody({})).toThrow();
 });
@@ -132,7 +132,7 @@ test('object restriction, assert on a specific object (again) - exception', () =
 // route defined with no body restriction
 
 test('no body restriction, assert on a specific string, application/json header, request body equals test string - assertion success', async () => {
-    const route = fakeServer.http.post().to(path).willSucceed();
+    const route = fakeServer.post().to(path).willSucceed();
     const actualBody = {a: 1};
     const testString = JSON.stringify({a: 1});
 
@@ -146,7 +146,7 @@ test('no body restriction, assert on a specific string, application/json header,
 });
 
 test('no body restriction, assert on a specific string, no application/json header, request body equals test string - assertion success', async () => {
-    const route = fakeServer.http.post().to(path).willSucceed();
+    const route = fakeServer.post().to(path).willSucceed();
     const actualBody = 'abc';
     const testString = 'abc';
 
@@ -162,7 +162,7 @@ test('no body restriction, assert on a specific string, no application/json head
 test('no body restriction, assert on a specific object, application/json header request body equals test object - assertion success', async () => {
     const actualBody = {a: 1, b: 2};
     const testBody = {a: 1, b: 2};
-    const route = fakeServer.http.post().to(path).willSucceed();
+    const route = fakeServer.post().to(path).willSucceed();
 
     await fetch(`http://localhost:${port}${path}`, {
         method: 'POST',
@@ -176,7 +176,7 @@ test('no body restriction, assert on a specific object, application/json header 
 test('no body restriction, assert on a specific object, no application/json header, request body equals test object - assertion fails', async () => {
     const actualBody = {a: 1, b: 2};
     const testBody = {a: 1, b: 2};
-    const route = fakeServer.http.post().to(path).willSucceed();
+    const route = fakeServer.post().to(path).willSucceed();
 
     await fetch(`http://localhost:${port}${path}`, {
         method: 'POST',

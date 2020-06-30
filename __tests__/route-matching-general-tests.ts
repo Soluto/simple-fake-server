@@ -20,7 +20,7 @@ afterEach(() => {
     describe(`Route Matching - ${method}`, () => {
         test('GET route defined, one call matches and two dont, callsMade returns only the matching call', async () => {
             const path = '/somePath';
-            const route = fakeServer.http.get().to(path)[method]();
+            const route = fakeServer.get().to(path)[method]();
 
             await fetch(`http://localhost:${port}${path}`, {method: 'GET'});
             await fetch(`http://localhost:${port}${path}`, {method: 'PUT'});
@@ -31,7 +31,7 @@ afterEach(() => {
 
         test('GET route defined and called - match', async () => {
             const path = '/somePath';
-            const route = fakeServer.http.get().to(path)[method]();
+            const route = fakeServer.get().to(path)[method]();
 
             const res = await fetch(`http://localhost:${port}${path}`, {method: 'GET'});
 
@@ -42,7 +42,7 @@ afterEach(() => {
         test('GET route with query params - match', async () => {
             const path = '/someQueryPath';
             const queryObject = {k1: 'v1', k2: 'v2'};
-            const route = fakeServer.http.get().to(path).withQueryParams(queryObject)[method]();
+            const route = fakeServer.get().to(path).withQueryParams(queryObject)[method]();
 
             const queryParams = '?k1=v1&k2=v2';
 
@@ -55,7 +55,7 @@ afterEach(() => {
         test('GET route with extra query params - no match', async () => {
             const path = '/someQueryPath';
             const queryObject = {k1: 'v1'};
-            const route = fakeServer.http.get().to(path).withQueryParams(queryObject)[method]();
+            const route = fakeServer.get().to(path).withQueryParams(queryObject)[method]();
 
             const queryParams = '?k1=v1&k2=v2';
 
@@ -68,7 +68,7 @@ afterEach(() => {
         test('GET route with wrong query params - no match', async () => {
             const path = '/someQueryPath';
             const queryObject = {k1: 'v1', k2: 'v2'};
-            const route = fakeServer.http.get().to(path).withQueryParams(queryObject)[method]();
+            const route = fakeServer.get().to(path).withQueryParams(queryObject)[method]();
 
             const wrongQueryParams = '?k1=v1&k3=v3';
 
@@ -81,7 +81,7 @@ afterEach(() => {
         test('GET route with partial query params - no match', async () => {
             const path = '/someQueryPath';
             const queryObject = {k1: 'v1', k2: 'v2'};
-            const route = fakeServer.http.get().to(path).withQueryParams(queryObject)[method]();
+            const route = fakeServer.get().to(path).withQueryParams(queryObject)[method]();
 
             const wrongQueryParams = '?k1=v1';
 
@@ -94,7 +94,7 @@ afterEach(() => {
         test('GET route with no query params and with query restrictions - no match', async () => {
             const path = '/someQueryPath';
             const queryObject = {k1: 'v1', k2: 'v2'};
-            const route = fakeServer.http.get().to(path).withQueryParams(queryObject)[method]();
+            const route = fakeServer.get().to(path).withQueryParams(queryObject)[method]();
 
             const res = await fetch(`http://localhost:${port}${path}`, {method: 'GET'});
 
@@ -104,7 +104,7 @@ afterEach(() => {
 
         test('GET route with query paraysm without specifying query restrictions -  match', async () => {
             const path = '/someQueryPath';
-            const route = fakeServer.http.get().to(path)[method]();
+            const route = fakeServer.get().to(path)[method]();
 
             const queryParams = '?k1=v1&k3=v3';
 
@@ -116,7 +116,7 @@ afterEach(() => {
 
         test('DELETE route defined and called - match', async () => {
             const path = '/somePath';
-            const route = fakeServer.http.delete().to(path)[method]();
+            const route = fakeServer.delete().to(path)[method]();
 
             const res = await fetch(`http://localhost:${port}${path}`, {method: 'DELETE'});
 
@@ -126,7 +126,7 @@ afterEach(() => {
 
         test('PUT route defined and called - match', async () => {
             const path = '/somePath';
-            const route = fakeServer.http.put().to(path)[method]();
+            const route = fakeServer.put().to(path)[method]();
 
             const res = await fetch(`http://localhost:${port}${path}`, {method: 'PUT'});
 
@@ -136,7 +136,7 @@ afterEach(() => {
 
         test('PATCH route defined and called - match', async () => {
             const path = '/somePath';
-            const route = fakeServer.http.patch().to(path)[method]();
+            const route = fakeServer.patch().to(path)[method]();
 
             const res = await fetch(`http://localhost:${port}${path}`, {method: 'PATCH'});
 
@@ -146,7 +146,7 @@ afterEach(() => {
 
         test('route defined and not called - no match', () => {
             const path = '/somePath';
-            const route = fakeServer.http.get().to(path)[method]();
+            const route = fakeServer.get().to(path)[method]();
 
             expect(fakeServer.hasMade(route.call)).toEqual(false);
         });
@@ -154,7 +154,7 @@ afterEach(() => {
         test('route defined with path regex - asserting on specific path that matches the regex - assertion success', async () => {
             const pathRegex = '/[a-zA-Z]+$';
             const actualPath = '/somePathThatMatchesTheRegex';
-            const route = fakeServer.http.get().to(pathRegex)[method]();
+            const route = fakeServer.get().to(pathRegex)[method]();
 
             const res = await fetch(`http://localhost:${port}${actualPath}`, {method: 'GET'});
 
@@ -165,7 +165,7 @@ afterEach(() => {
         test('route defined with path regex - asserting on specific path that does not match the path regex - throws', () => {
             const pathRegex = '/[0-9]+$';
             const pathThatDoesNotMatchTheRegex = '/pathThatDoesNotMatchTheRegex';
-            const route = fakeServer.http.get().to(pathRegex)[method]();
+            const route = fakeServer.get().to(pathRegex)[method]();
 
             expect(() => route.call.withPath(pathThatDoesNotMatchTheRegex)).toThrow();
         });
@@ -175,7 +175,7 @@ afterEach(() => {
             const actualPath = '/somePath';
             const bodyRegex = '[0-9]+$';
             const actualBody = '123';
-            const route = fakeServer.http.post().to(pathRegex).withBodyThatMatches(bodyRegex)[method]();
+            const route = fakeServer.post().to(pathRegex).withBodyThatMatches(bodyRegex)[method]();
 
             const res = await fetch(`http://localhost:${port}${actualPath}`, {
                 method: 'POST',
@@ -193,7 +193,7 @@ afterEach(() => {
 describe('Route Matching - willReturn', () => {
     test('GET route defined with default status code and called - match', async () => {
         const path = '/somePath';
-        const route = fakeServer.http.get().to(path).willReturn({name: 'Morty'});
+        const route = fakeServer.get().to(path).willReturn({name: 'Morty'});
 
         const res = await fetch(`http://localhost:${port}${path}`, {method: 'GET'});
         const body = await res.json();
@@ -205,7 +205,7 @@ describe('Route Matching - willReturn', () => {
 
     test('GET route defined with custom status code and called - match', async () => {
         const path = '/somePath';
-        const route = fakeServer.http.get().to(path).willReturn({name: 'Teapot'}, 418);
+        const route = fakeServer.get().to(path).willReturn({name: 'Teapot'}, 418);
 
         const res = await fetch(`http://localhost:${port}${path}`, {method: 'GET'});
         const body = await res.json();
@@ -221,7 +221,7 @@ describe('Route Matching - willReturn', () => {
         const bodyRegex = '[0-9]+$';
         const actualBody = '123';
         const requestBody = 'body as string';
-        const route = fakeServer.http.post().to(pathRegex).withBodyThatMatches(bodyRegex).willReturn(requestBody, 300);
+        const route = fakeServer.post().to(pathRegex).withBodyThatMatches(bodyRegex).willReturn(requestBody, 300);
 
         const res = await fetch(`http://localhost:${port}${actualPath}`, {
             method: 'POST',

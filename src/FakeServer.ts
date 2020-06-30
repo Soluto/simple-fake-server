@@ -27,7 +27,7 @@ export type MockedCall = {
 };
 
 export default class FakeServer {
-    public http: FakeHttpCalls;
+    private http: FakeHttpCalls;
     private callHistory: CallHistory;
     private mockedCalls: MockedCall[];
     private port: number;
@@ -46,6 +46,26 @@ export default class FakeServer {
         this.tls = tls;
         this.http = new FakeHttpCalls(this);
         this.logger = logger;
+    }
+
+    public get() {
+        return this.http.get();
+    }
+
+    public post() {
+        return this.http.post();
+    }
+
+    public put() {
+        return this.http.put();
+    }
+
+    public delete() {
+        return this.http.delete();
+    }
+
+    public patch() {
+        return this.http.patch();
     }
 
     public start() {
