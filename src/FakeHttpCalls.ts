@@ -19,7 +19,7 @@ export interface FakeRoute {
     call: RouteCallTester;
 }
 
-export interface FakeHttpMethod {
+export interface FakeHttpMethod extends With {
     to(pathRegex: string): With;
 }
 
@@ -30,30 +30,32 @@ export default class FakeHttpCalls {
         this.fakeServer = fakeServer;
     }
 
-    public post(): FakeHttpMethod {
-        return this.create('POST');
+    public post(pathRegex?: string): FakeHttpMethod {
+        return this.create('POST', pathRegex);
     }
 
     // tslint:disable-next-line:no-reserved-keywords
-    public get(): FakeHttpMethod {
-        return this.create('GET');
+    public get(pathRegex?: string): FakeHttpMethod {
+        return this.create('GET', pathRegex);
     }
 
-    public put(): FakeHttpMethod {
-        return this.create('PUT');
+    public put(pathRegex?: string): FakeHttpMethod {
+        return this.create('PUT', pathRegex);
     }
 
-    public patch(): FakeHttpMethod {
-        return this.create('PATCH');
+    public patch(pathRegex?: string): FakeHttpMethod {
+        return this.create('PATCH', pathRegex);
     }
 
     // tslint:disable-next-line:no-reserved-keywords
-    public delete(): FakeHttpMethod {
-        return this.create('DELETE');
+    public delete(pathRegex?: string): FakeHttpMethod {
+        return this.create('DELETE', pathRegex);
     }
 
     private will(method: string, pathRegex: string, bodyRestriction: BodyRestriction, queryParamsObject?: {}): Will {
-        const fakeRoute: FakeRoute = {call: new RouteCallTester(method, pathRegex, bodyRestriction, queryParamsObject)};
+        const fakeRoute: FakeRoute = {
+            call: new RouteCallTester(method, pathRegex, bodyRestriction, queryParamsObject),
+        };
 
         return {
             willReturn: (
@@ -110,15 +112,20 @@ export default class FakeHttpCalls {
         };
     }
 
-    private create(method: string): FakeHttpMethod {
+    private create(method: string, pathRegex?: string): FakeHttpMethod {
         return {
-            to: (pathRegex: string): With => ({
-                ...this.withBodyThatMatches(method, pathRegex),
-                ...this.withBodyThatContains(method, pathRegex),
-                ...this.withBody(method, pathRegex),
-                ...this.withQueryParams(method, pathRegex),
-                ...this.will(method, pathRegex, {}),
+            to: (path: string): With => ({
+                ...this.withBodyThatMatches(method, path),
+                ...this.withBodyThatContains(method, path),
+                ...this.withBody(method, path),
+                ...this.withQueryParams(method, path),
+                ...this.will(method, path, {}),
             }),
+            ...this.withBodyThatMatches(method, pathRegex || ''),
+            ...this.withBodyThatContains(method, pathRegex || ''),
+            ...this.withBody(method, pathRegex || ''),
+            ...this.withQueryParams(method, pathRegex || ''),
+            ...this.will(method, pathRegex || '', {}),
         };
     }
 }

@@ -48,6 +48,26 @@ export default class FakeServer {
         this.logger = logger;
     }
 
+    public get(pathRegex?: string) {
+        return this.http.get(pathRegex);
+    }
+
+    public post(pathRegex?: string) {
+        return this.http.post(pathRegex);
+    }
+
+    public put(pathRegex?: string) {
+        return this.http.put(pathRegex);
+    }
+
+    public delete(pathRegex?: string) {
+        return this.http.delete(pathRegex);
+    }
+
+    public patch(pathRegex?: string) {
+        return this.http.patch(pathRegex);
+    }
+
     public start() {
         if (this.server) {
             return;
