@@ -20,7 +20,7 @@ afterEach(() => {
     {method: 'willFail', defaultStatus: 500, useNewApi: true},
 ].forEach(({method, defaultStatus, useNewApi}) => {
     describe(`Route Matching - ${method}`, () => {
-        test('GET route defined, one call matches and two dont, callsMade returns only the matching call', async () => {
+        test('GET route defined, one call matches and two dont, callsReceived returns only the matching call', async () => {
             const path = '/somePath';
             let route;
             if (useNewApi) {
@@ -33,7 +33,7 @@ afterEach(() => {
             await fetch(`http://localhost:${port}${path}`, {method: 'PUT'});
             await fetch(`http://localhost:${port}${path}`, {method: 'POST'});
 
-            expect(fakeServer.callsMade(route.call).length).toEqual(1);
+            expect(fakeServer.callsReceived(route.call).length).toEqual(1);
         });
 
         test('GET route defined and called - match', async () => {

@@ -183,6 +183,10 @@ export default class FakeServer {
         return this.callHistory.get().filter(this.match(call));
     }
 
+    public callsReceived(call: MockedCall) {
+        return this.callHistory.get().filter(this.match(call));
+    }
+
     private match(mockedCall: MockedCall) {
         return (serverCall: Call) => {
             const contentTypeIsApplicationJson = serverCall.headers['content-type'] === 'application/json';

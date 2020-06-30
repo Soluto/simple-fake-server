@@ -43,9 +43,9 @@ afterEach(() => {
             expect(res.status).toEqual(defaultStatus);
             expect(fakeServer.didReceive(route.call)).toEqual(true);
 
-            const callsMade = fakeServer.callsMade(route.call);
-            expect(callsMade[0].path).toEqual(path);
-            expect(callsMade[0].body).toEqual(actualBody);
+            const callsReceived = fakeServer.callsReceived(route.call);
+            expect(callsReceived[0].path).toEqual(path);
+            expect(callsReceived[0].body).toEqual(actualBody);
         });
 
         test('regex restriction, request has "application/json", request body matches regex - match', async () => {

@@ -141,12 +141,12 @@ await fetch('/your/api', {method: 'GET'});
 console.log(fakeServer.didReceive(route.call)); // true
 ```
 
--   **`callsMade(routeCallTester: RouteCallTester)`**  
-    Returns an array of all calls made that match the provided route.  
+-   **`callsReceived(routeCallTester: RouteCallTester)`**  
+    Returns an array of all calls received that match the provided route.  
     Each entry of the array is an object containing `method`, `path`, `headers` and `body`.
 
 -   **`clearCallHistory()`**  
-    Self explanatory. After calling clearCallHistory didReceive will always return false and callsMade will always return an empty array until the next call is made.
+    Self explanatory. After calling clearCallHistory didReceive will always return false and callsReceived will always return an empty array until the next call is made.
 
 ### Assertion Constrains
 
