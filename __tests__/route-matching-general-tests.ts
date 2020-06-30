@@ -48,7 +48,7 @@ afterEach(() => {
             const res = await fetch(`http://localhost:${port}${path}`, {method: 'GET'});
 
             expect(res.status).toEqual(defaultStatus);
-            expect(fakeServer.hasMade(route.call)).toEqual(true);
+            expect(fakeServer.didReceive(route.call)).toEqual(true);
         });
 
         test('GET route with query params - match', async () => {
@@ -67,7 +67,7 @@ afterEach(() => {
             const res = await fetch(`http://localhost:${port}${path}${queryParams}`, {method: 'GET'});
 
             expect(res.status).toEqual(defaultStatus);
-            expect(fakeServer.hasMade(route.call)).toEqual(true);
+            expect(fakeServer.didReceive(route.call)).toEqual(true);
         });
 
         test('GET route with extra query params - no match', async () => {
@@ -85,7 +85,7 @@ afterEach(() => {
             const res = await fetch(`http://localhost:${port}${path}${queryParams}`, {method: 'GET'});
 
             expect(res.status).toEqual(400);
-            expect(fakeServer.hasMade(route.call)).toEqual(false);
+            expect(fakeServer.didReceive(route.call)).toEqual(false);
         });
 
         test('GET route with wrong query params - no match', async () => {
@@ -103,7 +103,7 @@ afterEach(() => {
             const res = await fetch(`http://localhost:${port}${path}${wrongQueryParams}`, {method: 'GET'});
 
             expect(res.status).toEqual(400);
-            expect(fakeServer.hasMade(route.call)).toEqual(false);
+            expect(fakeServer.didReceive(route.call)).toEqual(false);
         });
 
         test('GET route with partial query params - no match', async () => {
@@ -121,7 +121,7 @@ afterEach(() => {
             const res = await fetch(`http://localhost:${port}${path}${wrongQueryParams}`, {method: 'GET'});
 
             expect(res.status).toEqual(400);
-            expect(fakeServer.hasMade(route.call)).toEqual(false);
+            expect(fakeServer.didReceive(route.call)).toEqual(false);
         });
 
         test('GET route with no query params and with query restrictions - no match', async () => {
@@ -137,7 +137,7 @@ afterEach(() => {
             const res = await fetch(`http://localhost:${port}${path}`, {method: 'GET'});
 
             expect(res.status).toEqual(400);
-            expect(fakeServer.hasMade(route.call)).toEqual(false);
+            expect(fakeServer.didReceive(route.call)).toEqual(false);
         });
 
         test('GET route with query paraysm without specifying query restrictions -  match', async () => {
@@ -155,7 +155,7 @@ afterEach(() => {
             const res = await fetch(`http://localhost:${port}${path}${queryParams}`, {method: 'GET'});
 
             expect(res.status).toEqual(defaultStatus);
-            expect(fakeServer.hasMade(route.call)).toEqual(true);
+            expect(fakeServer.didReceive(route.call)).toEqual(true);
         });
 
         test('DELETE route defined and called - match', async () => {
@@ -171,7 +171,7 @@ afterEach(() => {
             const res = await fetch(`http://localhost:${port}${path}`, {method: 'DELETE'});
 
             expect(res.status).toEqual(defaultStatus);
-            expect(fakeServer.hasMade(route.call)).toEqual(true);
+            expect(fakeServer.didReceive(route.call)).toEqual(true);
         });
 
         test('PUT route defined and called - match', async () => {
@@ -187,7 +187,7 @@ afterEach(() => {
             const res = await fetch(`http://localhost:${port}${path}`, {method: 'PUT'});
 
             expect(res.status).toEqual(defaultStatus);
-            expect(fakeServer.hasMade(route.call)).toEqual(true);
+            expect(fakeServer.didReceive(route.call)).toEqual(true);
         });
 
         test('PATCH route defined and called - match', async () => {
@@ -203,7 +203,7 @@ afterEach(() => {
             const res = await fetch(`http://localhost:${port}${path}`, {method: 'PATCH'});
 
             expect(res.status).toEqual(defaultStatus);
-            expect(fakeServer.hasMade(route.call)).toEqual(true);
+            expect(fakeServer.didReceive(route.call)).toEqual(true);
         });
 
         test('route defined and not called - no match', () => {
@@ -216,7 +216,7 @@ afterEach(() => {
                 route = fakeServer.get().to(path)[method]();
             }
 
-            expect(fakeServer.hasMade(route.call)).toEqual(false);
+            expect(fakeServer.didReceive(route.call)).toEqual(false);
         });
 
         test('route defined with path regex - asserting on specific path that matches the regex - assertion success', async () => {
@@ -233,7 +233,7 @@ afterEach(() => {
             const res = await fetch(`http://localhost:${port}${actualPath}`, {method: 'GET'});
 
             expect(res.status).toEqual(defaultStatus);
-            expect(fakeServer.hasMade(route.call.withPath(actualPath))).toEqual(true);
+            expect(fakeServer.didReceive(route.call.withPath(actualPath))).toEqual(true);
         });
 
         test('route defined with path regex - asserting on specific path that does not match the path regex - throws', () => {
@@ -270,8 +270,8 @@ afterEach(() => {
             });
 
             expect(res.status).toEqual(defaultStatus);
-            expect(fakeServer.hasMade(route.call.withPath(actualPath).withBodyText(actualBody))).toEqual(true);
-            expect(fakeServer.hasMade(route.call.withBodyText(actualBody).withPath(actualPath))).toEqual(true);
+            expect(fakeServer.didReceive(route.call.withPath(actualPath).withBodyText(actualBody))).toEqual(true);
+            expect(fakeServer.didReceive(route.call.withBodyText(actualBody).withPath(actualPath))).toEqual(true);
         });
     });
 });
@@ -293,7 +293,7 @@ afterEach(() => {
 
             expect(body.name).toEqual('Morty');
             expect(res.status).toEqual(200);
-            expect(fakeServer.hasMade(route.call)).toEqual(true);
+            expect(fakeServer.didReceive(route.call)).toEqual(true);
         });
 
         test('GET route defined with custom status code and called - match', async () => {
@@ -311,7 +311,7 @@ afterEach(() => {
 
             expect(body.name).toEqual('Teapot');
             expect(res.status).toEqual(418);
-            expect(fakeServer.hasMade(route.call)).toEqual(true);
+            expect(fakeServer.didReceive(route.call)).toEqual(true);
         });
 
         test('route defined with path and body regex - chaining assertions, specific path and body match path and body regex - assertion success', async () => {
@@ -337,8 +337,8 @@ afterEach(() => {
 
             expect(res.status).toEqual(300);
             expect(body).toEqual(requestBody);
-            expect(fakeServer.hasMade(route.call.withPath(actualPath).withBodyText(actualBody))).toEqual(true);
-            expect(fakeServer.hasMade(route.call.withBodyText(actualBody).withPath(actualPath))).toEqual(true);
+            expect(fakeServer.didReceive(route.call.withPath(actualPath).withBodyText(actualBody))).toEqual(true);
+            expect(fakeServer.didReceive(route.call.withBodyText(actualBody).withPath(actualPath))).toEqual(true);
         });
     });
 });

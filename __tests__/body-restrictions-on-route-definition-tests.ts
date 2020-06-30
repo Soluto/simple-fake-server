@@ -41,7 +41,7 @@ afterEach(() => {
             });
 
             expect(res.status).toEqual(defaultStatus);
-            expect(fakeServer.hasMade(route.call)).toEqual(true);
+            expect(fakeServer.didReceive(route.call)).toEqual(true);
 
             const callsMade = fakeServer.callsMade(route.call);
             expect(callsMade[0].path).toEqual(path);
@@ -65,7 +65,7 @@ afterEach(() => {
             });
 
             expect(res.status).toEqual(defaultStatus);
-            expect(fakeServer.hasMade(route.call)).toEqual(true);
+            expect(fakeServer.didReceive(route.call)).toEqual(true);
         });
 
         test('route defined with regex body restriction, request body does not match regex - no match', async () => {
@@ -85,7 +85,7 @@ afterEach(() => {
             });
 
             expect(res.status).toEqual(400);
-            expect(fakeServer.hasMade(route.call)).toEqual(false);
+            expect(fakeServer.didReceive(route.call)).toEqual(false);
         });
 
         test('route defined with regex body restriction, request has "application/json", request body does not match regex - no match', async () => {
@@ -105,7 +105,7 @@ afterEach(() => {
             });
 
             expect(res.status).toEqual(400);
-            expect(fakeServer.hasMade(route.call)).toEqual(false);
+            expect(fakeServer.didReceive(route.call)).toEqual(false);
         });
 
         // route defined with partial object body restriction
@@ -128,7 +128,7 @@ afterEach(() => {
             });
 
             expect(res.status).toEqual(defaultStatus);
-            expect(fakeServer.hasMade(route.call)).toEqual(true);
+            expect(fakeServer.didReceive(route.call)).toEqual(true);
         });
 
         test('partial object restriction, request has "application/json", request body is equal to the body route object but with different property order - match', async () => {
@@ -149,7 +149,7 @@ afterEach(() => {
             });
 
             expect(res.status).toEqual(defaultStatus);
-            expect(fakeServer.hasMade(route.call)).toEqual(true);
+            expect(fakeServer.didReceive(route.call)).toEqual(true);
         });
 
         test('partial object restriction, request has "application/json", request body is a superset of the body route object - match', async () => {
@@ -170,7 +170,7 @@ afterEach(() => {
             });
 
             expect(res.status).toEqual(defaultStatus);
-            expect(fakeServer.hasMade(route.call)).toEqual(true);
+            expect(fakeServer.didReceive(route.call)).toEqual(true);
         });
 
         test('partial object restriction, request has "application/json", request body is not a superset of the body route object - no match', async () => {
@@ -191,7 +191,7 @@ afterEach(() => {
             });
 
             expect(res.status).toEqual(400);
-            expect(fakeServer.hasMade(route.call)).toEqual(false);
+            expect(fakeServer.didReceive(route.call)).toEqual(false);
         });
 
         test('partial object restriction, request has "application/json", request body is not a superset of the body route object (missing property) - no match', async () => {
@@ -211,7 +211,7 @@ afterEach(() => {
             });
 
             expect(res.status).toEqual(400);
-            expect(fakeServer.hasMade(route.call)).toEqual(false);
+            expect(fakeServer.didReceive(route.call)).toEqual(false);
         });
 
         test('partial object restriction, request has "application/json", request body is not a superset of the body route object (different value) - no match', async () => {
@@ -232,7 +232,7 @@ afterEach(() => {
             });
 
             expect(res.status).toEqual(400);
-            expect(fakeServer.hasMade(route.call)).toEqual(false);
+            expect(fakeServer.didReceive(route.call)).toEqual(false);
         });
 
         test('partial object restriction, request has "application/json", request body cannot be parsed to an object - no match', async () => {
@@ -252,7 +252,7 @@ afterEach(() => {
             });
 
             expect(res.status).toEqual(400);
-            expect(fakeServer.hasMade(route.call)).toEqual(false);
+            expect(fakeServer.didReceive(route.call)).toEqual(false);
         });
 
         test('partial object restriction, request does not have "application/json" - no match', async () => {
@@ -272,7 +272,7 @@ afterEach(() => {
             });
 
             expect(res.status).toEqual(400);
-            expect(fakeServer.hasMade(route.call)).toEqual(false);
+            expect(fakeServer.didReceive(route.call)).toEqual(false);
         });
 
         // route defined with object body restriction
@@ -295,7 +295,7 @@ afterEach(() => {
             });
 
             expect(res.status).toEqual(defaultStatus);
-            expect(fakeServer.hasMade(route.call)).toEqual(true);
+            expect(fakeServer.didReceive(route.call)).toEqual(true);
         });
 
         test('object restriction, request has "application/json", request body is equal to the body route object but with different property order - match', async () => {
@@ -315,7 +315,7 @@ afterEach(() => {
             });
 
             expect(res.status).toEqual(defaultStatus);
-            expect(fakeServer.hasMade(route.call)).toEqual(true);
+            expect(fakeServer.didReceive(route.call)).toEqual(true);
         });
 
         test('object restriction, request has "application/json", request body is a superset of the body route object - no match', async () => {
@@ -335,7 +335,7 @@ afterEach(() => {
             });
 
             expect(res.status).toEqual(400);
-            expect(fakeServer.hasMade(route.call)).toEqual(false);
+            expect(fakeServer.didReceive(route.call)).toEqual(false);
         });
 
         test('object restriction, request has "application/json", request body is a subset of the body route object - no match', async () => {
@@ -355,7 +355,7 @@ afterEach(() => {
             });
 
             expect(res.status).toEqual(400);
-            expect(fakeServer.hasMade(route.call)).toEqual(false);
+            expect(fakeServer.didReceive(route.call)).toEqual(false);
         });
 
         test('object restriction, request has "application/json", request body is different than the body route object - no match', async () => {
@@ -375,7 +375,7 @@ afterEach(() => {
             });
 
             expect(res.status).toEqual(400);
-            expect(fakeServer.hasMade(route.call)).toEqual(false);
+            expect(fakeServer.didReceive(route.call)).toEqual(false);
         });
 
         test('object restriction, request has "application/json", request body cannot be parsed to an object - no match', async () => {
@@ -395,7 +395,7 @@ afterEach(() => {
             });
 
             expect(res.status).toEqual(400);
-            expect(fakeServer.hasMade(route.call)).toEqual(false);
+            expect(fakeServer.didReceive(route.call)).toEqual(false);
         });
 
         test('object restriction, request does not have "application/json" - no match', async () => {
@@ -415,7 +415,7 @@ afterEach(() => {
             });
 
             expect(res.status).toEqual(400);
-            expect(fakeServer.hasMade(route.call)).toEqual(false);
+            expect(fakeServer.didReceive(route.call)).toEqual(false);
         });
 
         // route defined with no body restriction
@@ -431,7 +431,7 @@ afterEach(() => {
             const res = await fetch(`http://localhost:${port}${path}`, {method: 'POST'});
 
             expect(res.status).toEqual(defaultStatus);
-            expect(fakeServer.hasMade(route.call)).toEqual(true);
+            expect(fakeServer.didReceive(route.call)).toEqual(true);
         });
 
         test('no body restriction, request has "application/json", request body empty - match', async () => {
@@ -448,7 +448,7 @@ afterEach(() => {
             });
 
             expect(res.status).toEqual(defaultStatus);
-            expect(fakeServer.hasMade(route.call)).toEqual(true);
+            expect(fakeServer.didReceive(route.call)).toEqual(true);
         });
 
         test('no body restriction, request body not empty - match', async () => {
@@ -466,7 +466,7 @@ afterEach(() => {
             });
 
             expect(res.status).toEqual(defaultStatus);
-            expect(fakeServer.hasMade(route.call)).toEqual(true);
+            expect(fakeServer.didReceive(route.call)).toEqual(true);
         });
 
         test('no body restriction, request has "application/json", request body not empty - match', async () => {
@@ -484,7 +484,7 @@ afterEach(() => {
             });
 
             expect(res.status).toEqual(defaultStatus);
-            expect(fakeServer.hasMade(route.call)).toEqual(true);
+            expect(fakeServer.didReceive(route.call)).toEqual(true);
         });
 
         test('defining 2 routes with the same path with restrictions, make a call that matches only one - success + match', async () => {
@@ -505,8 +505,8 @@ afterEach(() => {
             });
 
             expect(res.status).toEqual(defaultStatus);
-            expect(fakeServer.hasMade(route1.call)).toEqual(false);
-            expect(fakeServer.hasMade(route2.call)).toEqual(true);
+            expect(fakeServer.didReceive(route1.call)).toEqual(false);
+            expect(fakeServer.didReceive(route2.call)).toEqual(true);
         });
     });
 });
