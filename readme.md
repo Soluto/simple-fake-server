@@ -8,10 +8,9 @@ A small, simple http server for mocking and asserting http calls.
 -   [Usage Example](#usage-example)
 -   [Defining Fake Routes](#defining-routes)
 -   [Running Inside a Docker Container](#Running-Inside-a-Docker-Container)
-
-    -   [Supported HTTP Methods](#supported-http-methods)
-    -   [Response](#response)
-    -   [Route Restrictions](#route-restrictions)
+-   [Supported HTTP Methods](#supported-http-methods)
+-   [Response](#response)
+-   [Route Restrictions](#route-restrictions)
 -   [Assertions](#assertions)
     -   [Assertion Methods](#assertion-methods)
     -   [Assertion Constrains](#assertion-constrains)
