@@ -1,11 +1,14 @@
 # simple-fake-server
 
+
 A small, simple http server for mocking and asserting http calls.
+
 
 -   [Installation](#installation)
 -   [Usage Example](#usage-example)
 -   [Defining Fake Routes](#defining-routes)
 -   [Running Inside a Docker Container](#Running-Inside-a-Docker-Container)
+
     -   [Supported HTTP Methods](#supported-http-methods)
     -   [Response](#response)
     -   [Route Restrictions](#route-restrictions)
@@ -41,7 +44,7 @@ describe('Test Example', () => {
 
         expect(response.status).toEqual(200);
         expect(body.message).toEqual("hello world");
-        expect(fakeServer.hasMade(route.call)).toEqual(true);
+        expect(fakeServer.didReceive(route.call)).toEqual(true);
     });
 
     after(() => {
@@ -93,6 +96,7 @@ Chaining more than one restriction will result in an error.
 
 ```js
 const withBodyRoute = fakeServer.post('/some/path').withBody({a: 1, b: 2}).willSucceed();
+    Will match only requests with content-type header set to 'application/json' and bodies that are objects that **deeply equal** the given body:
 
 // Request to /some/path with body { a: 1, b: 2 } => Success, 200 status code.
 // Request to /some/path with body { a: 1, b: 2, c: 3 } => Fail, 400 status code.
@@ -108,12 +112,13 @@ const withBodyRoute = fakeServer.post('/some/path').withBody({a: 1, b: 2}).willS
 
 -   **`withQueryParams(queryParams: object)`**  
     Will only match requests that match the query params set on `queryParams`.  
-    i.e. route defined with `withQueryParams({ someQuery: true })` will match requests to `some/path?someQuery=true` but will reject `some/path?someQuery=false` or `some/path?someQuery=true&other=something`.
 
+    i.e. route defined with `withQueryParams({ someQuery: true })` will match requests to `some/path?someQuery=true` but will reject `some/path?someQuery=false` or `some/path?someQuery=true&other=something`.
 <br/><br/>
 NOTES:
 
--   A request that failed to fulfill a restriction will return 400 and will result in false when asserting with `hasMade` (more on this on the next section).
+
+-   A request that failed to fulfill a restriction will return 400 and will result in false when asserting with `didReceive` (more on this on the next section).
 -   When setting 2 or more routes with the same path, but with different body restrictions, it's enough to fulfill just 1 of the restrictions to get a match.
 
 ## Assertions
@@ -130,7 +135,7 @@ const routeCallTester = route.call;
 
 FakeServer instance exposes 3 methods that can be helpful for your tests assertions.
 
--   **`hasMade(routeCallTester: RouteCallTester)`**  
+-   **`didReceive(routeCallTester: RouteCallTester)`**  
     Returns true/false, based on whether this route was called since the server was started.  
     Usage example:
 
@@ -142,30 +147,31 @@ await fetch('http://localhost:1234/your/api', {method: 'GET'});
 console.log(fakeServer.hasMade(route.call)); // true
 ```
 
--   **`callsMade(routeCallTester: RouteCallTester)`**  
-    Returns an array of all calls made that match the provided route.  
+-   **`callsReceived(routeCallTester: RouteCallTester)`**  
+    Returns an array of all calls received that match the provided route.  
     Each entry of the array is an object containing `method`, `path`, `headers` and `body`.
 
 -   **`clearCallHistory()`**  
     After calling clearCallHistory hasMade will always return false and callsMade will always return an empty array until the next call is made.
 
+
 ### Assertion Constrains
 
-It's possible to add a constraint to the routeCallTester. It's useful when the route was defined with a regex or a body restriction and you want to assert the specific details the route was called with.
+It's possible to add a constrain to the routeCallTester. It's useful when the route was defined with a regex or a body restriction and you want to make sure _exactly_ what was the route called with.
 
 -   **`withPath(specificPath: string)`**  
-    Useful when defining a route with regex and you'd like to assert a specific path was called.  
+    Comes useful when defining a route with regex and you'd like to assert a specific path was called.  
     Usage example:
 
 ```js
-const route = fakeServer.get('/some/path/[a-zA-Z]+$').willSucceed();
 await fetch('/some/path/xyz', {method: 'GET'});
 
-console.log(fakeServer.hasMade(route.call.withPath('/some/path/xyz'))); // true
-console.log(fakeServer.hasMade(route.call.withPath('/some/path/abc'))); // false
+console.log(fakeServer.didReceive(route.call.withPath('/some/path/xyz'))); // true
+console.log(fakeServer.didReceive(route.call.withPath('/some/path/abc'))); // false
 ```
 
 -   **`withBodyText(text: string)`**  
+
     Useful when defining a route with `withBodyThatMatches` using regex and you'd like to assert a specific body text.
 
 -   **`withSpecificBody(body: object)`**  
