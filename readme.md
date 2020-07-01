@@ -96,7 +96,6 @@ Chaining more than one restriction will result in an error.
 
 ```js
 const withBodyRoute = fakeServer.post('/some/path').withBody({a: 1, b: 2}).willSucceed();
-    Will match only requests with content-type header set to 'application/json' and bodies that are objects that **deeply equal** the given body:
 
 // Request to /some/path with body { a: 1, b: 2 } => Success, 200 status code.
 // Request to /some/path with body { a: 1, b: 2, c: 3 } => Fail, 400 status code.
@@ -160,7 +159,7 @@ console.log(fakeServer.hasMade(route.call)); // true
 It's possible to add a constrain to the routeCallTester. It's useful when the route was defined with a regex or a body restriction and you want to make sure _exactly_ what was the route called with.
 
 -   **`withPath(specificPath: string)`**  
-    Comes useful when defining a route with regex and you'd like to assert a specific path was called.  
+    Useful when defining a route with regex and you'd like to assert a specific path was called.  
     Usage example:
 
 ```js
