@@ -35,7 +35,7 @@ afterEach(() => {
                 body: actualBody,
             });
 
-            expect(fakeServer.hasMade(route.call.withBodyText(testString))).toEqual(true);
+            expect(fakeServer.didReceive(route.call.withBodyText(testString))).toEqual(true);
         });
 
         test('regex restriction, assert on a specific string that matches the regex, request body does not equal test string (but matches regex) - assertion success', async () => {
@@ -54,7 +54,7 @@ afterEach(() => {
                 body: actualBody,
             });
 
-            expect(fakeServer.hasMade(route.call.withBodyText(testString))).toEqual(false);
+            expect(fakeServer.didReceive(route.call.withBodyText(testString))).toEqual(false);
         });
 
         test('regex restriction, assert on a specific string that does not match the regex - exception', () => {
@@ -110,7 +110,7 @@ afterEach(() => {
                 body: JSON.stringify(actualBody),
             });
 
-            expect(fakeServer.hasMade(route.call.withSpecificBody(testBody))).toEqual(true);
+            expect(fakeServer.didReceive(route.call.withSpecificBody(testBody))).toEqual(true);
         });
 
         test('partial object restriction, assert on a specific object that matches the partial object, request body does not equal test object (but matches partial object) - assertion fails', async () => {
@@ -130,7 +130,7 @@ afterEach(() => {
                 body: JSON.stringify(actualBody),
             });
 
-            expect(fakeServer.hasMade(route.call.withSpecificBody(testBody))).toEqual(false);
+            expect(fakeServer.didReceive(route.call.withSpecificBody(testBody))).toEqual(false);
         });
 
         test('partial object restriction, assert on a specific object that does not match the partial object - exception', () => {
@@ -212,7 +212,7 @@ afterEach(() => {
                 body: JSON.stringify(actualBody),
             });
 
-            expect(fakeServer.hasMade(route.call.withBodyText(testString))).toEqual(true);
+            expect(fakeServer.didReceive(route.call.withBodyText(testString))).toEqual(true);
         });
 
         test('no body restriction, assert on a specific string, no application/json header, request body equals test string - assertion success', async () => {
@@ -233,7 +233,7 @@ afterEach(() => {
                 body: actualBody,
             });
 
-            expect(fakeServer.hasMade(route.call.withBodyText(testString))).toEqual(true);
+            expect(fakeServer.didReceive(route.call.withBodyText(testString))).toEqual(true);
         });
 
         test('no body restriction, assert on a specific object, application/json header request body equals test object - assertion success', async () => {
@@ -253,7 +253,7 @@ afterEach(() => {
                 body: JSON.stringify(actualBody),
             });
 
-            expect(fakeServer.hasMade(route.call.withSpecificBody(testBody))).toEqual(true);
+            expect(fakeServer.didReceive(route.call.withSpecificBody(testBody))).toEqual(true);
         });
 
         test('no body restriction, assert on a specific object, no application/json header, request body equals test object - assertion fails', async () => {
@@ -273,7 +273,7 @@ afterEach(() => {
                 body: JSON.stringify(actualBody),
             });
 
-            expect(fakeServer.hasMade(route.call.withSpecificBody(testBody))).toEqual(false);
+            expect(fakeServer.didReceive(route.call.withSpecificBody(testBody))).toEqual(false);
         });
     });
 });

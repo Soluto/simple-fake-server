@@ -175,7 +175,15 @@ export default class FakeServer {
         return this.callHistory.get().some(this.match(call));
     }
 
+    public didReceive(call: MockedCall) {
+        return this.hasMade(call);
+    }
+
     public callsMade(call: MockedCall) {
+        return this.callHistory.get().filter(this.match(call));
+    }
+
+    public callsReceived(call: MockedCall) {
         return this.callHistory.get().filter(this.match(call));
     }
 
