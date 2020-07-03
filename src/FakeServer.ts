@@ -28,7 +28,7 @@ export type MockedCall = {
 
 export default class FakeServer {
     public http: FakeHttpCalls;
-    private callHistory: CallHistory;
+    public callHistory: CallHistory;
     private mockedCalls: MockedCall[];
     private port: number;
     private tls: boolean;
