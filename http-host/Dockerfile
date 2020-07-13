@@ -8,4 +8,4 @@ RUN yarn
 
 COPY . .
 
-CMD [ "node", "index.js" ]
+CMD [ "yarn", "start" ]
