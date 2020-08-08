@@ -1,9 +1,9 @@
-# simple-fake-server-server-client
-This is a the client library to use with `simple-fake-server-server`.
+# simple-fake-server-host-client
+This is a the client library to use with `simple-fake-server-host`.
 
 ## Example
 ```typescript
-import Server from 'simple-fake-server-server-client';
+import Server from 'simple-fake-server-host-client';
 
 const server = new Server();
 
@@ -20,5 +20,5 @@ const {hasBeenMade} = await server.getCall(callId);
 await sever.clear();
 ```
 
-## Seriously? simple-fake-server-server-client?
+## Seriously? simple-fake-server-host-client?
 Yes, seriously

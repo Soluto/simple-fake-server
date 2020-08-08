@@ -1,5 +1,5 @@
 {
-    "name": "simple-fake-server-server-client",
+    "name": "simple-fake-server-host-client",
     "version": "2.1.1",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
