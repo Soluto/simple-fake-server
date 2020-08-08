@@ -1,4 +1,4 @@
-# simple-fake-server-server
+# simple-fake-server-host
 This is a small server to host a [simple-fake-server](https://github.com/Soluto/simple-fake-server).
 
 ## API
@@ -50,7 +50,7 @@ describe('test', () => {
 ```
 or using our client:
 ```js
-import Server from 'simple-fake-server-server-client';
+import Server from 'simple-fake-server-host-client';
 
 const server = new Server({port: 3001});
 
