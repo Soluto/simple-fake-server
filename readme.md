@@ -54,7 +54,7 @@ describe('Test Example', () => {
 
 ## Running Inside a Docker Container
 
-see [simple-fake-server-server](http-host/README.md)
+see [simple-fake-server-host](http-host/README.md)
 
 ## Defining Routes
 
