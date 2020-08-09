@@ -19,7 +19,7 @@
     "esModuleInterop": true
   },
   "include": [
-    "index.ts"
+    "./index.ts"
   ],
   "exclude": []
 }
