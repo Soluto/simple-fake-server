@@ -21,7 +21,7 @@
         "koa": "1.5.1",
         "koa-bodyparser": "2",
         "koa-cors": "0.0.16",
-        "lodash": "^4.17.12",
+        "lodash": "^4.17.20",
         "query-string": "5.0.1"
     },
     "devDependencies": {
