@@ -32,7 +32,7 @@
         "into-stream": "^5.1.0",
         "jest": "^22.1.4",
         "lint-staged": "^6.0.1",
-        "node-fetch": "^1.7.3",
+        "node-fetch": "^2.6.1",
         "prettier": "^2.0.5",
         "rimraf": "^2.6.2",
         "ts-jest": "^22.0.1",
