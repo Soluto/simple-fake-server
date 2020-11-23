@@ -95,6 +95,8 @@ app.post('/fake_server_admin/clear', (_req, res) => {
     res.send('Ok');
 });
 
+app.get('/isAlive', (_, res) => res.send('Ok'));
+
 interface GetCallQueryParams {
     callId: string;
     [x: string]: string;
