@@ -2,7 +2,7 @@
 import * as isSubset from 'is-subset';
 import {BodyRestriction} from './models/BodyRestriction';
 
-export default class RouteCallTester {
+export default class RouteRequestTester {
     method: string;
     pathRegex: string;
     bodyRestriction: BodyRestriction;
@@ -22,7 +22,7 @@ export default class RouteCallTester {
             );
         }
 
-        return new RouteCallTester(this.method, path, this.bodyRestriction);
+        return new RouteRequestTester(this.method, path, this.bodyRestriction);
     }
 
     withBodyText(bodyText: string) {
@@ -39,7 +39,7 @@ export default class RouteCallTester {
             );
         }
 
-        return new RouteCallTester(this.method, this.pathRegex, {...this.bodyRestriction, exactText: bodyText});
+        return new RouteRequestTester(this.method, this.pathRegex, {...this.bodyRestriction, exactText: bodyText});
     }
 
     withSpecificBody(bodyObject: {}) {
@@ -61,6 +61,6 @@ export default class RouteCallTester {
             );
         }
 
-        return new RouteCallTester(this.method, this.pathRegex, {...this.bodyRestriction, object: bodyObject});
+        return new RouteRequestTester(this.method, this.pathRegex, {...this.bodyRestriction, object: bodyObject});
     }
 }

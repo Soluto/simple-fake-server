@@ -14,7 +14,7 @@ import * as isSubset from 'is-subset';
 import * as selfSignedCertificate from './selfSignedCertificate';
 import CallHistory, {Call} from './CallHistory';
 import {BodyRestriction} from './models/BodyRestriction';
-import FakeHttpCalls from './FakeHttpCalls';
+import FakeHttpRequests from './FakeHttpRequests';
 
 export type MockedCall = {
     method: string;
@@ -27,7 +27,7 @@ export type MockedCall = {
 };
 
 export default class FakeServer {
-    public http: FakeHttpCalls;
+    public http: FakeHttpRequests;
     public callHistory: CallHistory;
     private mockedCalls: MockedCall[];
     private port: number;
@@ -44,7 +44,7 @@ export default class FakeServer {
         this.mockedCalls = [];
         this.port = port;
         this.tls = tls;
-        this.http = new FakeHttpCalls(this);
+        this.http = new FakeHttpRequests(this);
         this.logger = logger;
     }
 
