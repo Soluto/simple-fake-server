@@ -107,9 +107,8 @@ app.get<{}, {}, {}, GetCallQueryParams>('/fake_server_admin/calls', (req, res) =
     }
 
     const mockedCall = mockedCalls[req.query.callId] || {call: {method: '', pathRegex: ''}};
-    const madeCalls = fakeServer.callHistory.calls.filter(
-        (c: FakeRoute) =>
-            c.method === mockedCall.request.method && new RegExp(mockedCall.request.pathRegex).test(c.path)
+    const madeCalls = fakeServer.callHistory.requests.filter(
+        (c) => c.method === mockedCall.request.method && new RegExp(mockedCall.request.pathRegex).test(c.path)
     );
 
     if (!mockedCall || !madeCalls.length) {

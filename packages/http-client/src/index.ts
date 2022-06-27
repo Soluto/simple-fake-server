@@ -1,5 +1,5 @@
 import fetch from 'node-fetch';
-import {Call} from 'simple-fake-server';
+import {Request} from 'simple-fake-server';
 
 export type MockOptions = {
     method?: 'get' | 'post' | 'put' | 'patch' | 'delete';
@@ -69,7 +69,7 @@ export default class Server {
         return callId;
     }
 
-    async getCalls(): Promise<Call[]> {
+    async getCalls(): Promise<Request[]> {
         const res = await fetch(this.buildUrl('calls'));
 
         const {calls} = await res.json();
@@ -77,7 +77,7 @@ export default class Server {
         return calls;
     }
 
-    async getCall(callId: string): Promise<{hasBeenMade: boolean; madeCalls: Call[]}> {
+    async getCall(callId: string): Promise<{hasBeenMade: boolean; madeCalls: Request[]}> {
         const res = await fetch(this.buildUrl(`calls?callId=${callId}`));
 
         return res.json();
