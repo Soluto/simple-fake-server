@@ -12,9 +12,9 @@ import * as deepEquals from 'deep-equal';
 //@ts-ignore
 import * as isSubset from 'is-subset';
 import * as selfSignedCertificate from './selfSignedCertificate';
-import CallHistory, {Call} from './CallHistory';
+import RequestsHistory, {Request} from './RequestsHistory';
 import {BodyRestriction} from './models/BodyRestriction';
-import FakeHttpCalls from './FakeHttpCalls';
+import FakeHttpRequests from './FakeHttpRequests';
 
 export type MockedCall = {
     method: string;
@@ -27,8 +27,8 @@ export type MockedCall = {
 };
 
 export default class FakeServer {
-    public http: FakeHttpCalls;
-    public callHistory: CallHistory;
+    public http: FakeHttpRequests;
+    public callHistory: RequestsHistory;
     private mockedCalls: MockedCall[];
     private port: number;
     private tls: boolean;
@@ -40,11 +40,11 @@ export default class FakeServer {
             throw new TypeError('No port provided!');
         }
 
-        this.callHistory = new CallHistory();
+        this.callHistory = new RequestsHistory();
         this.mockedCalls = [];
         this.port = port;
         this.tls = tls;
-        this.http = new FakeHttpCalls(this);
+        this.http = new FakeHttpRequests(this);
         this.logger = logger;
     }
 
@@ -86,7 +86,7 @@ export default class FakeServer {
         app.use(koaBody({enableTypes: ['json', 'form', 'text']}));
         app.use(cors());
         app.use(function* (): Iterator<void> {
-            const serverCall: Call = {
+            const serverCall: Request = {
                 method: this.req.method,
                 path: this.url,
                 headers: this.request.header,
@@ -188,7 +188,7 @@ export default class FakeServer {
     }
 
     private match(mockedCall: MockedCall) {
-        return (serverCall: Call) => {
+        return (serverCall: Request) => {
             const contentTypeIsApplicationJson = serverCall.headers['content-type'] === 'application/json';
             const callBodyAsString = contentTypeIsApplicationJson ? JSON.stringify(serverCall.body) : serverCall.body;
             const {bodyRestriction, queryParamsObject, pathRegex, method} = mockedCall;

@@ -2,6 +2,7 @@ import fetch from 'node-fetch';
 import getStream from 'get-stream';
 import intoStream from 'into-stream';
 import {FakeServer} from '../src';
+import {FakeRoute} from '../src/FakeHttpRequests';
 
 const port = 4444;
 let fakeServer: FakeServer;
@@ -20,7 +21,7 @@ afterEach(() => {
         test('GET route defined with mocked body and response headers', async () => {
             const path = '/somePath';
 
-            let route;
+            let route: FakeRoute;
             if (useNewApi) {
                 route = fakeServer.get(path).willReturn({name: 'Cloud'}, 200, {imontop: 'Of The World'});
             } else {
@@ -33,7 +34,7 @@ afterEach(() => {
             expect(body.name).toEqual('Cloud');
             expect(res.status).toEqual(200);
             expect(res.headers.get('imontop')).toEqual('Of The World');
-            expect(fakeServer.didReceive(route.call)).toEqual(true);
+            expect(fakeServer.didReceive(route.request)).toEqual(true);
         });
 
         test('GET route defined with response as stream', async () => {
@@ -41,7 +42,7 @@ afterEach(() => {
             const bodyAsStream = intoStream(stringTobeStreamed);
             const path = '/somePath';
 
-            let route;
+            let route: FakeRoute;
             if (useNewApi) {
                 route = fakeServer.get(path).willReturn(bodyAsStream);
             } else {
@@ -51,7 +52,7 @@ afterEach(() => {
             const res = await fetch(`http://localhost:${port}${path}`, {method: 'GET'});
             expect(res.headers.get('content-type')).toEqual('application/octet-stream');
             expect(res.status).toEqual(200);
-            expect(fakeServer.didReceive(route.call)).toEqual(true);
+            expect(fakeServer.didReceive(route.request)).toEqual(true);
             const body = await getStream(res.body);
             expect(body).toEqual(stringTobeStreamed);
         });

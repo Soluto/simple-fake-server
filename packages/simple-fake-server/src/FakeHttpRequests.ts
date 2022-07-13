@@ -1,4 +1,4 @@
-import RouteCallTester from './RouteCallTester';
+import RouteRequestTester from './RouteRequestTester';
 import {default as FakeServer} from './FakeServer';
 import {BodyRestriction} from './models/BodyRestriction';
 
@@ -16,14 +16,14 @@ export interface Will {
 }
 
 export interface FakeRoute {
-    call: RouteCallTester;
+    request: RouteRequestTester;
 }
 
 export interface FakeHttpMethod extends With {
     to(pathRegex: string): With;
 }
 
-export default class FakeHttpCalls {
+export default class FakeHttpRequests {
     private fakeServer: FakeServer;
 
     constructor(fakeServer: FakeServer) {
@@ -54,7 +54,7 @@ export default class FakeHttpCalls {
 
     private will(method: string, pathRegex: string, bodyRestriction: BodyRestriction, queryParamsObject?: {}): Will {
         const fakeRoute: FakeRoute = {
-            call: new RouteCallTester(method, pathRegex, bodyRestriction, queryParamsObject),
+            request: new RouteRequestTester(method, pathRegex, bodyRestriction, queryParamsObject),
         };
 
         return {
